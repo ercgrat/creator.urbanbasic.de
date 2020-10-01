@@ -1,2 +1,1 @@
-# creator.urbanbasic.de
-T-shirt customization flow for the urbanbasic.de site.
+This is a starter template for [Learn Next.js](https://nextjs.org/learn).
