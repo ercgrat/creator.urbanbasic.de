@@ -11,5 +11,9 @@
     "next": "9.5.3",
     "react": "16.13.1",
     "react-dom": "16.13.1"
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.0",
+    "sass": "^1.26.11"
   }
 }
