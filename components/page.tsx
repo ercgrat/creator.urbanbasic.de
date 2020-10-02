@@ -2,13 +2,7 @@ import styles from './page.module.scss';
 import Link from 'next/link';
 import React, { useContext } from 'react';
 import { CartContext } from '../hooks/useCart';
-import Button from '@material-ui/core/button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Divider from '@material-ui/core/Divider';
+import { Button, Card, CardContent, Stepper, Step, StepLabel, Divider } from '@material-ui/core';
 
 function CartAction() {
     return (
