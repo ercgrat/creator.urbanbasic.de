@@ -1,9 +1,14 @@
 import styles from './page.module.scss';
 import Link from 'next/link';
-import { Card, Steps, Button } from 'antd';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { CartContext } from '../hooks/useCart';
-const { Step } = Steps;
+import Button from '@material-ui/core/button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import Divider from '@material-ui/core/Divider';
 
 function CartAction() {
     return (
@@ -22,8 +27,8 @@ export default function Page({ children }) {
                     <ul className={styles.navActions}>
                         <li>
                             <Link href="/cart">
-                                <Button type="primary" shape="round" icon={<CartAction />} size="large">
-                                    { cart.getSize() }
+                                <Button variant="contained" color="primary" startIcon={<CartAction />} size="large">
+                                    {cart.getSize()}
                                 </Button>
                             </Link>
                         </li>
@@ -31,14 +36,24 @@ export default function Page({ children }) {
                 </nav>
             </header>
             <main className={styles.main}>
-                <Card title={
-                    <Steps current={0}>
-                        <Step title="Design" />
-                        <Step title={<Link href="/cart">Review cart</Link>} />
-                        <Step title="Submit order" />
-                    </Steps>
-                }>
-                    {children}
+                <Card>
+                    <CardContent>
+                        <section className={styles.progress}>
+                            <Stepper activeStep={0}>
+                                <Step>
+                                    <StepLabel>Design</StepLabel>
+                                </Step>
+                                <Step>
+                                    <StepLabel>Review cart</StepLabel>
+                                </Step>
+                                <Step>
+                                    <StepLabel>Submit order</StepLabel>
+                                </Step>
+                            </Stepper>
+                            <Divider light />
+                        </section>
+                        {children}
+                    </CardContent>
                 </Card>
             </main>
             <footer className={styles.footer}>

@@ -1,5 +1,4 @@
 import '@fortawesome/fontawesome-free/css/all.css';
-import 'antd/dist/antd.css';
 import '../styles/global.scss';
 import Head from 'next/head';
 import { CartContext, useCart } from '../hooks/useCart';
