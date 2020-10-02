@@ -4,13 +4,24 @@ import Link from 'next/link';
 export default function Page({ children }) {
     return (
         <div className={styles.container}>
-            <nav className={styles.nav}>
-                <img src="/images/logo.png" alt="Create Your Own Style" className={styles.logo}></img>
-                <Link href="/cart"><i className="fas fa-shopping-cart"></i></Link>
-            </nav>
+            <header>
+                <nav className={styles.nav}>
+                    <Link href="/"><img src="/images/logo.png" alt="Create Your Own Style" className={styles.logo}></img></Link>
+                    <ul className={styles.navActions}>
+                        <li>
+                            <Link href="/cart"><i className="fas fa-shopping-bag"></i></Link>
+                            <p>3</p>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
             <main className={styles.main}>
-                { children }
+                {children}
             </main>
+            <footer className={styles.footer}>
+                <p><i>This page is part of <a href="https://urbanbasic.de" target="_blank">urbanbasic.de</a>, where you'll find our custom designs for sale. Made with love in Cologne.</i></p>
+                <p><i>Developed by <a href="https://linkedin.com/in/ercgrat" target="_blank">Eric Gratta</a> on Long Island, NY.</i></p>
+            </footer>
         </div>
     );
 }

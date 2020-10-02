@@ -1,5 +1,9 @@
+import Page from '../../components/page';
+
 export default function Cart() {
     return (
-        <p>This is the cart.</p>
+        <Page>
+            <p>This is the cart.</p>
+        </Page>
     );
 }
