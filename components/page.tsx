@@ -1,5 +1,14 @@
 import styles from './page.module.scss';
 import Link from 'next/link';
+import { Card, Steps, Button } from 'antd';
+import { ShoppingCartOutlined } from '@ant-design/icons';
+const { Step } = Steps;
+
+function CartAction() {
+    return (
+        <i className="fas fa-shopping-bag" style={{ marginRight: "12px" }}></i>
+    );
+}
 
 export default function Page({ children }) {
     return (
@@ -10,17 +19,24 @@ export default function Page({ children }) {
                     <ul className={styles.navActions}>
                         <li>
                             <Link href="/cart">
-                                <div>
-                                    <i className="fas fa-shopping-bag"></i>
-                                    <p>3</p>
-                                </div>
+                                <Button type="primary" shape="round" icon={<CartAction />} size="large">
+                                    3
+                                </Button>
                             </Link>
                         </li>
                     </ul>
                 </nav>
             </header>
             <main className={styles.main}>
-                {children}
+                <Card title={
+                    <Steps current={0}>
+                        <Step title="Design" />
+                        <Step title={<Link href="/cart">Review cart</Link>} />
+                        <Step title="Submit order" />
+                    </Steps>
+                }>
+                    {children}
+                </Card>
             </main>
             <footer className={styles.footer}>
                 <p><i>This page is part of <a href="https://urbanbasic.de" target="_blank">urbanbasic.de</a>, where you'll find our custom designs for sale. Made with love in Cologne.</i></p>

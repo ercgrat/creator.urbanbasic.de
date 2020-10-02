@@ -29,17 +29,13 @@
     cursor: pointer;
 }
 
-.navActions > li > div {
+.navAction {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     min-width: 42px;
     line-height: 0;
-}
-
-.navActions > li i {
-    color: $primary-color;
 }
 
 .logo {
@@ -50,9 +46,6 @@
 .main {
     margin: 24px auto;
     width: 1000px;
-    background-color: $component-background-color;
-    border: solid 1px $border-color;
-    border-radius: 0.8rem;
     flex: 1 0 100%;
 }
 
@@ -97,7 +90,6 @@
         height: 40px;
     }
     .main {
-        padding: 0px 20px;
         width: calc(100vw - 40px);
     }
 }
