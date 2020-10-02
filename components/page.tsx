@@ -1,7 +1,8 @@
 import styles from './page.module.scss';
 import Link from 'next/link';
 import { Card, Steps, Button } from 'antd';
-import { ShoppingCartOutlined } from '@ant-design/icons';
+import { useContext } from 'react';
+import { CartContext } from '../hooks/useCart';
 const { Step } = Steps;
 
 function CartAction() {
@@ -11,6 +12,8 @@ function CartAction() {
 }
 
 export default function Page({ children }) {
+    const { cart, dispatcher } = useContext(CartContext);
+
     return (
         <div className={styles.container}>
             <header>
@@ -20,7 +23,7 @@ export default function Page({ children }) {
                         <li>
                             <Link href="/cart">
                                 <Button type="primary" shape="round" icon={<CartAction />} size="large">
-                                    3
+                                    { cart.getSize() }
                                 </Button>
                             </Link>
                         </li>
