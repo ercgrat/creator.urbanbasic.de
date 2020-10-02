@@ -9,8 +9,12 @@ export default function Page({ children }) {
                     <Link href="/"><img src="/images/logo.png" alt="Create Your Own Style" className={styles.logo}></img></Link>
                     <ul className={styles.navActions}>
                         <li>
-                            <Link href="/cart"><i className="fas fa-shopping-bag"></i></Link>
-                            <p>3</p>
+                            <Link href="/cart">
+                                <div>
+                                    <i className="fas fa-shopping-bag"></i>
+                                    <p>3</p>
+                                </div>
+                            </Link>
                         </li>
                     </ul>
                 </nav>
