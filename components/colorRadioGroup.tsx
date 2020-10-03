@@ -1,5 +1,5 @@
 import { FormControl, RadioGroup, Radio, makeStyles } from '@material-ui/core';
-import { useState } from 'react';
+import colors from '../model/Colors';
 
 const useRadioGroupStyles = makeStyles({
     radioGroup: {
@@ -60,7 +60,6 @@ function ColorRadio({ color }) {
 }
 
 export default function ColorRadioGroup({ onChange }) {
-    const [colors] = useState(['white', 'gray', 'black', 'navy', 'orange']);
     const classes = useRadioGroupStyles();
     return (
         <FormControl component="fieldset">

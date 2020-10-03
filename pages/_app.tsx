@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { CartContext, useCart } from '../hooks/useCart';
 import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import colors from '../model/Colors';
 
 
 export default function App({ Component, pageProps }) {
@@ -38,6 +39,12 @@ export default function App({ Component, pageProps }) {
             <Head>
                 <title>Creator</title>
                 <link rel="icon" href="/favicon.ico" />
+                {
+                    colors.map(color => (<React.Fragment key={color}>
+                        <link rel="prefetch" href={`/images/${color}-front.jpg`}></link>
+                        <link rel="prefetch" href={`/images/${color}-back.jpg`}></link>
+                    </React.Fragment>))
+                }
                 <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;700&display=swap" rel="stylesheet"></link>
             </Head>
             <CartContext.Provider value={{ cart, dispatcher }}>
