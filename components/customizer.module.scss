@@ -19,11 +19,12 @@
 
 .label {
     font-weight: bold;
-    margin-bottom: 6px;
+    margin: 6px 0px;
 }
 
 .shirtImage {
     width: 100%;
+    max-height: 500px;
 }
 
 .canvasContainer {
@@ -39,13 +40,12 @@
     overflow: hidden;
 }
 
-.textConfiguration {
-    margin-top: 12px;
-    display: flex;
-}
-
 @media screen and (max-width: 600px) {
     .container {
         flex-direction: column;
+    }
+
+    .shirtImage {
+        max-height: 240px;
     }
 }

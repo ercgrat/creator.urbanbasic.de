@@ -1,36 +1,27 @@
 import styles from './customizer.module.scss';
-import { Button, TextField, FormControl, Select, InputLabel, MenuItem } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
 import { fabric } from 'fabric';
 import { Dispatch, useEffect, useRef, useState } from 'react';
+import TextConfiguration from './textConfiguration';
+import { CustomizerItem, CustomizerItemType } from '../model/Customizer';
+import ColorRadioGroup from './colorRadioGroup';
 
-enum ItemType {
-    text,
-    image
-}
-
-class Item {
-    id: number;
-    type: ItemType;
-    value: string;
-
-    constructor(id: number, type: ItemType, value: string) {
-        this.id = id;
-        this.type = type;
-        this.value = value;
-    }
-}
+const PX_PER_CM = 38; // Approximately, it's actually 37.795275591
 
 export default function Customizer() {
 
     const canvasRef = useRef(null);
-    const textRef = useRef(null);
     let canvas: fabric.Canvas, setCanvas: Dispatch<fabric.Canvas>;
     [canvas, setCanvas] = useState(null);
-    const [items, setItems] = useState([]);
-    const [itemCounter, setItemCounter] = useState(0);
-    let currentObject: fabric.Object, setCurrentObject: Dispatch<fabric.Object>;
-    [currentObject, setCurrentObject] = useState(null);
+    let items: CustomizerItem[], setItems: Dispatch<CustomizerItem[]>;
+    [items, setItems] = useState([]);
+    let itemCounter: number, setItemCounter: Dispatch<number>;
+    [itemCounter, setItemCounter] = useState(0);
+    let selectedObject: fabric.Object, setSelectedObject: Dispatch<fabric.Object>;
+    [selectedObject, setSelectedObject] = useState(null);
+    let color: string, setColor: Dispatch<string>;
+    [color, setColor] = useState('white');
+    let shirtPosition: string, setShirtPosition: Dispatch<string>;
+    [shirtPosition, setShirtPosition] = useState('front');
 
     useEffect(() => {
         const effectCanvas = new fabric.Canvas('canvas', {
@@ -38,80 +29,31 @@ export default function Customizer() {
             height: canvasRef.current.clientHeight
         });
         setCanvas(effectCanvas);
-        items.forEach((item: Item) => {
+        items.forEach((item: CustomizerItem) => {
             switch (item.type) {
-                case ItemType.text:
-                    addText(item.value);
+                case CustomizerItemType.text:
+                    addObject(CustomizerItemType.text, item.value);
                     break;
             }
         });
         effectCanvas.on('selection:cleared', () => {
             removeUnusedObjects(effectCanvas);
-            setCurrentObject(null);
+            setSelectedObject(null);
         });
         effectCanvas.on('selection:created', (event) => {
-            setCurrentObject(event.target);
+            setSelectedObject(event.target);
         });
         effectCanvas.on('selection:updated', (event) => {
-            removeUnusedObjects(effectCanvas);
-            setCurrentObject(event.target);
+            setSelectedObject(event.target);
         });
     }, [canvasRef]);
 
-    useEffect(() => {
-        if (currentObject) {
-            switch (currentObject.type) {
-                case 'text':
-                    const obj = currentObject as fabric.Text;
-                    setCustomTextareas(obj.get('text'));
-                    break;
-            }
-        }
-    }, [currentObject]);
-
-    function addText(value?: string) {
-        const id = itemCounter;
-        const item = new Item(id, ItemType.text, value || '');
+    function addObject(type: CustomizerItemType, value: any) {
+        const item = new CustomizerItem(itemCounter, type, value);
         const newItems = items.slice();
         newItems.push(item);
-
-        const textObject = new fabric.Text(value || '', {
-            data: id,
-            left: canvasRef.current.clientWidth / 2,
-            top: canvasRef.current.clientHeight / 2,
-            transparentCorners: false,
-            fontSize: 20,
-            fontFamily: 'Fira Sans'
-        });
-        textObject.setControlsVisibility({
-            bl: false, br: false, mb: false, ml: false, mr: false, mt: false, tl: false, tr: false
-        });
-        
-        setCustomTextareas(value);
         setItemCounter(itemCounter + 1);
         setItems(newItems);
-
-        canvas.add(textObject);
-        canvas.setActiveObject(textObject);
-        canvas.renderAll();
-    }
-
-    function setCustomTextareas(value) {
-        if (textRef.current) {
-            const textareas = (textRef.current as HTMLElement).getElementsByTagName('textarea');
-            for (let i = 0; i < textareas.length; i++) {
-                textareas[i].value = value;
-            }
-        }
-    }
-
-    function textChanged(event) {
-        const value = event.target.value;
-        if (currentObject) {
-            const obj = currentObject as fabric.Text;
-            obj.set('text', value);
-            canvas.renderAll();
-        }
     }
 
     function removeUnusedObjects(canvas) {
@@ -127,36 +69,23 @@ export default function Customizer() {
         });
     }
 
+    function changeColor(event: React.SyntheticEvent, color: string) {
+        setColor(color);
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.editor}>
-                <img src="/images/white-front.jpg" className={styles.shirtImage}></img>
+                <img src={`/images/${color}-${shirtPosition}.jpg`} className={styles.shirtImage}></img>
                 <div className={styles.canvasContainer} ref={canvasRef}>
                     <canvas id="canvas" className={styles.canvas}></canvas>
                 </div>
             </div>
             <div className={styles.settings}>
+                <label className={styles.label}>Color</label>
+                <ColorRadioGroup onChange={changeColor} />
                 <label className={styles.label}>Text</label>
-                <Button color="primary" startIcon={<AddIcon />} variant="outlined"
-                    onClick={() => addText()}>Add text</Button>
-                {
-                    currentObject && currentObject.isType('text') ?
-                        <section>
-                            <div className={styles.textConfiguration}>
-                                <FormControl variant="outlined" className={styles.formControl} size="small">
-                                    <InputLabel id="font-select">Font</InputLabel>
-                                    <Select
-                                        labelId="font-select"
-                                        value="Fira Sans"
-                                    >
-                                        <MenuItem value="Fira Sans">Fira Sans</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </div>
-                            <TextField ref={textRef} placeholder="Enter text here" variant="outlined" multiline onChange={textChanged} />
-                        </section> :
-                        null
-                }
+                <TextConfiguration config={ { canvas, canvasRef, selectedObject, addObject }} />
             </div>
         </div>
     );

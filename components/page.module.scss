@@ -2,6 +2,7 @@
 
 .container {
     overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -91,7 +92,8 @@
         height: 40px;
     }
     .main {
-        width: calc(100vw - 40px);
+        padding: 12px;
+        width: 100vw;
     }
     .footer {
         align-items: flex-start;

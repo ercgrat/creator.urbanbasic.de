@@ -33,7 +33,7 @@ export default function Page({ children }) {
                 <Card>
                     <CardContent>
                         <section className={styles.progress}>
-                            <Stepper activeStep={0}>
+                            <Stepper activeStep={0} color="secondary">
                                 <Step>
                                     <StepLabel>Design</StepLabel>
                                 </Step>
