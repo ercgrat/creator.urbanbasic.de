@@ -15,7 +15,9 @@ export default function ImageAdder({ canvas }) {
         imageInput.onchange = async function (event: InputEvent) {
             const file: Blob = (event.target as any).files[0];
             const image: HTMLImageElement = await canvasUtils.addImage(file);
-            const imageObject = new fabric.Image(image);
+            const imageObject = new fabric.Image(image, {
+                transparentCorners: false
+            });
             imageObject.scaleToHeight(100);
             imageObject.scaleToWidth(100);
             imageObject.set('data', file);
