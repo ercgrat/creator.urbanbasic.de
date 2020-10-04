@@ -1,17 +1,27 @@
-import { Button, FormControl, InputLabel, Select, MenuItem, TextField } from '@material-ui/core';
+import { Button, FormControl, InputLabel, Select, MenuItem, TextField, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { fabric } from 'fabric';
 import { useRef, useEffect, useState } from 'react';
 import { ColorResult } from 'react-color';
 import { CustomizerItemType, ICustomizerConfigProps } from '../model/Customizer';
 import ColorSelect from './colorSelect';
+import FormatAlignLeftIcon from '@material-ui/icons/FormatAlignLeft';
+import FormatAlignCenterIcon from '@material-ui/icons/FormatAlignCenter';
+import FormatAlignRightIcon from '@material-ui/icons/FormatAlignRight';
 import styles from './textConfiguration.module.scss';
+
+const useStyles = makeStyles({
+    withMargin: {
+        margin: '6px 6px 6px 0px'
+    }
+});
 
 export default function TextConfiguration(props: { config: ICustomizerConfigProps }) {
     const { canvas, canvasRef, selectedObject, addObject } = props.config;
     const textRef = useRef(null);
     const [fontColor, setFontColor] = useState('black');
-    
+    const [textAlign, setTextAlign] = useState('left');
+
     useEffect(() => {
         if (selectedObject) {
             switch (selectedObject.type) {
@@ -21,6 +31,7 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
                     let color = obj.get('fill') as string;
                     color = (!color || color === 'rgb(0,0,0)') ? 'black' : color;
                     setFontColor(color);
+                    setTextAlign(obj.get('textAlign'));
                     break;
             }
         }
@@ -34,10 +45,7 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
             fontSize: 20,
             fontFamily: 'Fira Sans'
         });
-        textObject.setControlsVisibility({
-            bl: false, br: false, mb: false, ml: false, mr: false, mt: false, tl: false, tr: false
-        });
-        
+
         setCustomTextareas(value);
 
         canvas.add(textObject);
@@ -47,7 +55,7 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
         addObject(CustomizerItemType.text, value);
     }
 
-    
+
     function setCustomTextareas(value) {
         if (textRef.current) {
             const textareas = (textRef.current as HTMLElement).getElementsByTagName('textarea');
@@ -66,6 +74,18 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
         }
     }
 
+    function alignChanged(event) {
+        console.log(event);
+        const value = event.target.value;
+        console.log(value);
+        if (selectedObject) {
+            const obj = selectedObject as fabric.Text;
+            obj.set('textAlign', value);
+            canvas.renderAll();
+        }
+        setTextAlign(value);
+    }
+
     function colorChanged(pickerResults: ColorResult) {
         const value = pickerResults.hex;
         if (selectedObject) {
@@ -76,6 +96,8 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
         setFontColor(value);
     }
 
+    const muiStyles = useStyles();
+
     return (
         <section>
             <Button color="secondary" startIcon={<AddIcon />} variant="outlined"
@@ -84,7 +106,10 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
                 selectedObject && selectedObject.isType('text') ?
                     <section>
                         <div className={styles.textConfiguration}>
-                            <FormControl variant="outlined" className={styles.formControl} size="small">
+                            <FormControl
+                                variant="outlined"
+                                size="small"
+                                classes={{ root: muiStyles.withMargin }}>
                                 <InputLabel>Font</InputLabel>
                                 <Select
                                     value="Fira Sans"
@@ -92,9 +117,32 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
                                     <MenuItem value="Fira Sans">Fira Sans</MenuItem>
                                 </Select>
                             </FormControl>
-                            <ColorSelect selectedColor={fontColor} onChange={colorChanged} />
+                            <ColorSelect
+                                selectedColor={fontColor}
+                                onChange={colorChanged}
+                                classes={{ root: muiStyles.withMargin }} />
+                            <FormControl
+                                variant="outlined"
+                                size="small"
+                                classes={{ root: muiStyles.withMargin }}>
+                                <InputLabel>Align</InputLabel>
+                                <Select defaultValue="left"
+                                    value={textAlign}
+                                    onChange={alignChanged}
+                                    style={{ fontSize: '15px' }}>
+                                    <MenuItem value="left"><FormatAlignLeftIcon fontSize="inherit" /></MenuItem>
+                                    <MenuItem value="center"><FormatAlignCenterIcon fontSize="inherit" /></MenuItem>
+                                    <MenuItem value="right"><FormatAlignRightIcon fontSize="inherit" /></MenuItem>
+                                </Select>
+                            </FormControl>
                         </div>
-                        <TextField ref={textRef} placeholder="Enter text here" variant="outlined" multiline onChange={textChanged} />
+                        <TextField
+                            ref={textRef}
+                            placeholder="Enter text here"
+                            variant="outlined"
+                            multiline
+                            onChange={textChanged}
+                            fullWidth />
                     </section> :
                     null
             }

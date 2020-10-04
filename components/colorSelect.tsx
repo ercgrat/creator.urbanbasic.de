@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, Select, MenuItem, makeStyles } from '@material-ui/core';
+import { FormControl, InputLabel, Select, MenuItem, makeStyles, FormControlClassKey } from '@material-ui/core';
 import { useEffect, useRef, useState } from 'react';
 import { ColorChangeHandler, SketchPicker, ChromePicker } from 'react-color';
 import OutsideClickDetector from './blurDetector';
@@ -11,7 +11,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function ColorSelect(props: { selectedColor: string, onChange: ColorChangeHandler }) {
+export default function ColorSelect(props: { selectedColor: string, onChange: ColorChangeHandler, classes: Partial<Record<FormControlClassKey, string>> }) {
 
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
@@ -34,7 +34,7 @@ export default function ColorSelect(props: { selectedColor: string, onChange: Co
     }
 
     return (
-        <FormControl variant="outlined" size="small">
+        <FormControl variant="outlined" size="small" classes={props.classes}>
             <InputLabel>Color</InputLabel>
             <Select
                 className={styles.colorSelect}
