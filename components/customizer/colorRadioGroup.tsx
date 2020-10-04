@@ -1,5 +1,5 @@
 import { FormControl, RadioGroup, Radio, makeStyles } from '@material-ui/core';
-import colors from '../../model/Colors';
+import { colors } from '../../model/Products';
 
 const useRadioGroupStyles = makeStyles({
     radioGroup: {
@@ -43,7 +43,6 @@ const useRadioStyles = function (color: string) {
     })();
 };
 
-// Inspired by blueprintjs
 function ColorRadio({ color }) {
     const classes = useRadioStyles(color);
 
@@ -54,7 +53,6 @@ function ColorRadio({ color }) {
             icon={<span className={classes.icon} />}
             checkedIcon={<span className={classes.checkedIcon} />}
             disableRipple
-
         />
     );
 }

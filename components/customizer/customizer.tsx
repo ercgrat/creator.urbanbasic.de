@@ -4,8 +4,7 @@ import { Dispatch, useEffect, useRef, useState } from 'react';
 import TextConfiguration from './textConfiguration';
 import { CustomizerItem, CustomizerItemType } from '../../model/Customizer';
 import ColorRadioGroup from './colorRadioGroup';
-
-const PX_PER_CM = 38; // Approximately, it's actually 37.795275591
+import SizeRadioGroup from './sizeRadioGroup';
 
 export default function Customizer() {
 
@@ -20,6 +19,8 @@ export default function Customizer() {
     [selectedObject, setSelectedObject] = useState(null);
     let color: string, setColor: Dispatch<string>;
     [color, setColor] = useState('white');
+    let size: string, setSize: Dispatch<string>;
+    [size, setSize] = useState('m');
     let shirtPosition: string, setShirtPosition: Dispatch<string>;
     [shirtPosition, setShirtPosition] = useState('front');
 
@@ -79,6 +80,10 @@ export default function Customizer() {
         setColor(color);
     }
 
+    function changeSize(event: React.SyntheticEvent, size: string) {
+        setSize(size);
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.editor}>
@@ -90,6 +95,8 @@ export default function Customizer() {
             <div className={styles.settings}>
                 <label className={styles.label}>Color</label>
                 <ColorRadioGroup onChange={changeColor} />
+                <label className={styles.label}>Size</label>
+                <SizeRadioGroup onChange={changeSize} />
                 <label className={styles.label}>Text</label>
                 <TextConfiguration config={{ canvas, canvasRef, selectedObject, addObject }} />
             </div>
