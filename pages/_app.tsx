@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }) {
         <ThemeProvider theme={theme}>
             <Head>
                 <title>Creator</title>
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/favicon.png" />
                 {
                     colors.map(color => (<React.Fragment key={color}>
                         <link rel="prefetch" href={`/images/${color}-front.jpg`}></link>
