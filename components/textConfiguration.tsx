@@ -35,6 +35,10 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
                     break;
             }
         }
+
+        if (textRef.current) {
+            (textRef.current as HTMLElement).getElementsByTagName('textarea')[0].focus();
+        }
     }, [selectedObject]);
 
     function addText(value: string = '') {
@@ -75,9 +79,7 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
     }
 
     function alignChanged(event) {
-        console.log(event);
         const value = event.target.value;
-        console.log(value);
         if (selectedObject) {
             const obj = selectedObject as fabric.Text;
             obj.set('textAlign', value);
