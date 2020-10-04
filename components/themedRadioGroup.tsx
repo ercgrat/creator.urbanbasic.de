@@ -4,7 +4,7 @@ const useRadioGroupStyles = makeStyles({
     radioGroup: {
         'display': 'flex',
         'flex-direction': 'row',
-        'flex-wrap': 'nowrap'
+        'flex-wrap': 'wrap'
     }
 });
 
@@ -25,7 +25,7 @@ const useRadioStyles = function () {
         },
         icon,
         checkedIcon: Object.assign({ ...icon }, {
-            border: 'none',
+            border: 'solid 1px #5c7d84',
             backgroundColor: '#5c7d84'
         }),
         radioRoot: {
