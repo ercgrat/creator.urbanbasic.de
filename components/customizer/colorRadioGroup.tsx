@@ -1,5 +1,5 @@
 import { FormControl, RadioGroup, Radio, makeStyles } from '@material-ui/core';
-import colors from '../model/Colors';
+import colors from '../../model/Colors';
 
 const useRadioGroupStyles = makeStyles({
     radioGroup: {

@@ -2,7 +2,7 @@ import styles from './customizer.module.scss';
 import { fabric } from 'fabric';
 import { Dispatch, useEffect, useRef, useState } from 'react';
 import TextConfiguration from './textConfiguration';
-import { CustomizerItem, CustomizerItemType } from '../model/Customizer';
+import { CustomizerItem, CustomizerItemType } from '../../model/Customizer';
 import ColorRadioGroup from './colorRadioGroup';
 
 const PX_PER_CM = 38; // Approximately, it's actually 37.795275591

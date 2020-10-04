@@ -3,13 +3,12 @@ import AddIcon from '@material-ui/icons/Add';
 import { fabric } from 'fabric';
 import { useRef, useEffect, useState } from 'react';
 import { ColorResult } from 'react-color';
-import { CustomizerItemType, ICustomizerConfigProps } from '../model/Customizer';
+import { CustomizerItemType, ICustomizerConfigProps } from '../../model/Customizer';
 import ColorSelect from './colorSelect';
 import FormatAlignLeftIcon from '@material-ui/icons/FormatAlignLeft';
 import FormatAlignCenterIcon from '@material-ui/icons/FormatAlignCenter';
 import FormatAlignRightIcon from '@material-ui/icons/FormatAlignRight';
 import styles from './textConfiguration.module.scss';
-import usePrevious from '../hooks/usePrevious';
 
 const useStyles = makeStyles({
     withMargin: {

@@ -1,7 +1,6 @@
 import Page from '../components/page';
-import Customizer from '../components/customizer';
+import Customizer from '../components/customizer/customizer';
 import { Divider, Button, makeStyles } from '@material-ui/core';
-import styles from './index.module.scss';
 
 const useStyles = makeStyles({
     divider: {
