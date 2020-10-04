@@ -51,8 +51,10 @@ export default function Page({ children }) {
                 </Card>
             </main>
             <footer className={styles.footer}>
-                <p><i>This page is part of <a href="https://urbanbasic.de" target="_blank">urbanbasic.de</a>, where you'll find our custom designs for sale. Made with love in Cologne.</i></p>
-                <p><i>Developed by <a href="https://linkedin.com/in/ercgrat" target="_blank">Eric Gratta</a> on Long Island, NY.</i></p>
+                <p>This page is part of <a href="https://urbanbasic.de" target="_blank">urbanbasic.de</a>, where you'll find our custom designs for sale. Made with love in Cologne.</p>
+                <p>Developed by <a href="https://linkedin.com/in/ercgrat" target="_blank">Eric Gratta</a> on Long Island, NY.</p>
+                <br/>
+                <p>© 2020 Urban Basic</p>
             </footer>
         </div>
     );

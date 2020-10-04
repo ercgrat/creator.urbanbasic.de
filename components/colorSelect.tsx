@@ -42,6 +42,7 @@ export default function ColorSelect(props: { selectedColor: string, onChange: Co
                 MenuProps={{ classes: { paper: classes.root }, PopoverClasses: { root: classes.root } }}
                 onOpen={openPicker}
                 onClose={() => { }}
+                label="Color"
             >
                 {
                     <MenuItem value={props.selectedColor}>
