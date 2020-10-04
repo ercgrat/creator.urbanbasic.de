@@ -1,36 +1,28 @@
 import { Button } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { CustomizerItemType, ICustomizerConfigProps } from '../../model/Customizer';
-import { fabric } from 'fabric';
+import { imageUtils } from '../../hooks/useCanvasUtils';
+import {fabric } from 'fabric';
 
-export default function ImageAdder(props: { config: ICustomizerConfigProps }) {
-    const { canvas, addObject } = props.config;
+export default function ImageAdder({ canvas }) {
+
+    const canvasUtils = imageUtils();
 
     async function addImage() {
         const imageInput = document.createElement('input');
         imageInput.type = 'file';
         imageInput.accept = '.png, .jpg, .jpeg';
 
-        imageInput.onchange = function (event: InputEvent) {
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                const image = new Image();
-                image.onload = function () {
-                    const imageObject = new fabric.Image(image);
-                    imageObject.scaleToHeight(100);
-                    imageObject.scaleToWidth(100);
-                    canvas.centerObject(imageObject);
-                    canvas.add(imageObject);
-                    canvas.renderAll();
-
-                    addObject(CustomizerItemType.image, image);
-                };
-
-                image.src = event.target.result as string;
-            };
-
+        imageInput.onchange = async function (event: InputEvent) {
             const file: Blob = (event.target as any).files[0];
-            reader.readAsDataURL(file);
+            const image: HTMLImageElement = await canvasUtils.addImage(file);
+            const imageObject = new fabric.Image(image);
+            imageObject.scaleToHeight(100);
+            imageObject.scaleToWidth(100);
+            imageObject.set('data', file);
+            canvas.centerObject(imageObject);
+            canvas.add(imageObject);
+            canvas.setActiveObject(imageObject);
+            canvas.renderAll();
         };
 
         imageInput.click();

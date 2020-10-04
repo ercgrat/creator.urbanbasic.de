@@ -2,19 +2,22 @@ import styles from './customizer.module.scss';
 import { fabric } from 'fabric';
 import { Dispatch, useEffect, useRef, useState } from 'react';
 import TextConfiguration from './textConfiguration';
-import { CustomizerItem, CustomizerItemType } from '../../model/Customizer';
 import ColorRadioGroup from './colorRadioGroup';
 import SizeRadioGroup from './sizeRadioGroup';
 import ImageAdder from './imageAdder';
 import PositionRadioGroup from './positionRadioGroup';
+import { imageUtils } from '../../hooks/useCanvasUtils';
 
 export default function Customizer() {
 
-    const canvasRef = useRef(null);
+    const frontCanvasRef = useRef(null);
+    const backCanvasRef = useRef(null);
     let canvas: fabric.Canvas, setCanvas: Dispatch<fabric.Canvas>;
     [canvas, setCanvas] = useState(null);
-    let items: CustomizerItem[], setItems: Dispatch<CustomizerItem[]>;
-    [items, setItems] = useState([]);
+    let frontObjects: fabric.Object[], setFrontObjects: Dispatch<fabric.Object[]>;
+    [frontObjects, setFrontObjects] = useState([]);
+    let backObjects: fabric.Object[], setBackObjects: Dispatch<fabric.Object[]>;
+    [backObjects, setBackObjects] = useState([]);
     let itemCounter: number, setItemCounter: Dispatch<number>;
     [itemCounter, setItemCounter] = useState(0);
     let selectedObject: fabric.Object, setSelectedObject: Dispatch<fabric.Object>;
@@ -25,24 +28,26 @@ export default function Customizer() {
     [size, setSize] = useState('m');
     let shirtPosition: string, setShirtPosition: Dispatch<string>;
     [shirtPosition, setShirtPosition] = useState('front');
+    
+    const canvasUtils = imageUtils();
 
     useEffect(() => {
-        const effectCanvas = new fabric.Canvas('canvas', {
-            width: canvasRef.current.clientWidth,
-            height: canvasRef.current.clientHeight
+        const effectCanvas = new fabric.Canvas(`${shirtPosition}Canvas`, {
+            width: getCanvasRef().current.clientWidth,
+            height: getCanvasRef().current.clientHeight
         });
-        setCanvas(effectCanvas);
 
-        items.forEach((item: CustomizerItem) => {
-            switch (item.type) {
-                case CustomizerItemType.text:
-                    addObject(CustomizerItemType.text, item.value);
-                    break;
-                case CustomizerItemType.image:
-                    addObject(CustomizerItemType.image, item.value);
-                    break;
+        getObjects().forEach(async (object) => {
+            if (object.isType('image')) {
+                const image = await canvasUtils.addImage(object.get('data') as Blob);
+                const imageObject = object as fabric.Image;
+                imageObject.setElement(image);
+                effectCanvas.add(imageObject);
+            } else {
+                effectCanvas.add(object);
             }
         });
+        effectCanvas.renderAll();
 
         effectCanvas.on('selection:cleared', () => {
             removeUnusedObjects(effectCanvas);
@@ -55,14 +60,20 @@ export default function Customizer() {
             setSelectedObject(event.target);
         });
 
+        setCanvas(effectCanvas);
+        setSelectedObject(null);
+
         return () => {
-            canvas && canvas.off();
+            if (effectCanvas) {
+                setObjects(effectCanvas.getObjects());
+                effectCanvas.dispose();
+            }
         };
-    }, [canvasRef]);
+    }, [shirtPosition]);
 
     useEffect(() => {
         const listener = (event: KeyboardEvent) => {
-            if(event.key === 'Delete') {
+            if (event.key === 'Delete') {
                 deleteSelectedObject();
             }
         };
@@ -73,12 +84,20 @@ export default function Customizer() {
         }
     });
 
-    function addObject(type: CustomizerItemType, value: any) {
-        const item = new CustomizerItem(itemCounter, type, value);
-        const newItems = items.slice();
-        newItems.push(item);
-        setItemCounter(itemCounter + 1);
-        setItems(newItems);
+    function getCanvasRef() {
+        return shirtPosition === 'front' ? frontCanvasRef : backCanvasRef;
+    }
+
+    function getObjects() {
+        return shirtPosition === 'front' ? frontObjects : backObjects;
+    }
+
+    function setObjects(objects: fabric.Object[]) {
+        if (shirtPosition === 'front') {
+            setFrontObjects(objects);
+        } else {
+            setBackObjects(objects);
+        }
     }
 
     function removeUnusedObjects(canvas) {
@@ -117,9 +136,15 @@ export default function Customizer() {
         <div className={styles.container}>
             <div className={styles.editor}>
                 <img src={`/images/${color}-${shirtPosition}.jpg`} className={styles.shirtImage}></img>
-                <div className={styles.canvasContainer} ref={canvasRef}>
-                    <canvas id="canvas" className={styles.canvas}></canvas>
-                </div>
+                {
+                    shirtPosition === 'front' ?
+                        <div className={styles.canvasContainer} ref={frontCanvasRef}>
+                            <canvas id="frontCanvas" className={styles.canvas}></canvas>
+                        </div> :
+                        <div className={styles.canvasContainer} ref={backCanvasRef}>
+                            <canvas id="backCanvas" className={styles.canvas}></canvas>
+                        </div>
+                }
                 <PositionRadioGroup onChange={changePosition} />
             </div>
             <div className={styles.settings}>
@@ -128,9 +153,9 @@ export default function Customizer() {
                 <label className={styles.label}>Size</label>
                 <SizeRadioGroup onChange={changeSize} />
                 <label className={styles.label}>Text</label>
-                <TextConfiguration config={{ canvas, canvasRef, selectedObject, addObject }} />
+                <TextConfiguration canvas={canvas} selectedObject={selectedObject} />
                 <label className={styles.label}>Image</label>
-                <ImageAdder config={{ canvas, canvasRef, selectedObject, addObject }} />
+                <ImageAdder canvas={canvas} />
             </div>
         </div>
     );

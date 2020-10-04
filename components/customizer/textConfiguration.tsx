@@ -3,7 +3,6 @@ import AddIcon from '@material-ui/icons/Add';
 import { fabric } from 'fabric';
 import { useRef, useEffect, useState } from 'react';
 import { ColorResult } from 'react-color';
-import { CustomizerItemType, ICustomizerConfigProps } from '../../model/Customizer';
 import ColorSelect from './colorSelect';
 import FormatAlignLeftIcon from '@material-ui/icons/FormatAlignLeft';
 import FormatAlignCenterIcon from '@material-ui/icons/FormatAlignCenter';
@@ -16,8 +15,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function TextConfiguration(props: { config: ICustomizerConfigProps }) {
-    const { canvas, canvasRef, selectedObject, addObject } = props.config;
+export default function TextConfiguration({ canvas, selectedObject }) {
     const textRef = useRef(null);
     const [fontColor, setFontColor] = useState('black');
     const [textAlign, setTextAlign] = useState('left');
@@ -44,23 +42,22 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
     }, [selectedObject]);
 
     function addText(value: string = '') {
+        setCustomTextareas(value);
+        addTextObject(value);
+    }
+
+    function addTextObject(value: string = '') {
         const textObject = new fabric.Text(value, {
-            left: canvasRef.current.clientWidth / 2,
-            top: canvasRef.current.clientHeight / 2,
             transparentCorners: false,
             fontSize: 20,
             fontFamily: 'Fira Sans'
         });
 
-        setCustomTextareas(value);
-
+        canvas.centerObject(textObject);
         canvas.add(textObject);
         canvas.setActiveObject(textObject);
         canvas.renderAll();
-
-        addObject(CustomizerItemType.text, value);
     }
-
 
     function setCustomTextareas(value) {
         if (textRef.current) {
