@@ -61,7 +61,7 @@ function SizeRadio({ size }) {
                 />
             }
             label={size}
-            classes={ { label: classes.label } }/>
+            classes={ { root: classes.radioRoot, label: classes.label } }/>
 
     );
 }
