@@ -29,6 +29,7 @@ export default function Customizer() {
             height: canvasRef.current.clientHeight
         });
         setCanvas(effectCanvas);
+
         items.forEach((item: CustomizerItem) => {
             switch (item.type) {
                 case CustomizerItemType.text:
@@ -36,6 +37,7 @@ export default function Customizer() {
                     break;
             }
         });
+
         effectCanvas.on('selection:cleared', () => {
             removeUnusedObjects(effectCanvas);
             setSelectedObject(null);
@@ -46,6 +48,10 @@ export default function Customizer() {
         effectCanvas.on('selection:updated', (event) => {
             setSelectedObject(event.target);
         });
+
+        return () => {
+            canvas && canvas.off();
+        };
     }, [canvasRef]);
 
     function addObject(type: CustomizerItemType, value: any) {
@@ -85,7 +91,7 @@ export default function Customizer() {
                 <label className={styles.label}>Color</label>
                 <ColorRadioGroup onChange={changeColor} />
                 <label className={styles.label}>Text</label>
-                <TextConfiguration config={ { canvas, canvasRef, selectedObject, addObject }} />
+                <TextConfiguration config={{ canvas, canvasRef, selectedObject, addObject }} />
             </div>
         </div>
     );
