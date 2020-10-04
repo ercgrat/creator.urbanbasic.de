@@ -65,6 +65,7 @@ export default function Customizer() {
 
         return () => {
             if (effectCanvas) {
+                removeUnusedObjects(effectCanvas);
                 setObjects(effectCanvas.getObjects());
                 effectCanvas.dispose();
             }
