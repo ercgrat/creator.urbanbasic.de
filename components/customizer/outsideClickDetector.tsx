@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect, MutableRefObject } from "react";
 
 function useOutsideClickDetector(disabled, onBlur, ref) {
     useEffect(() => {
@@ -27,8 +27,7 @@ function useOutsideClickDetector(disabled, onBlur, ref) {
     }, [ref, disabled]);
 }
 
-export default function OutsideClickDetector(props: { onOutsideClick, children, className, disabled?: boolean }) {
-    const containerRef = useRef(null);
-    useOutsideClickDetector(props.disabled, props.onOutsideClick, containerRef);
-    return <div ref={containerRef} className={props.className}>{props.children}</div>;
+export default function OutsideClickDetector(props: { onOutsideClick, children, className, disabled?: boolean, innerRef?: MutableRefObject<any> }) {
+    useOutsideClickDetector(props.disabled, props.onOutsideClick, props.innerRef);
+    return <div ref={props.innerRef} className={props.className}>{props.children}</div>;
 }
