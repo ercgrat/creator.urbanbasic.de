@@ -6,11 +6,21 @@ import ColorRadioGroup from './colorRadioGroup';
 import SizeRadioGroup from './sizeRadioGroup';
 import ImageAdder from './imageAdder';
 import PositionRadioGroup from './positionRadioGroup';
-import { imageUtils } from '../../hooks/useCanvasUtils';
+import useCanvasUtils from '../../hooks/useCanvasUtils';
 import { Button, withStyles } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import { DesignColor, DesignSize } from '../../model/Cart';
 
-export default function Customizer() {
+export interface IDesignData {
+    frontObjects: fabric.Object[];
+    backObjects: fabric.Object[];
+    width: number;
+    height: number;
+    color: DesignColor;
+    size: DesignSize;
+}
+
+export default function Customizer(props: { onDesignChanged?: (data: IDesignData) => void }) {
 
     const frontCanvasRef = useRef(null);
     const backCanvasRef = useRef(null);
@@ -20,8 +30,6 @@ export default function Customizer() {
     [frontObjects, setFrontObjects] = useState([]);
     let backObjects: fabric.Object[], setBackObjects: Dispatch<fabric.Object[]>;
     [backObjects, setBackObjects] = useState([]);
-    let itemCounter: number, setItemCounter: Dispatch<number>;
-    [itemCounter, setItemCounter] = useState(0);
     let selectedObject: fabric.Object, setSelectedObject: Dispatch<fabric.Object>;
     [selectedObject, setSelectedObject] = useState(null);
     let color: string, setColor: Dispatch<string>;
@@ -31,26 +39,22 @@ export default function Customizer() {
     let shirtPosition: string, setShirtPosition: Dispatch<string>;
     [shirtPosition, setShirtPosition] = useState('front');
 
-    const canvasUtils = imageUtils();
+    const canvasUtils = useCanvasUtils();
 
     useEffect(() => {
+        /**
+         * Discard and reconstruct the canvas when flipping sides.
+         */
         const effectCanvas = new fabric.Canvas(`${shirtPosition}Canvas`, {
             width: getCanvasRef().current.clientWidth,
             height: getCanvasRef().current.clientHeight,
             selection: false
         });
 
-        getObjects().forEach(async (object) => {
-            if (object.isType('image')) {
-                const image = await canvasUtils.addImage(object.get('data') as Blob);
-                const imageObject = object as fabric.Image;
-                imageObject.setElement(image);
-                effectCanvas.add(imageObject);
-            } else {
-                effectCanvas.add(object);
-            }
-        });
-        effectCanvas.renderAll();
+        (async () => {
+            await canvasUtils.renderObjects(effectCanvas, getObjects());
+            effectCanvas.renderAll();
+        })();
 
         effectCanvas.on('selection:cleared', () => {
             removeUnusedObjects(effectCanvas);
@@ -69,24 +73,47 @@ export default function Customizer() {
         return () => {
             if (effectCanvas) {
                 removeUnusedObjects(effectCanvas);
-                setObjects(effectCanvas.getObjects());
                 effectCanvas.dispose();
             }
         };
     }, [shirtPosition]);
 
     useEffect(() => {
+        /**
+         * Delete the currently selected canvas object whenever the delete key is pressed in the application.
+         */
         const listener = (event: KeyboardEvent) => {
             if (event.key === 'Delete') {
                 deleteSelectedObject();
             }
         };
-        document.addEventListener('keydown', listener);
+        window.addEventListener('keydown', listener);
 
         return () => {
-            document.removeEventListener('keydown', listener);
+            window.removeEventListener('keydown', listener);
         }
     });
+
+    useEffect(() => {
+        /**
+         * Every time an object is added or removed from the canvas, or the color or size change,
+         * record the current objects and emit the latest state of the design.
+         */
+        if (canvas) {
+            setObjects(canvas.getObjects());
+
+            if (props.onDesignChanged) {
+                props.onDesignChanged({
+                    frontObjects: shirtPosition === 'front' ? canvas.getObjects() : frontObjects,
+                    backObjects: shirtPosition === 'front' ? backObjects : canvas.getObjects(),
+                    width: getCanvasRef().current.clientWidth,
+                    height: getCanvasRef().current.clientHeight,
+                    color: (color as DesignColor),
+                    size: (size as DesignSize)
+                });
+            }
+        }
+    }, [selectedObject, color, size]);
 
     function getCanvasRef() {
         return shirtPosition === 'front' ? frontCanvasRef : backCanvasRef;

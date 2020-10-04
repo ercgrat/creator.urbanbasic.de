@@ -1,5 +1,5 @@
 import { FormControl, RadioGroup, Radio, makeStyles } from '@material-ui/core';
-import { colors } from '../../model/Products';
+import { DesignColor } from '../../model/Cart';
 
 const useRadioGroupStyles = makeStyles({
     radioGroup: {
@@ -64,7 +64,7 @@ export default function ColorRadioGroup({ onChange }) {
             <RadioGroup className={classes.radioGroup} defaultValue="white" aria-label="color" name="color-radios"
                 onChange={onChange}>
                 {
-                    colors.map(color => (
+                    Object.keys(DesignColor).map(color => (
                         <ColorRadio key={color} color={color} />
                     ))
                 }

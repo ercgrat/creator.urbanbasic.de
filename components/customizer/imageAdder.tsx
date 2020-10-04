@@ -1,11 +1,11 @@
 import { Button } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { imageUtils } from '../../hooks/useCanvasUtils';
-import {fabric } from 'fabric';
+import useCanvasUtils from '../../hooks/useCanvasUtils';
+import { fabric } from 'fabric';
 
 export default function ImageAdder({ canvas }) {
 
-    const canvasUtils = imageUtils();
+    const canvasUtils = useCanvasUtils();
 
     async function addImage() {
         const imageInput = document.createElement('input');

@@ -11,7 +11,7 @@ function CartAction() {
 }
 
 export default function Page({ children }) {
-    const { cart, dispatcher } = useContext(CartContext);
+    const { cart } = useContext(CartContext);
 
     return (
         <div className={styles.container}>
@@ -32,7 +32,7 @@ export default function Page({ children }) {
             <main className={styles.main}>
                 <Card>
                     <CardContent>
-                        <section className={styles.progress}>
+                        {/*<section className={styles.progress}>
                             <Stepper activeStep={0} color="secondary">
                                 <Step>
                                     <StepLabel>Design</StepLabel>
@@ -45,7 +45,7 @@ export default function Page({ children }) {
                                 </Step>
                             </Stepper>
                             <Divider light />
-                        </section>
+                        </section>*/}
                         {children}
                     </CardContent>
                 </Card>
@@ -53,7 +53,7 @@ export default function Page({ children }) {
             <footer className={styles.footer}>
                 <p>This page is part of <a href="https://urbanbasic.de" target="_blank">urbanbasic.de</a>, where you'll find our custom designs for sale. Made with love in Cologne.</p>
                 <p>Developed by <a href="https://linkedin.com/in/ercgrat" target="_blank">Eric Gratta</a> on Long Island, NY.</p>
-                <br/>
+                <br />
                 <p>© 2020 Urban Basic</p>
             </footer>
         </div>

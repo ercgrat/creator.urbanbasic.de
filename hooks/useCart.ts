@@ -3,8 +3,8 @@ import { useReducer } from "react";
 import { Cart, Design } from "../model/Cart";
 
 interface ICartContext {
-    cart: Cart,
-    dispatcher: React.Dispatch<ICartAction>;
+    readonly cart: Cart,
+    cartDispatcher: React.Dispatch<ICartAction>;
 }
 export const CartContext = React.createContext<ICartContext>(null);
 
@@ -19,13 +19,17 @@ export interface ICartAction {
 }
 
 export function useCart() {
-    return useReducer((state, action: ICartAction) => {
+    return useReducer((state: Cart, action: ICartAction) => {
+        const cart = new Cart();
+        state.getItems().forEach(item => cart.addItem(item));
         switch (action.type) {
             case CartActionType.add:
+                cart.addItem(action.value);
                 break;
             case CartActionType.remove:
+                cart.removeItem(action.value);
                 break;
         }
-        return state;
+        return cart;
     }, new Cart());
 }

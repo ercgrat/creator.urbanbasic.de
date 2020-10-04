@@ -1,45 +1,68 @@
 export enum DesignColor {
     white = "white",
+    gray = "gray",
     black = "black",
     navy = "navy",
     orange = "orange"
 }
 
-export interface IDesign {
-    color: DesignColor;
+export enum DesignSize {
+    xs = 'xs',
+    s = 's',
+    m = 'm',
+    l = 'l',
+    xl = 'xl',
+    xxl = 'xxl'
 }
 
-export class Design implements IDesign {
-    id: number;
+export class Design {
+    frontBlob: string;
+    backBlob: string;
     color: DesignColor;
+    size: DesignSize;
 
-    constructor(id: number, design: IDesign) {
-        this.id = id;
-        Object.assign(this, design);
+    constructor(frontBlob: string, backBlob: string, color: DesignColor, size: DesignSize) {
+        this.frontBlob = frontBlob;
+        this.backBlob = backBlob;
+        this.color = color;
+        this.size = size;
+    }
+}
+
+export class CartItem {
+    design: Design;
+    quantity: number;
+    price: number;
+    totalPrice: number;
+
+    constructor(design: Design) {
+        this.design = design;
+        this.quantity = 1;
     }
 }
 
 export class Cart {
-    private idCounter: number;
-    private items: Design[];
+    private items: CartItem[];
 
     constructor() {
         this.items = [];
-        this.idCounter = 1;
     }
 
     public getSize(): number {
         return this.items.length;
     }
 
-    public getItems(): Design[] {
+    public getItems(): CartItem[] {
         return this.items.slice();
     }
 
-    public addItem(item: IDesign) {
-        const design = new Design(this.idCounter++, item);
-        this.items.push(design);
+    public addItem(design: Design) {
+        this.items.push(new CartItem(design));
         this.items = this.items.slice();
+    }
+
+    public removeItem(design: Design) {
+        this.items = this.items.filter(item => !(item.design.frontBlob === design.frontBlob && item.design.backBlob === design.backBlob));
     }
 
 }
