@@ -9,6 +9,7 @@ import FormatAlignLeftIcon from '@material-ui/icons/FormatAlignLeft';
 import FormatAlignCenterIcon from '@material-ui/icons/FormatAlignCenter';
 import FormatAlignRightIcon from '@material-ui/icons/FormatAlignRight';
 import styles from './textConfiguration.module.scss';
+import usePrevious from '../hooks/usePrevious';
 
 const useStyles = makeStyles({
     withMargin: {
@@ -36,9 +37,11 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
             }
         }
 
-        if (textRef.current) {
-            (textRef.current as HTMLElement).getElementsByTagName('textarea')[0].focus();
-        }
+        setTimeout(() => {
+            if (textRef.current) {
+                (textRef.current as HTMLElement).getElementsByTagName('textarea')[0].focus()
+            }
+        }, 0);
     }, [selectedObject]);
 
     function addText(value: string = '') {
@@ -115,6 +118,7 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
                                 <InputLabel>Font</InputLabel>
                                 <Select
                                     value="Fira Sans"
+                                    label="Font"
                                 >
                                     <MenuItem value="Fira Sans">Fira Sans</MenuItem>
                                 </Select>
@@ -131,7 +135,8 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
                                 <Select defaultValue="left"
                                     value={textAlign}
                                     onChange={alignChanged}
-                                    style={{ fontSize: '15px' }}>
+                                    style={{ fontSize: '15px' }}
+                                    label="Align">
                                     <MenuItem value="left"><FormatAlignLeftIcon fontSize="inherit" /></MenuItem>
                                     <MenuItem value="center"><FormatAlignCenterIcon fontSize="inherit" /></MenuItem>
                                     <MenuItem value="right"><FormatAlignRightIcon fontSize="inherit" /></MenuItem>
