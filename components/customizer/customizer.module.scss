@@ -68,4 +68,14 @@
     .editor {
         align-self: center;
     }
+
+    .settings {
+        margin-bottom: 24px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .settings {
+        padding: 6px;
+    }
 }
