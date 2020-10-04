@@ -7,6 +7,8 @@ import SizeRadioGroup from './sizeRadioGroup';
 import ImageAdder from './imageAdder';
 import PositionRadioGroup from './positionRadioGroup';
 import { imageUtils } from '../../hooks/useCanvasUtils';
+import { Button, withStyles } from '@material-ui/core';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 export default function Customizer() {
 
@@ -28,7 +30,7 @@ export default function Customizer() {
     [size, setSize] = useState('m');
     let shirtPosition: string, setShirtPosition: Dispatch<string>;
     [shirtPosition, setShirtPosition] = useState('front');
-    
+
     const canvasUtils = imageUtils();
 
     useEffect(() => {
@@ -133,6 +135,14 @@ export default function Customizer() {
         setShirtPosition(position);
     }
 
+    const DeleteButton = withStyles({
+        root: {
+            marginTop: '24px',
+            borderColor: '#f44336',
+            color: '#f44336'
+        }
+    })(Button);
+
     return (
         <div className={styles.container}>
             <div className={styles.editor}>
@@ -157,6 +167,16 @@ export default function Customizer() {
                 <TextConfiguration canvas={canvas} selectedObject={selectedObject} />
                 <label className={styles.label}>Image</label>
                 <ImageAdder canvas={canvas} />
+                {
+                    selectedObject && <section>
+                        <DeleteButton
+                            startIcon={<DeleteForeverIcon />}
+                            variant='outlined'
+                            onClick={deleteSelectedObject}>
+                            Delete Selection
+                            </DeleteButton>
+                    </section>
+                }
             </div>
         </div>
     );
