@@ -5,6 +5,7 @@ import TextConfiguration from './textConfiguration';
 import { CustomizerItem, CustomizerItemType } from '../../model/Customizer';
 import ColorRadioGroup from './colorRadioGroup';
 import SizeRadioGroup from './sizeRadioGroup';
+import ImageAdder from './imageAdder';
 
 export default function Customizer() {
 
@@ -99,6 +100,8 @@ export default function Customizer() {
                 <SizeRadioGroup onChange={changeSize} />
                 <label className={styles.label}>Text</label>
                 <TextConfiguration config={{ canvas, canvasRef, selectedObject, addObject }} />
+                <label className={styles.label}>Image</label>
+                <ImageAdder config={{ canvas, canvasRef, selectedObject, addObject }} />
             </div>
         </div>
     );
