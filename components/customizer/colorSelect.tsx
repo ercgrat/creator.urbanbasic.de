@@ -19,15 +19,7 @@ export default function ColorSelect(props: { selectedColor: string, onChange: Co
     const pickerRef = useRef();
 
     useEffect(() => {
-        const resizeListener = () => {
-            /** If the window is narrow, shift the picker over so that it fits within the window. */
-            if (formRef.current && pickerRef.current) {
-                const formRect = (formRef.current as HTMLElement).getBoundingClientRect();
-                const picker = pickerRef.current as HTMLElement;
-                const adjustedLeft = ((window.innerWidth - picker.clientWidth) - formRect.left) - 24;
-                picker.style.left = `${Math.min(0, adjustedLeft)}px`;
-            }
-        };
+        const resizeListener = alignPicker;
         window.addEventListener('resize', resizeListener);
 
         return () => {
@@ -36,6 +28,10 @@ export default function ColorSelect(props: { selectedColor: string, onChange: Co
     }, []);
 
     useEffect(() => {
+        if (isOpen) {
+            alignPicker();
+        }
+        
         if (!isOpen) {
             const popoverRootList = document.getElementsByClassName('MuiPopover-root');
             if (popoverRootList.length > 0) {
@@ -51,6 +47,16 @@ export default function ColorSelect(props: { selectedColor: string, onChange: Co
 
     function closePicker() {
         setIsOpen(false);
+    }
+
+    function alignPicker() {
+        /** If the window is narrow, shift the picker over so that it fits within the window. */
+        if (formRef.current && pickerRef.current) {
+            const formRect = (formRef.current as HTMLElement).getBoundingClientRect();
+            const picker = pickerRef.current as HTMLElement;
+            const adjustedLeft = ((window.innerWidth - picker.clientWidth) - formRect.left) - 24;
+            picker.style.left = `${Math.min(0, adjustedLeft)}px`;
+        }
     }
 
     return (
