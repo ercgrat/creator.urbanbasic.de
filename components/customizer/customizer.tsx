@@ -36,7 +36,8 @@ export default function Customizer() {
     useEffect(() => {
         const effectCanvas = new fabric.Canvas(`${shirtPosition}Canvas`, {
             width: getCanvasRef().current.clientWidth,
-            height: getCanvasRef().current.clientHeight
+            height: getCanvasRef().current.clientHeight,
+            selection: false
         });
 
         getObjects().forEach(async (object) => {
