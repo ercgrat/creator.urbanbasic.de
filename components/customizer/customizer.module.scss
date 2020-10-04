@@ -7,8 +7,10 @@
 .editor {
     position: relative;
     width: 500px;
-    height: 500px;
     padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .settings {

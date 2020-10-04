@@ -6,6 +6,7 @@ import { CustomizerItem, CustomizerItemType } from '../../model/Customizer';
 import ColorRadioGroup from './colorRadioGroup';
 import SizeRadioGroup from './sizeRadioGroup';
 import ImageAdder from './imageAdder';
+import PositionRadioGroup from './positionRadioGroup';
 
 export default function Customizer() {
 
@@ -108,6 +109,10 @@ export default function Customizer() {
         setSize(size);
     }
 
+    function changePosition(event: React.SyntheticEvent, position: string) {
+        setShirtPosition(position);
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.editor}>
@@ -115,6 +120,7 @@ export default function Customizer() {
                 <div className={styles.canvasContainer} ref={canvasRef}>
                     <canvas id="canvas" className={styles.canvas}></canvas>
                 </div>
+                <PositionRadioGroup onChange={changePosition} />
             </div>
             <div className={styles.settings}>
                 <label className={styles.label}>Color</label>
