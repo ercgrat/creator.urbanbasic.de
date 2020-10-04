@@ -37,6 +37,9 @@ export default function Customizer() {
                 case CustomizerItemType.text:
                     addObject(CustomizerItemType.text, item.value);
                     break;
+                case CustomizerItemType.image:
+                    addObject(CustomizerItemType.image, item.value);
+                    break;
             }
         });
 
@@ -55,6 +58,19 @@ export default function Customizer() {
             canvas && canvas.off();
         };
     }, [canvasRef]);
+
+    useEffect(() => {
+        const listener = (event: KeyboardEvent) => {
+            if(event.key === 'Delete') {
+                deleteSelectedObject();
+            }
+        };
+        document.addEventListener('keydown', listener);
+
+        return () => {
+            document.removeEventListener('keydown', listener);
+        }
+    });
 
     function addObject(type: CustomizerItemType, value: any) {
         const item = new CustomizerItem(itemCounter, type, value);
@@ -75,6 +91,13 @@ export default function Customizer() {
                     break;
             }
         });
+    }
+
+    function deleteSelectedObject() {
+        if (selectedObject) {
+            canvas.remove(selectedObject);
+            setSelectedObject(null);
+        }
     }
 
     function changeColor(event: React.SyntheticEvent, color: string) {

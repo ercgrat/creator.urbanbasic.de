@@ -1,10 +1,10 @@
 import { Button } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { ICustomizerConfigProps } from '../../model/Customizer';
+import { CustomizerItemType, ICustomizerConfigProps } from '../../model/Customizer';
 import { fabric } from 'fabric';
 
 export default function ImageAdder(props: { config: ICustomizerConfigProps }) {
-    const { canvas } = props.config;
+    const { canvas, addObject } = props.config;
 
     async function addImage() {
         const imageInput = document.createElement('input');
@@ -22,6 +22,8 @@ export default function ImageAdder(props: { config: ICustomizerConfigProps }) {
                     canvas.centerObject(imageObject);
                     canvas.add(imageObject);
                     canvas.renderAll();
+
+                    addObject(CustomizerItemType.image, image);
                 };
 
                 image.src = event.target.result as string;
