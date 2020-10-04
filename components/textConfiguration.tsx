@@ -1,13 +1,16 @@
 import { Button, FormControl, InputLabel, Select, MenuItem, TextField } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { fabric } from 'fabric';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
+import { ColorResult } from 'react-color';
 import { CustomizerItemType, ICustomizerConfigProps } from '../model/Customizer';
+import ColorSelect from './colorSelect';
 import styles from './textConfiguration.module.scss';
 
 export default function TextConfiguration(props: { config: ICustomizerConfigProps }) {
     const { canvas, canvasRef, selectedObject, addObject } = props.config;
     const textRef = useRef(null);
+    const [fontColor, setFontColor] = useState('black');
     
     useEffect(() => {
         if (selectedObject) {
@@ -15,6 +18,9 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
                 case 'text':
                     const obj = selectedObject as fabric.Text;
                     setCustomTextareas(obj.get('text'));
+                    let color = obj.get('fill') as string;
+                    color = (!color || color === 'rgb(0,0,0)') ? 'black' : color;
+                    setFontColor(color);
                     break;
             }
         }
@@ -60,6 +66,16 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
         }
     }
 
+    function colorChanged(pickerResults: ColorResult) {
+        const value = pickerResults.hex;
+        if (selectedObject) {
+            const obj = selectedObject as fabric.Text;
+            obj.set('fill', value);
+            canvas.renderAll();
+        }
+        setFontColor(value);
+    }
+
     return (
         <section>
             <Button color="secondary" startIcon={<AddIcon />} variant="outlined"
@@ -69,14 +85,14 @@ export default function TextConfiguration(props: { config: ICustomizerConfigProp
                     <section>
                         <div className={styles.textConfiguration}>
                             <FormControl variant="outlined" className={styles.formControl} size="small">
-                                <InputLabel id="font-select">Font</InputLabel>
+                                <InputLabel>Font</InputLabel>
                                 <Select
-                                    labelId="font-select"
                                     value="Fira Sans"
                                 >
                                     <MenuItem value="Fira Sans">Fira Sans</MenuItem>
                                 </Select>
                             </FormControl>
+                            <ColorSelect selectedColor={fontColor} onChange={colorChanged} />
                         </div>
                         <TextField ref={textRef} placeholder="Enter text here" variant="outlined" multiline onChange={textChanged} />
                     </section> :

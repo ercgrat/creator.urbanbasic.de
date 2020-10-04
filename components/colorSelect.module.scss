@@ -1,0 +1,16 @@
+.colorSelect {
+    position: relative;
+}
+
+.colorPickerContainer {
+    display: none;
+    position: absolute;
+    top: 100%;
+    outline: none;
+    border: none;
+}
+
+.colorPickerContainer.open {
+    display: block;
+    z-index: 1;
+}
