@@ -52,7 +52,7 @@ function ColorRadio({ color }) {
             classes={{ root: classes.root, checked: classes.rootSelected }}
             icon={<span className={classes.icon} />}
             checkedIcon={<span className={classes.checkedIcon} />}
-            disableRipple
+            color='primary'
         />
     );
 }
