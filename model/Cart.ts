@@ -56,7 +56,12 @@ export class Cart {
         return this.items.slice();
     }
 
-    public addItem(design: Design) {
+    public addItem(item: CartItem) {
+        this.items.push(item);
+        this.items = this.items.slice();
+    }
+
+    public addDesign(design: Design) {
         this.items.push(new CartItem(design));
         this.items = this.items.slice();
     }

@@ -24,7 +24,7 @@ export function useCart() {
         state.getItems().forEach(item => cart.addItem(item));
         switch (action.type) {
             case CartActionType.add:
-                cart.addItem(action.value);
+                cart.addDesign(action.value);
                 break;
             case CartActionType.remove:
                 cart.removeItem(action.value);
