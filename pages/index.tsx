@@ -1,6 +1,7 @@
 import Page from '../components/page';
-import { Button } from '@material-ui/core';
-import { Dispatch, useCallback, useContext, useState } from 'react';
+import { Button, Snackbar } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
 import { CartActionType, CartContext } from '../hooks/useCart';
 import { fabric } from 'fabric';
 import Customizer from '../components/customizer/customizer';
@@ -15,6 +16,8 @@ export default function Home() {
 
     let designData: IDesignData, setDesignData: Dispatch<IDesignData>;
     [designData, setDesignData] = useState(null);
+    let open: boolean, setOpen: Dispatch<SetStateAction<boolean>>;
+    [open, setOpen] = useState(false);
     const canvasUtils = useCanvasUtils();
     const { cartDispatcher } = useContext(CartContext);
 
@@ -40,6 +43,12 @@ export default function Home() {
             type: CartActionType.add,
             value: new Design(frontImageBlob, backImageBlob, designData.color, designData.size)
         });
+
+        setOpen(true);
+    }
+
+    function handleClose() {
+        setOpen(false);
     }
 
     return (
@@ -52,6 +61,8 @@ export default function Home() {
             <Divider />
             <footer className={styles.footer}>
                 <Button
+                    disabled={!designData ||
+                        (designData.frontObjects.length === 0 && designData.backObjects.length === 0)}
                     variant="contained"
                     color="primary"
                     startIcon={<i className="fas fa-shopping-bag" style={{ marginRight: "12px" }}></i>}
@@ -60,6 +71,24 @@ export default function Home() {
                     Add to Cart
                 </Button>
             </footer>
+            <Snackbar
+                anchorOrigin={
+                    {
+                        vertical: 'top',
+                        horizontal: 'center'
+                    }
+                }
+                open={open}
+                autoHideDuration={3000}
+                onClose={handleClose}>
+                <Alert
+                    variant="filled"
+                    onClose={handleClose}
+                    severity="success"
+                >
+                    Design added to your cart!
+                </Alert>
+            </Snackbar>
         </Page>
     )
 };
