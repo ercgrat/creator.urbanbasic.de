@@ -26,7 +26,8 @@ export default function App({ Component, pageProps }) {
         },
         palette: {
             primary: {
-                main: "#74b6c7"
+                main: "#74b6c7",
+                contrastText: 'white'
             },
             secondary: {
                 main: "#d89507"

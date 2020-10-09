@@ -2,7 +2,7 @@ import styles from './page.module.scss';
 import Link from 'next/link';
 import React, { useContext } from 'react';
 import { CartContext } from '../hooks/useCart';
-import { Button, Card, CardContent, Stepper, Step, StepLabel, Divider } from '@material-ui/core';
+import { Button, Card, CardContent } from '@material-ui/core';
 
 function CartAction() {
     return (
@@ -21,7 +21,11 @@ export default function Page({ children }) {
                     <ul className={styles.navActions}>
                         <li>
                             <Link href="/cart">
-                                <Button variant="contained" color="primary" startIcon={<CartAction />} size="large">
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<CartAction />}
+                                    size="large">
                                     {cart.getSize()}
                                 </Button>
                             </Link>
@@ -32,20 +36,6 @@ export default function Page({ children }) {
             <main className={styles.main}>
                 <Card>
                     <CardContent>
-                        {/*<section className={styles.progress}>
-                            <Stepper activeStep={0} color="secondary">
-                                <Step>
-                                    <StepLabel>Design</StepLabel>
-                                </Step>
-                                <Step>
-                                    <StepLabel>Review cart</StepLabel>
-                                </Step>
-                                <Step>
-                                    <StepLabel>Submit order</StepLabel>
-                                </Step>
-                            </Stepper>
-                            <Divider light />
-                        </section>*/}
                         {children}
                     </CardContent>
                 </Card>
