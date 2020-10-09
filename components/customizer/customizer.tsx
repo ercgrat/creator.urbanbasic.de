@@ -10,6 +10,7 @@ import useCanvasUtils from '../../hooks/useCanvasUtils';
 import { Button, withStyles } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { DesignColor, DesignSize } from '../../model/Cart';
+import React from 'react';
 
 export interface IDesignData {
     frontObjects: fabric.Object[];
@@ -20,7 +21,7 @@ export interface IDesignData {
     size: DesignSize;
 }
 
-export default function Customizer(props: { onDesignChanged?: (data: IDesignData) => void }) {
+export default React.memo(function Customizer(props: { onDesignChanged?: (data: IDesignData) => void }) {
 
     const frontCanvasRef = useRef(null);
     const backCanvasRef = useRef(null);
@@ -208,4 +209,4 @@ export default function Customizer(props: { onDesignChanged?: (data: IDesignData
             </div>
         </div>
     );
-}
+});

@@ -1,0 +1,20 @@
+@import '../styles/theme.scss';
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.heading {
+    @include page-heading;
+}
+
+.footer {
+    margin: 0px -24px -24px -24px;
+    padding: 12px 24px;
+    background-color: #f9fafb;
+    display: flex;
+    flex-direction: row-reverse;
+}

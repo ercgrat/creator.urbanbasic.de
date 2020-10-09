@@ -1,6 +1,6 @@
 import React from "react";
 import { useReducer } from "react";
-import { Cart, Design } from "../model/Cart";
+import { Cart } from "../model/Cart";
 
 interface ICartContext {
     readonly cart: Cart,
@@ -10,12 +10,13 @@ export const CartContext = React.createContext<ICartContext>(null);
 
 export enum CartActionType {
     add,
-    remove
+    remove,
+    update
 }
 
 export interface ICartAction {
     type: CartActionType,
-    value: Design
+    value: any
 }
 
 export function useCart() {
@@ -29,6 +30,9 @@ export function useCart() {
             case CartActionType.remove:
                 cart.removeItem(action.value);
                 break;
+            case CartActionType.update:
+                const item = cart.getItem(action.value.index);
+                item.quantity = action.value.quantity;
         }
         return cart;
     }, new Cart());

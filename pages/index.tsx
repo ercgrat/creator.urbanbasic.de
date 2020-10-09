@@ -1,39 +1,29 @@
 import Page from '../components/page';
-import { Divider, Button, makeStyles } from '@material-ui/core';
-import { Dispatch, useContext, useState } from 'react';
+import { Button } from '@material-ui/core';
+import { Dispatch, useCallback, useContext, useState } from 'react';
 import { CartActionType, CartContext } from '../hooks/useCart';
 import { fabric } from 'fabric';
 import Customizer from '../components/customizer/customizer';
+import Divider from '../components/divider';
 import { IDesignData } from '../components/customizer/customizer';
 import useCanvasUtils from '../hooks/useCanvasUtils';
 import { Design } from '../model/Cart';
-
-const useStyles = makeStyles({
-    divider: {
-        margin: '0 -24px'
-    },
-    footer: {
-        margin: '0px -24px -24px -24px',
-        padding: '12px 24px',
-        backgroundColor: '#f9fafb',
-        display: 'flex',
-        flexDirection: 'row-reverse'
-    }
-});
+import ClearIcon from '@material-ui/icons/Clear';
+import styles from './index.module.scss';
 
 export default function Home() {
 
-    const styles = useStyles();
     let designData: IDesignData, setDesignData: Dispatch<IDesignData>;
-    [designData, setDesignData]= useState(null);
+    [designData, setDesignData] = useState(null);
     const canvasUtils = useCanvasUtils();
-    const { cart, cartDispatcher } = useContext(CartContext);
+    const { cartDispatcher } = useContext(CartContext);
 
-    function onDesignChanged(data: IDesignData) {
+    const onDesignChanged = useCallback((data: IDesignData) => {
         setDesignData(data);
-    }
+    }, [setDesignData]);
 
     async function addToCart() {
+        if (!designData) { return; }
         const frontCanvas = new fabric.Canvas(document.createElement('canvas'), {
             width: designData.width,
             height: designData.height
@@ -54,8 +44,12 @@ export default function Home() {
 
     return (
         <Page>
+            <header className={styles.header}>
+                <h1 className={styles.heading}>Designer</h1>
+                <Button startIcon={<ClearIcon />} size="medium">Clear Design</Button>
+            </header>
             <Customizer onDesignChanged={onDesignChanged} />
-            <Divider className={styles.divider} />
+            <Divider />
             <footer className={styles.footer}>
                 <Button
                     variant="contained"
