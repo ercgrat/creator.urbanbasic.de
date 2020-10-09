@@ -34,23 +34,27 @@ export class CartItem {
     quantity: number;
     price: number;
 
-    constructor(design: Design) {
+    constructor(design: Design, quantity?: number) {
         this.design = design;
-        this.quantity = 1;
+        this.quantity = quantity || 1;
         this.price = 20;
     }
 
-    getTotalPrice() {
+    public getTotalPrice() {
         return this.price * this.quantity;
     }
 }
 
+export interface ICartStorage {
+    items: CartItem[];
+}
+
 export class Cart {
     private items: CartItem[];
-    private readonly shippingCost: number = 3;
+    public readonly shippingCost: number = 3;
 
-    constructor() {
-        this.items = [];
+    constructor(items?: CartItem[]) {
+        this.items = items || [];
     }
 
     public getSize(): number {

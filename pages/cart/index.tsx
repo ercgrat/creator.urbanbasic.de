@@ -11,8 +11,8 @@ export default function Cart() {
     const { cart, cartDispatcher } = useContext(CartContext);
 
     function quantityChanged(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, index: number) {
-        let quantity: number = Number(event.target.value);
-        if (event.target.value.length === 0) { quantity = null; }
+        let quantity: number | string = Number(event.target.value);
+        if (event.target.value.length === 0) { quantity = ''; }
         else if (quantity < 0) { quantity = 0; }
         else if (quantity > 999) { quantity = 999; }
         cartDispatcher({

@@ -1,7 +1,7 @@
 import Page from '../components/page';
 import { Button, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 import { CartActionType, CartContext } from '../hooks/useCart';
 import { fabric } from 'fabric';
 import Customizer from '../components/customizer/customizer';
@@ -24,6 +24,10 @@ export default function Home() {
     const onDesignChanged = useCallback((data: IDesignData) => {
         setDesignData(data);
     }, [setDesignData]);
+
+    function designHasData() {
+        return designData && (designData.frontObjects.length !== 0 || designData.backObjects.length !== 0);
+    }
 
     async function addToCart() {
         if (!designData) { return; }
@@ -61,8 +65,7 @@ export default function Home() {
             <Divider />
             <footer className={styles.footer}>
                 <Button
-                    disabled={!designData ||
-                        (designData.frontObjects.length === 0 && designData.backObjects.length === 0)}
+                    disabled={!designHasData()}
                     variant="contained"
                     color="primary"
                     startIcon={<i className="fas fa-shopping-bag" style={{ marginRight: "12px" }}></i>}
