@@ -15,28 +15,21 @@ import React from 'react';
 export interface IDesignData {
     frontObjects: fabric.Object[];
     backObjects: fabric.Object[];
-    width: number;
-    height: number;
     color: DesignColor;
     size: DesignSize;
 }
 
-export default React.memo(function Customizer(props: { onDesignChanged?: (data: IDesignData) => void }) {
+export const CANVAS_WIDTH = 168;
+export const CANVAS_HEIGHT = 252;
+
+export default React.memo(function Customizer(props: { designData: IDesignData, onDesignChanged?: (data: IDesignData) => void }) {
 
     const frontCanvasRef = useRef(null);
     const backCanvasRef = useRef(null);
     let canvas: fabric.Canvas, setCanvas: Dispatch<fabric.Canvas>;
     [canvas, setCanvas] = useState(null);
-    let frontObjects: fabric.Object[], setFrontObjects: Dispatch<fabric.Object[]>;
-    [frontObjects, setFrontObjects] = useState([]);
-    let backObjects: fabric.Object[], setBackObjects: Dispatch<fabric.Object[]>;
-    [backObjects, setBackObjects] = useState([]);
     let selectedObject: fabric.Object, setSelectedObject: Dispatch<fabric.Object>;
     [selectedObject, setSelectedObject] = useState(null);
-    let color: string, setColor: Dispatch<string>;
-    [color, setColor] = useState('white');
-    let size: string, setSize: Dispatch<string>;
-    [size, setSize] = useState('m');
     let shirtPosition: string, setShirtPosition: Dispatch<string>;
     [shirtPosition, setShirtPosition] = useState('front');
 
@@ -93,7 +86,7 @@ export default React.memo(function Customizer(props: { onDesignChanged?: (data: 
         return () => {
             window.removeEventListener('keydown', listener);
         }
-    });
+    }, [selectedObject, setSelectedObject]);
 
     useEffect(() => {
         /**
@@ -105,31 +98,42 @@ export default React.memo(function Customizer(props: { onDesignChanged?: (data: 
 
             if (props.onDesignChanged) {
                 props.onDesignChanged({
-                    frontObjects: shirtPosition === 'front' ? canvas.getObjects() : frontObjects,
-                    backObjects: shirtPosition === 'front' ? backObjects : canvas.getObjects(),
-                    width: getCanvasRef().current.clientWidth,
-                    height: getCanvasRef().current.clientHeight,
-                    color: (color as DesignColor),
-                    size: (size as DesignSize)
+                    frontObjects: shirtPosition === 'front' ? canvas.getObjects() : props.designData.frontObjects,
+                    backObjects: shirtPosition === 'front' ? props.designData.backObjects : canvas.getObjects(),
+                    color: (props.designData.color as DesignColor),
+                    size: (props.designData.size as DesignSize)
                 });
             }
         }
-    }, [selectedObject, color, size]);
+    }, [selectedObject]);
 
     function getCanvasRef() {
         return shirtPosition === 'front' ? frontCanvasRef : backCanvasRef;
     }
 
     function getObjects() {
-        return shirtPosition === 'front' ? frontObjects : backObjects;
+        return shirtPosition === 'front' ? props.designData.frontObjects : props.designData.backObjects;
+    }
+
+    function getCurrentDesignData() {
+        return {
+            frontObjects: shirtPosition === 'front' ? canvas.getObjects() : props.designData.frontObjects,
+            backObjects: shirtPosition === 'front' ? props.designData.backObjects : canvas.getObjects(),
+            width: getCanvasRef().current.clientWidth,
+            height: getCanvasRef().current.clientHeight,
+            color: (props.designData.color as DesignColor),
+            size: (props.designData.size as DesignSize)
+        };
     }
 
     function setObjects(objects: fabric.Object[]) {
+        const currentData = getCurrentDesignData();
         if (shirtPosition === 'front') {
-            setFrontObjects(objects);
+            currentData.frontObjects = objects;
         } else {
-            setBackObjects(objects);
+            currentData.backObjects = objects;
         }
+        props.onDesignChanged(currentData);
     }
 
     function removeUnusedObjects(canvas) {
@@ -153,11 +157,15 @@ export default React.memo(function Customizer(props: { onDesignChanged?: (data: 
     }
 
     function changeColor(event: React.SyntheticEvent, color: string) {
-        setColor(color);
+        const currentData = getCurrentDesignData();
+        currentData.color = DesignColor[color];
+        props.onDesignChanged(currentData);
     }
 
     function changeSize(event: React.SyntheticEvent, size: string) {
-        setSize(size);
+        const currentData = getCurrentDesignData();
+        currentData.size = DesignSize[size];
+        props.onDesignChanged(currentData);
     }
 
     function changePosition(event: React.SyntheticEvent, position: string) {
@@ -175,7 +183,7 @@ export default React.memo(function Customizer(props: { onDesignChanged?: (data: 
     return (
         <div className={styles.container}>
             <div className={styles.editor}>
-                <img src={`/images/${color}-${shirtPosition}.jpg`} className={styles.shirtImage}></img>
+                <img src={`/images/${props.designData.color}-${shirtPosition}.jpg`} className={styles.shirtImage}></img>
                 {
                     shirtPosition === 'front' ?
                         <div className={styles.canvasContainer} ref={frontCanvasRef}>

@@ -4,18 +4,22 @@ import { Alert } from '@material-ui/lab';
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 import { CartActionType, CartContext } from '../hooks/useCart';
 import { fabric } from 'fabric';
-import Customizer from '../components/customizer/customizer';
+import Customizer, { CANVAS_HEIGHT, CANVAS_WIDTH } from '../components/customizer/customizer';
 import Divider from '../components/divider';
 import { IDesignData } from '../components/customizer/customizer';
 import useCanvasUtils from '../hooks/useCanvasUtils';
-import { Design } from '../model/Cart';
-import ClearIcon from '@material-ui/icons/Clear';
+import { Design, DesignColor, DesignSize } from '../model/Cart';
 import styles from './index.module.scss';
 
 export default function Home() {
 
     let designData: IDesignData, setDesignData: Dispatch<IDesignData>;
-    [designData, setDesignData] = useState(null);
+    [designData, setDesignData] = useState<IDesignData>({
+        frontObjects: [],
+        backObjects: [],
+        color: DesignColor.white,
+        size: DesignSize.m
+    });
     let open: boolean, setOpen: Dispatch<SetStateAction<boolean>>;
     [open, setOpen] = useState(false);
     const canvasUtils = useCanvasUtils();
@@ -25,6 +29,20 @@ export default function Home() {
         setDesignData(data);
     }, [setDesignData]);
 
+    useEffect(() => {
+        const listener = (event: BeforeUnloadEvent) => {
+            if (designHasData()) {
+                event.preventDefault();
+                event.returnValue = '';
+            }
+        };
+        window.addEventListener('beforeunload', listener);
+
+        return () => {
+            window.removeEventListener('beforeunload', listener);
+        };
+    }, [designData]);
+
     function designHasData() {
         return designData && (designData.frontObjects.length !== 0 || designData.backObjects.length !== 0);
     }
@@ -32,12 +50,12 @@ export default function Home() {
     async function addToCart() {
         if (!designData) { return; }
         const frontCanvas = new fabric.Canvas(document.createElement('canvas'), {
-            width: designData.width,
-            height: designData.height
+            width: CANVAS_WIDTH,
+            height: CANVAS_HEIGHT
         });
         const backCanvas = new fabric.Canvas(document.createElement('canvas'), {
-            width: designData.width,
-            height: designData.height
+            width: CANVAS_WIDTH,
+            height: CANVAS_HEIGHT
         });
         await canvasUtils.renderObjects(frontCanvas, designData.frontObjects);
         await canvasUtils.renderObjects(backCanvas, designData.backObjects);
@@ -59,9 +77,8 @@ export default function Home() {
         <Page>
             <header className={styles.header}>
                 <h1 className={styles.heading}>Designer</h1>
-                <Button startIcon={<ClearIcon />} size="medium">Clear Design</Button>
             </header>
-            <Customizer onDesignChanged={onDesignChanged} />
+            <Customizer designData={designData} onDesignChanged={onDesignChanged} />
             <Divider />
             <footer className={styles.footer}>
                 <Button

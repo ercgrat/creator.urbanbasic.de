@@ -20,7 +20,7 @@ export default function Page({ children }) {
                     <Link href="/"><img src="/images/logo.png" alt="Create Your Own Style" className={styles.logo}></img></Link>
                     <ul className={styles.navActions}>
                         <li>
-                            <Link href="/cart">
+                            <a href="/cart" aria-label="cart" className={styles.cartLink}>
                                 <Button
                                     variant="contained"
                                     color="primary"
@@ -28,7 +28,7 @@ export default function Page({ children }) {
                                     size="large">
                                     {cart.getSize()}
                                 </Button>
-                            </Link>
+                            </a>
                         </li>
                     </ul>
                 </nav>
