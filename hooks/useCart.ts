@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { Dispatch, useEffect, useRef } from "react";
 import { useReducer } from "react";
 import { Cart, CartItem, ICartStorage } from "../model/Cart";
 import { STORAGE_KEYS } from "../model/Constants";
@@ -21,7 +21,7 @@ export interface ICartAction {
     value: any
 }
 
-export function useCart() {
+export function useCart(): [Cart, Dispatch<ICartAction>] {
     const [cart, cartDispatcher] = useReducer((state: Cart, action: ICartAction) => {
         let cart = new Cart();
         state.getItems().forEach(item => cart.addItem(item));

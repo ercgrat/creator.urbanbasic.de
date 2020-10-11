@@ -12,9 +12,7 @@
 }
 
 .footer {
-    margin: 0px -24px -24px -24px;
-    padding: 12px 24px;
-    background-color: #f9fafb;
+    @include footer;
     display: flex;
     flex-direction: row-reverse;
 }

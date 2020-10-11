@@ -80,6 +80,7 @@
 .cartSummary {
     display: flex;
     flex-direction: column;
+    margin-bottom: 6px;
 }
 
 .cartSummaryItem {
@@ -92,6 +93,10 @@
 
 .cartSummaryTotal {
     font-size: 27px;
+}
+
+.footer {
+    @include footer;
 }
 
 @media screen and (max-width: 1000px) {

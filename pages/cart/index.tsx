@@ -6,6 +6,8 @@ import React from 'react';
 import styles from './index.module.scss';
 import { Button, IconButton, TextField } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import PayPalButtons from '../../components/payPalButtons';
+import Divider from '../../components/divider';
 
 export default function Cart() {
     const { cart, cartDispatcher } = useContext(CartContext);
@@ -118,6 +120,12 @@ export default function Cart() {
                             <p className={styles.cartSummaryItem}><span className={styles.label}> Shipping</span> {formatPrice(cart.getShipping())}</p>
                             <p className={`${styles.cartSummaryItem} ${styles.cartSummaryTotal}`}><span className={styles.label}> Total</span> {formatPrice(cart.getTotal())}</p>
                         </section>
+                        <Divider />
+                        <footer className={styles.footer}>
+                            <PayPalButtons
+                                total={cart.getTotal()}
+                            />
+                        </footer>
                     </React.Fragment>
             }
         </Page>

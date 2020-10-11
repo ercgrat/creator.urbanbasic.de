@@ -8,7 +8,7 @@ import { DesignColor } from '../model/Cart';
 
 
 export default function App({ Component, pageProps }) {
-    const [cart, dispatcher] = useCart();
+    const [cart, cartDispatcher] = useCart();
 
     React.useEffect(() => {
         // Remove the server-side injected CSS.
@@ -48,7 +48,7 @@ export default function App({ Component, pageProps }) {
                 }
                 <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;700&display=swap" rel="stylesheet"></link>
             </Head>
-            <CartContext.Provider value={{ cart, cartDispatcher: dispatcher }}>
+            <CartContext.Provider value={{ cart, cartDispatcher }}>
                 <Component {...pageProps} />
             </CartContext.Provider>
         </ThemeProvider>
