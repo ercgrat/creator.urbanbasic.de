@@ -1,8 +1,7 @@
 [build]
 command = "npm run build"
-build = "out"
-publish = "out"
-functions = "out_functions"
+publish = "out/"
+functions = "out_functions/"
 
 [dev]
 command = "npm run dev"
