@@ -6,7 +6,7 @@
     "dev": "npm-run-all --parallel start:appdev start:server",
     "start": "npm-run-all --parallel start:appprod start:server",
     "build": "npm-run-all --parallel build:app build:server",
-    "build:app": "next build & next export",
+    "build:app": "next build",
     "build:server": "netlify-lambda build functions",
     "start:appdev": "cross-env PORT=3000 node server.js",
     "start:appprod": "next start",
