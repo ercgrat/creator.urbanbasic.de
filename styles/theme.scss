@@ -23,3 +23,12 @@ $label-color: #84878A;
     padding: 12px 24px;
     background-color: #f9fafb;
 }
+
+@mixin hero-font {
+    font-size: 60px;
+
+    @media screen and (max-width: 600px) {
+        font-size: 40px;
+    }
+}
+

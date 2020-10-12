@@ -16,14 +16,14 @@ export enum DesignSize {
 }
 
 export class Design {
-    frontBlob: string;
-    backBlob: string;
+    frontDataURL: string;
+    backDataURL: string;
     color: DesignColor;
     size: DesignSize;
 
-    constructor(frontBlob: string, backBlob: string, color: DesignColor, size: DesignSize) {
-        this.frontBlob = frontBlob;
-        this.backBlob = backBlob;
+    constructor(frontDataURL: string, backDataURL: string, color: DesignColor, size: DesignSize) {
+        this.frontDataURL = frontDataURL;
+        this.backDataURL = backDataURL;
         this.color = color;
         this.size = size;
     }
@@ -80,8 +80,8 @@ export class Cart {
     }
 
     public removeItem(actionItem: CartItem) {
-        this.items = this.items.filter(item => !(item.design.frontBlob === actionItem.design.frontBlob
-            && item.design.backBlob === actionItem.design.backBlob));
+        this.items = this.items.filter(item => !(item.design.frontDataURL === actionItem.design.frontDataURL
+            && item.design.backDataURL === actionItem.design.backDataURL));
     }
 
     public getSubtotal(): number {

@@ -13,12 +13,13 @@ export enum CartActionType {
     initialize,
     add,
     remove,
-    update
+    update,
+    clear
 }
 
 export interface ICartAction {
     type: CartActionType,
-    value: any
+    value?: any
 }
 
 export function useCart(): [Cart, Dispatch<ICartAction>] {
@@ -38,6 +39,10 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
             case CartActionType.update:
                 const item = cart.getItem(action.value.index);
                 item.quantity = action.value.quantity;
+                break;
+            case CartActionType.clear:
+                cart = new Cart();
+                break;
         }
         return cart;
     }, new Cart());

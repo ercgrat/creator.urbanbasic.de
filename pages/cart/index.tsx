@@ -1,16 +1,20 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import Page from '../../components/page';
 import { CartActionType, CartContext } from '../../hooks/useCart';
 import { CartItem } from '../../model/Cart';
 import React from 'react';
 import styles from './index.module.scss';
-import { Button, IconButton, TextField } from '@material-ui/core';
+import { Button, IconButton, Snackbar, TextField } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import PayPalButtons from '../../components/payPalButtons';
+import PayPalButton from '../../components/payPalButton';
 import Divider from '../../components/divider';
+import { lambda } from '../../model/Constants';
+import router from 'next/router';
+import { Alert } from '@material-ui/lab';
 
 export default function Cart() {
     const { cart, cartDispatcher } = useContext(CartContext);
+    const [errorOpen, setErrorOpen] = useState(false);
 
     function quantityChanged(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, index: number) {
         let quantity: number | string = Number(event.target.value);
@@ -28,6 +32,24 @@ export default function Cart() {
 
     function formatPrice(value: number) {
         return `${value.toFixed(2).replace('.', ',')} €`;
+    }
+
+    function onPaid(payment: any) {
+        lambda('order-create', 'POST', {
+            cart,
+            payment
+        }).then(response => {
+            router.push('/ordercomplete');
+            cartDispatcher({
+                type: CartActionType.clear
+            });
+        }).catch(err => {
+            setErrorOpen(true);
+        });
+    }
+
+    function handleErrorClose() {
+        setErrorOpen(false);
     }
 
     return (
@@ -52,11 +74,11 @@ export default function Cart() {
                                         <div className={styles.product}>
                                             <div className={styles.imageContainer}>
                                                 <img className={styles.image} src={`/images/${item.design.color}-front.jpg`}></img>
-                                                <img className={styles.design} src={item.design.frontBlob}></img>
+                                                <img className={styles.design} src={item.design.frontDataURL}></img>
                                             </div>
                                             <div className={styles.imageContainer}>
                                                 <img className={styles.image} src={`/images/${item.design.color}-back.jpg`}></img>
-                                                <img className={styles.design} src={item.design.backBlob}></img>
+                                                <img className={styles.design} src={item.design.backDataURL}></img>
                                             </div>
                                         </div>
                                         <div>
@@ -122,12 +144,31 @@ export default function Cart() {
                         </section>
                         <Divider />
                         <footer className={styles.footer}>
-                            <PayPalButtons
+                            <PayPalButton
                                 total={cart.getTotal()}
+                                onSuccess={onPaid}
                             />
                         </footer>
                     </React.Fragment>
             }
+            <Snackbar
+                anchorOrigin={
+                    {
+                        vertical: 'top',
+                        horizontal: 'center'
+                    }
+                }
+                open={errorOpen}
+                autoHideDuration={3000}
+                onClose={handleErrorClose}>
+                <Alert
+                    variant="filled"
+                    onClose={handleErrorClose}
+                    severity="success"
+                >
+                    Something went wrong. Please refresh your browser.
+                </Alert>
+            </Snackbar>
         </Page>
     );
 }

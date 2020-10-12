@@ -1,0 +1,13 @@
+@import '../../styles/theme.scss';
+
+.hero {
+    @include hero-font;
+    text-align: center;
+}
+
+.footer {
+    @include footer;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
