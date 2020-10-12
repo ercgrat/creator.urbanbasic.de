@@ -1,10 +1,8 @@
 [build]
-functions = "functions-build"
-# This will be run the site build
 command = "npm run build"
-# This is the directory is publishing to netlify's CDN
+build = "out"
 publish = "out"
+functions = "out_functions"
 
 [dev]
-# Local dev command. A.k.a npm start
 command = "npm run dev"

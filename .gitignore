@@ -34,5 +34,5 @@ yarn-error.log*
 .netlify
 
 # netlify-lambda build
-/functions-build
-/functions-build/*
+/out_functions
+/out_functions/*
