@@ -8,4 +8,4 @@ export const lambda = (func: string, method: ('POST' | 'GET'), body: object): Pr
         method,
         body: JSON.stringify(body)
     });
-}
+};

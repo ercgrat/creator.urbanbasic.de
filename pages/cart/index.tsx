@@ -11,6 +11,7 @@ import Divider from '../../components/divider';
 import { lambda } from '../../model/Constants';
 import router from 'next/router';
 import { Alert } from '@material-ui/lab';
+import ShirtUnderlay from '../../components/shirtUnderlay';
 
 export default function Cart() {
     const { cart, cartDispatcher } = useContext(CartContext);
@@ -51,7 +52,7 @@ export default function Cart() {
     function handleErrorClose() {
         setErrorOpen(false);
     }
-
+    
     return (
         <Page>
             <h1 className={styles.heading}>Shopping Cart</h1>
@@ -73,11 +74,11 @@ export default function Cart() {
                                     <li className={styles.listItem} key={index}>
                                         <div className={styles.product}>
                                             <div className={styles.imageContainer}>
-                                                <img className={styles.image} src={`/images/${item.design.color}-front.jpg`}></img>
+                                                <ShirtUnderlay className={styles.image} shirtPosition='front' color={item.design.color} />
                                                 <img className={styles.design} src={item.design.frontDataURL}></img>
                                             </div>
                                             <div className={styles.imageContainer}>
-                                                <img className={styles.image} src={`/images/${item.design.color}-back.jpg`}></img>
+                                                <ShirtUnderlay className={styles.image} shirtPosition='back' color={item.design.color} />
                                                 <img className={styles.design} src={item.design.backDataURL}></img>
                                             </div>
                                         </div>

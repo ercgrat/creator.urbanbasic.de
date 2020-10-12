@@ -9,7 +9,8 @@ import PositionRadioGroup from './positionRadioGroup';
 import useCanvasUtils from '../../hooks/useCanvasUtils';
 import { Button, withStyles } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import { DesignColor, DesignSize } from '../../model/Cart';
+import { DesignColor, DesignSize, DesignProduct } from '../../model/Cart';
+import ShirtUnderlay from '../shirtUnderlay';
 import React from 'react';
 
 export interface IDesignData {
@@ -17,12 +18,20 @@ export interface IDesignData {
     backObjects: fabric.Object[];
     color: DesignColor;
     size: DesignSize;
+    product: DesignProduct;
 }
 
 export const CANVAS_WIDTH = 168;
 export const CANVAS_HEIGHT = 252;
 
-export default React.memo(function Customizer(props: { designData: IDesignData, onDesignChanged?: (data: IDesignData) => void }) {
+export default React.memo(function Customizer(props: { 
+    frontObjects: fabric.Object[],
+    backObjects: fabric.Object[],
+    color: DesignColor,
+    size: DesignSize,
+    product: DesignProduct,
+    onDesignChanged?: (data: Partial<IDesignData>) => void
+}) {
 
     const frontCanvasRef = useRef(null);
     const backCanvasRef = useRef(null);
@@ -98,10 +107,8 @@ export default React.memo(function Customizer(props: { designData: IDesignData, 
 
             if (props.onDesignChanged) {
                 props.onDesignChanged({
-                    frontObjects: shirtPosition === 'front' ? canvas.getObjects() : props.designData.frontObjects,
-                    backObjects: shirtPosition === 'front' ? props.designData.backObjects : canvas.getObjects(),
-                    color: (props.designData.color as DesignColor),
-                    size: (props.designData.size as DesignSize)
+                    frontObjects: shirtPosition === 'front' ? canvas.getObjects() : props.frontObjects,
+                    backObjects: shirtPosition === 'front' ? props.backObjects : canvas.getObjects()
                 });
             }
         }
@@ -112,22 +119,11 @@ export default React.memo(function Customizer(props: { designData: IDesignData, 
     }
 
     function getObjects() {
-        return shirtPosition === 'front' ? props.designData.frontObjects : props.designData.backObjects;
-    }
-
-    function getCurrentDesignData() {
-        return {
-            frontObjects: shirtPosition === 'front' ? canvas.getObjects() : props.designData.frontObjects,
-            backObjects: shirtPosition === 'front' ? props.designData.backObjects : canvas.getObjects(),
-            width: getCanvasRef().current.clientWidth,
-            height: getCanvasRef().current.clientHeight,
-            color: (props.designData.color as DesignColor),
-            size: (props.designData.size as DesignSize)
-        };
+        return shirtPosition === 'front' ? props.frontObjects : props.backObjects;
     }
 
     function setObjects(objects: fabric.Object[]) {
-        const currentData = getCurrentDesignData();
+        const currentData = {} as Partial<IDesignData>;
         if (shirtPosition === 'front') {
             currentData.frontObjects = objects;
         } else {
@@ -157,16 +153,16 @@ export default React.memo(function Customizer(props: { designData: IDesignData, 
     }
 
     const changeColor = useCallback((event: React.SyntheticEvent, color: string) => {
-        const currentData = getCurrentDesignData();
-        currentData.color = DesignColor[color];
-        props.onDesignChanged(currentData);
-    }, [props.designData.color, canvas, frontCanvasRef, backCanvasRef]);
+        props.onDesignChanged({
+            color: DesignColor[color]
+        });
+    }, [props.color, canvas, frontCanvasRef, backCanvasRef]);
 
     const changeSize = useCallback((event: React.SyntheticEvent, size: string) => {
-        const currentData = getCurrentDesignData();
-        currentData.size = DesignSize[size];
-        props.onDesignChanged(currentData);
-    }, [props.designData.size, canvas, frontCanvasRef, backCanvasRef]);
+        props.onDesignChanged({
+            size: DesignSize[size]
+        });
+    }, [props.size, canvas, frontCanvasRef, backCanvasRef]);
 
     const changePosition = useCallback((event: React.SyntheticEvent, position: string) => {
         setShirtPosition(position);
@@ -183,9 +179,8 @@ export default React.memo(function Customizer(props: { designData: IDesignData, 
     return (
         <div className={styles.container}>
             <div className={styles.editor}>
-                <div style={{
-                    background: `url(http://localhost:3000/images/tshirt-${shirtPosition}.png) center center / 100% 100% no-repeat ${props.designData.color}`
-                }} className={styles.shirtImage}></div>
+
+                <ShirtUnderlay className={styles.shirtImage} shirtPosition={shirtPosition} color={props.color} />
                 {
                     shirtPosition === 'front' ?
                         <div className={styles.canvasContainer} ref={frontCanvasRef}>

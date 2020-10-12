@@ -19,17 +19,23 @@ export enum DesignSize {
     xxl = 'xxl'
 }
 
+export enum DesignProduct {
+    tshirt = 'tshirt'
+}
+
 export class Design {
     frontDataURL: string;
     backDataURL: string;
     color: DesignColor;
     size: DesignSize;
+    product: DesignProduct;
 
-    constructor(frontDataURL: string, backDataURL: string, color: DesignColor, size: DesignSize) {
+    constructor(frontDataURL: string, backDataURL: string, color: DesignColor, size: DesignSize, product: DesignProduct) {
         this.frontDataURL = frontDataURL;
         this.backDataURL = backDataURL;
         this.color = color;
         this.size = size;
+        this.product = product;
     }
 }
 
