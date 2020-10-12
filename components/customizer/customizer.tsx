@@ -41,6 +41,8 @@ export default React.memo(function Customizer(props: {
     [selectedObject, setSelectedObject] = useState(null);
     let shirtPosition: string, setShirtPosition: Dispatch<string>;
     [shirtPosition, setShirtPosition] = useState('front');
+    let hoveredColor: DesignColor, setHoveredColor: Dispatch<DesignColor>;
+    [hoveredColor, setHoveredColor] = useState<DesignColor>(null);
 
     const canvasUtils = useCanvasUtils();
 
@@ -158,6 +160,14 @@ export default React.memo(function Customizer(props: {
         });
     }, [props.color, canvas, frontCanvasRef, backCanvasRef]);
 
+    const changeHoveredColor = useCallback((color: DesignColor, active: boolean) => {
+        if (active) {
+            setHoveredColor(DesignColor[color]);
+        } else {
+            setHoveredColor(null);
+        }
+    }, [setHoveredColor]);
+
     const changeSize = useCallback((event: React.SyntheticEvent, size: string) => {
         props.onDesignChanged({
             size: DesignSize[size]
@@ -180,7 +190,7 @@ export default React.memo(function Customizer(props: {
         <div className={styles.container}>
             <div className={styles.editor}>
 
-                <ShirtUnderlay className={styles.shirtImage} shirtPosition={shirtPosition} color={props.color} />
+                <ShirtUnderlay className={styles.shirtImage} shirtPosition={shirtPosition} color={hoveredColor || props.color} />
                 {
                     shirtPosition === 'front' ?
                         <div className={styles.canvasContainer} ref={frontCanvasRef}>
@@ -194,7 +204,7 @@ export default React.memo(function Customizer(props: {
             </div>
             <div className={styles.settings}>
                 <label className={styles.label}>Color</label>
-                <ColorRadioGroup onChange={changeColor} />
+                <ColorRadioGroup onChange={changeColor} onHover={changeHoveredColor} />
                 <label className={styles.label}>Size</label>
                 <SizeRadioGroup onChange={changeSize} />
                 <label className={styles.label}>Text</label>

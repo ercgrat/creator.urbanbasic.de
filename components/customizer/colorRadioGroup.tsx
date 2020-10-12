@@ -10,7 +10,7 @@ const useRadioGroupStyles = makeStyles({
     }
 });
 
-const useRadioStyles = function (color: string) {
+const useRadioStyles = function (color: DesignColor) {
     const icon = {
         borderRadius: '50%',
         width: 33,
@@ -44,12 +44,14 @@ const useRadioStyles = function (color: string) {
     })();
 };
 
-function ColorRadio({ color }) {
-    const classes = useRadioStyles(color);
+function ColorRadio(props: { color: DesignColor, onHover?: (color: DesignColor, active: boolean) => void }) {
+    const classes = useRadioStyles(props.color);
 
     return (
         <Radio
-            value={color}
+            onMouseEnter={() => props.onHover(props.color, true)}
+            onMouseLeave={() => props.onHover(props.color, false)}
+            value={props.color}
             classes={{ root: classes.root, checked: classes.rootSelected }}
             icon={<span className={classes.icon} />}
             checkedIcon={<span className={classes.checkedIcon} />}
@@ -58,7 +60,7 @@ function ColorRadio({ color }) {
     );
 }
 
-export default React.memo(function ColorRadioGroup(props: { onChange }) {
+export default React.memo(function ColorRadioGroup(props: { onChange?, onHover?: (color: DesignColor, active: boolean) => void }) {
     const classes = useRadioGroupStyles();
     return (
         <FormControl component="fieldset">
@@ -66,7 +68,7 @@ export default React.memo(function ColorRadioGroup(props: { onChange }) {
                 onChange={props.onChange}>
                 {
                     Object.keys(DesignColor).map(color => (
-                        <ColorRadio key={color} color={color} />
+                        <ColorRadio key={color} color={color as DesignColor} onHover={props.onHover} />
                     ))
                 }
             </RadioGroup>
