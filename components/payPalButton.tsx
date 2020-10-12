@@ -9,15 +9,21 @@ export default function PayPalButton(props: {
 }) {
 
     const onSuccess = (payment) => {
-        props.onSuccess(payment);
+        if (props.onSuccess) {
+            props.onSuccess(payment);
+        }
     };
 
     const onCancel = (data) => {
-        props.onCancel(data);
+        if (props.onCancel) {
+            props.onCancel(data);
+        }
     };
 
     const onError = (err) => {
-        props.onError(err);
+        if (props.onError) {
+            props.onError(err);
+        }
     };
 
     const env = process.env.NEXT_PUBLIC_PAYPAL_ENV;
