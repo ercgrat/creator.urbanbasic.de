@@ -6,8 +6,8 @@
 
 .editor {
     position: relative;
-    width: 500px;
-    height: 540px;
+    width: 440px;
+    height: 510px;
     padding: 24px;
     display: flex;
     flex-direction: column;
@@ -29,8 +29,9 @@
 .shirtImage {
     display: table;
     margin: 0 auto;
-    height: auto;
-    max-height: 450px;
+    width: 100%;
+    height: 410px;
+    margin-bottom: 12px;
 }
 
 @keyframes animateCanvasBorder {
@@ -42,7 +43,7 @@
 
 .canvasContainer {
     position: absolute;
-    top: -40px;
+    top: -50px;
     right: 0;
     bottom: 0;
     left: 0;

@@ -8,6 +8,7 @@ import FormatAlignLeftIcon from '@material-ui/icons/FormatAlignLeft';
 import FormatAlignCenterIcon from '@material-ui/icons/FormatAlignCenter';
 import FormatAlignRightIcon from '@material-ui/icons/FormatAlignRight';
 import styles from './textConfiguration.module.scss';
+import React from 'react';
 
 const useStyles = makeStyles({
     withMargin: {
@@ -52,7 +53,8 @@ const fonts = [
     'Shrikhand'
 ];
 
-export default function TextConfiguration({ canvas, selectedObject }) {
+export default React.memo(function TextConfiguration(props: { canvas, selectedObject }) {
+    const { canvas, selectedObject } = props;
     const textRef = useRef(null);
     const [font, setFont] = useState('Fira Sans');
     const [fontColor, setFontColor] = useState('black');
@@ -219,4 +221,4 @@ export default function TextConfiguration({ canvas, selectedObject }) {
             }
         </section>
     );
-}
+});

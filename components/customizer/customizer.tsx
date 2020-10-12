@@ -1,6 +1,6 @@
 import styles from './customizer.module.scss';
 import { fabric } from 'fabric';
-import { Dispatch, useEffect, useRef, useState } from 'react';
+import { Dispatch, useCallback, useEffect, useRef, useState } from 'react';
 import TextConfiguration from './textConfiguration';
 import ColorRadioGroup from './colorRadioGroup';
 import SizeRadioGroup from './sizeRadioGroup';
@@ -156,21 +156,21 @@ export default React.memo(function Customizer(props: { designData: IDesignData, 
         }
     }
 
-    function changeColor(event: React.SyntheticEvent, color: string) {
+    const changeColor = useCallback((event: React.SyntheticEvent, color: string) => {
         const currentData = getCurrentDesignData();
         currentData.color = DesignColor[color];
         props.onDesignChanged(currentData);
-    }
+    }, [props.designData.color, canvas, frontCanvasRef, backCanvasRef]);
 
-    function changeSize(event: React.SyntheticEvent, size: string) {
+    const changeSize = useCallback((event: React.SyntheticEvent, size: string) => {
         const currentData = getCurrentDesignData();
         currentData.size = DesignSize[size];
         props.onDesignChanged(currentData);
-    }
+    }, [props.designData.size, canvas, frontCanvasRef, backCanvasRef]);
 
-    function changePosition(event: React.SyntheticEvent, position: string) {
+    const changePosition = useCallback((event: React.SyntheticEvent, position: string) => {
         setShirtPosition(position);
-    }
+    }, [setShirtPosition]);
 
     const DeleteButton = withStyles({
         root: {
@@ -183,7 +183,9 @@ export default React.memo(function Customizer(props: { designData: IDesignData, 
     return (
         <div className={styles.container}>
             <div className={styles.editor}>
-                <img src={`/images/${props.designData.color}-${shirtPosition}.jpg`} className={styles.shirtImage}></img>
+                <div style={{
+                    background: `url(http://localhost:3000/images/tshirt-${shirtPosition}.png) center center / 100% 100% no-repeat ${props.designData.color}`
+                }} className={styles.shirtImage}></div>
                 {
                     shirtPosition === 'front' ?
                         <div className={styles.canvasContainer} ref={frontCanvasRef}>

@@ -40,12 +40,8 @@ export default function App({ Component, pageProps }) {
             <Head>
                 <title>Creator</title>
                 <link rel="icon" href="/favicon.png" />
-                {
-                    Object.keys(DesignColor).map(color => (<React.Fragment key={color}>
-                        <link rel="prefetch" href={`/images/${color}-front.jpg`}></link>
-                        <link rel="prefetch" href={`/images/${color}-back.jpg`}></link>
-                    </React.Fragment>))
-                }
+                <link rel="prefetch" href={`/images/tshirt-front.png`}></link>
+                <link rel="prefetch" href={`/images/tshirt-back.png`}></link>
             </Head>
             <CartContext.Provider value={{ cart, cartDispatcher }}>
                 <Component {...pageProps} />

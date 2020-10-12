@@ -2,8 +2,9 @@ import { Button } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import useCanvasUtils from '../../hooks/useCanvasUtils';
 import { fabric } from 'fabric';
+import React from 'react';
 
-export default function ImageAdder({ canvas }) {
+export default React.memo(function ImageAdder(props: { canvas }) {
 
     const canvasUtils = useCanvasUtils();
 
@@ -21,10 +22,10 @@ export default function ImageAdder({ canvas }) {
             imageObject.scaleToHeight(100);
             imageObject.scaleToWidth(100);
             imageObject.set('data', file);
-            canvas.centerObject(imageObject);
-            canvas.add(imageObject);
-            canvas.setActiveObject(imageObject);
-            canvas.renderAll();
+            props.canvas.centerObject(imageObject);
+            props.canvas.add(imageObject);
+            props.canvas.setActiveObject(imageObject);
+            props.canvas.renderAll();
         };
 
         imageInput.click();
@@ -36,4 +37,4 @@ export default function ImageAdder({ canvas }) {
                 onClick={addImage}>Add image</Button>
         </section>
     );
-}
+});

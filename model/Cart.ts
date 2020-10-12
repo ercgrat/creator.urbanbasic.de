@@ -1,9 +1,13 @@
 export enum DesignColor {
-    white = "white",
-    gray = "gray",
-    black = "black",
-    navy = "navy",
-    orange = "orange"
+    white = 'white',
+    oxfordGrey = '#8391A1',
+    heatherBlack = '#BDC3C7',
+    sand = '#C2B280',
+    gray = 'gray',
+    black = 'black',
+    orange = 'orange',
+    dustyBlue = '#5A86AD',
+    navy = 'navy'
 }
 
 export enum DesignSize {

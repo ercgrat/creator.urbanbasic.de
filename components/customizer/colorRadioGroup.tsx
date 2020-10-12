@@ -1,11 +1,12 @@
 import { FormControl, RadioGroup, Radio, makeStyles } from '@material-ui/core';
+import React from 'react';
 import { DesignColor } from '../../model/Cart';
 
 const useRadioGroupStyles = makeStyles({
     radioGroup: {
         'display': 'flex',
         'flex-direction': 'row',
-        'flex-wrap': 'nowrap'
+        'gap': '12px'
     }
 });
 
@@ -14,7 +15,7 @@ const useRadioStyles = function (color: string) {
         borderRadius: '50%',
         width: 33,
         height: 33,
-        backgroundColor: color,
+        backgroundColor: DesignColor[color],
         'input:hover ~ &': {
             boxShadow: '0px 0px 0px 3px rgba(116,182,199,0.3)'
         },
@@ -26,7 +27,7 @@ const useRadioStyles = function (color: string) {
 
     return makeStyles({
         root: {
-            padding: '3px 6px',
+            padding: '0px',
             backgroundColor: 'transparent'
         },
         rootSelected: {
@@ -57,12 +58,12 @@ function ColorRadio({ color }) {
     );
 }
 
-export default function ColorRadioGroup({ onChange }) {
+export default React.memo(function ColorRadioGroup(props: { onChange }) {
     const classes = useRadioGroupStyles();
     return (
         <FormControl component="fieldset">
             <RadioGroup className={classes.radioGroup} defaultValue="white" aria-label="color" name="color-radios"
-                onChange={onChange}>
+                onChange={props.onChange}>
                 {
                     Object.keys(DesignColor).map(color => (
                         <ColorRadio key={color} color={color} />
@@ -71,4 +72,4 @@ export default function ColorRadioGroup({ onChange }) {
             </RadioGroup>
         </FormControl>
     );
-}
+});
