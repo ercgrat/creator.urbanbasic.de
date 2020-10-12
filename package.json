@@ -10,7 +10,8 @@
     "build:server": "netlify-lambda build functions",
     "start:appdev": "cross-env PORT=3000 node server.js",
     "start:appprod": "next start",
-    "start:server": "netlify-lambda serve functions"
+    "start:server": "netlify-lambda serve functions",
+    "postinstall": "netlify-lambda install"
   },
   "dependencies": {
     "faunadb": "^3.0.1",
