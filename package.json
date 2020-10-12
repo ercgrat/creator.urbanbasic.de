@@ -31,6 +31,7 @@
     "@types/react": "^16.9.50",
     "@types/react-color": "^3.0.4",
     "cross-env": "^7.0.2",
+    "encoding": "^0.1.13",
     "fabric": "^4.2.0",
     "http-proxy-middleware": "^1.0.6",
     "netlify-lambda": "^2.0.1",
