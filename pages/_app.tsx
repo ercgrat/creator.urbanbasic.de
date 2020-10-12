@@ -46,7 +46,6 @@ export default function App({ Component, pageProps }) {
                         <link rel="prefetch" href={`/images/${color}-back.jpg`}></link>
                     </React.Fragment>))
                 }
-                <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;700&display=swap" rel="stylesheet"></link>
             </Head>
             <CartContext.Provider value={{ cart, cartDispatcher }}>
                 <Component {...pageProps} />

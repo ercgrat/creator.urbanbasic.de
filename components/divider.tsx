@@ -2,7 +2,7 @@ import { Divider as MUIDivider, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
     divider: {
-        margin: '0 -24px'
+        margin: '0 -16px'
     }
 });
 

@@ -2,10 +2,11 @@ body {
     background-color: #efefef;
 }
 
-html, body {
+html,
+body {
     padding: 0;
     margin: 0;
-    font-family: Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    font-family: 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif';
 }
 
 * {
@@ -14,4 +15,129 @@ html, body {
 
 .MuiInputLabel-outlined.MuiInputLabel-shrink {
     background-color: white;
+}
+
+@font-face {
+    font-family: 'Fira Sans';
+    src: url('/fonts/FiraSans.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Agent Orange';
+    src: url('/fonts/AGENTORANGE.TTF') format('truetype');
+}
+
+@font-face {
+    font-family: 'Black Casper';
+    src: url('/fonts/BlackCasper.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Capture It';
+    src: url('/fonts/Capture_it.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Capture It 2';
+    src: url('/fonts/Capture_it_2.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Chunk Five';
+    src: url('/fonts/ChunkFive-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Chunk Five Print';
+    src: url('/fonts/Chunk Five Print.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Deja Vu Serif';
+    src: url('/fonts/DejaVuSerif.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Digital Dream';
+    src: url('/fonts/digital_dream_regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Eraser';
+    src: url('/fonts/EraserRegular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Finger Paint';
+    src: url('/fonts/FingerPaint-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Fipps';
+    src: url('/fonts/Fipps-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Graduate';
+    src: url('/fonts/graduate-regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Hamburger';
+    src: url('/fonts/Hamburger.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'HVD Peace';
+    src: url('/fonts/HVD_Peace.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Impact';
+    src: url('/fonts/Impact_Label.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'League Gothic';
+    src: url('/fonts/LeagueGothic-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Londrina Sketch';
+    src: url('/fonts/LondrinaSketch-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Luckiest Guy';
+    src: url('/fonts/LuckiestGuy-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Megrim';
+    src: url('/fonts/Megrim-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Pacifico';
+    src: url('/fonts/Pacifico-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Quicksand';
+    src: url('/fonts/Quicksand.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'SF Distant Galaxy Alternate';
+    src: url('/fonts/SF Distant Galaxy Alternate.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'SF Distant Galaxy Alt Outline';
+    src: url('/fonts/SF Distant Galaxy AltOutline.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Shrikhand';
+    src: url('/fonts/Shrikhand-Regular.ttf') format('truetype');
 }

@@ -15,23 +15,9 @@ export default function ColorSelect(props: { selectedColor: string, onChange: Co
 
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
-    const formRef = useRef();
     const pickerRef = useRef();
 
     useEffect(() => {
-        const resizeListener = alignPicker;
-        window.addEventListener('resize', resizeListener);
-
-        return () => {
-            window.removeEventListener('resize', resizeListener);
-        };
-    }, []);
-
-    useEffect(() => {
-        if (isOpen) {
-            alignPicker();
-        }
-        
         if (!isOpen) {
             const popoverRootList = document.getElementsByClassName('MuiPopover-root');
             if (popoverRootList.length > 0) {
@@ -49,18 +35,8 @@ export default function ColorSelect(props: { selectedColor: string, onChange: Co
         setIsOpen(false);
     }
 
-    function alignPicker() {
-        /** If the window is narrow, shift the picker over so that it fits within the window. */
-        if (formRef.current && pickerRef.current) {
-            const formRect = (formRef.current as HTMLElement).getBoundingClientRect();
-            const picker = pickerRef.current as HTMLElement;
-            const adjustedLeft = ((window.innerWidth - picker.clientWidth) - formRect.left) - 24;
-            picker.style.left = `${Math.min(0, adjustedLeft)}px`;
-        }
-    }
-
     return (
-        <FormControl variant="outlined" size="small" classes={props.classes} innerRef={formRef}>
+        <FormControl variant="outlined" size="small" classes={props.classes}>
             <InputLabel>Color</InputLabel>
             <Select
                 className={styles.colorSelect}

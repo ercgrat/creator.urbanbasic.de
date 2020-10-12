@@ -1,4 +1,4 @@
-import { Button, FormControl, InputLabel, Select, MenuItem, TextField, makeStyles } from '@material-ui/core';
+import { Button, FormControl, InputLabel, Select, MenuItem, TextField, makeStyles, withStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { fabric } from 'fabric';
 import { useRef, useEffect, useState } from 'react';
@@ -11,14 +11,58 @@ import styles from './textConfiguration.module.scss';
 
 const useStyles = makeStyles({
     withMargin: {
+        maxWidth: '270px',
         margin: '6px 6px 6px 0px'
     }
 });
 
+const useFonts = (font) => {
+    return makeStyles({
+        root: {
+            fontFamily: font
+        }
+    });
+}
+
+const fonts = [
+    'Agent Orange',
+    'Black Casper',
+    'Capture It',
+    'Capture It 2',
+    'Chunk Five',
+    'Chunk Five Print',
+    'DejaVu Serif',
+    'Digital Dream',
+    'Eraser',
+    'Finger Paint',
+    'Fipps',
+    'Fira Sans',
+    'Graduate',
+    'Hamburger',
+    'HVD Peace',
+    'Impact',
+    'League Gothic',
+    'Londrina Sketch',
+    'Luckiest Guy',
+    'Megrim',
+    'Pacifico',
+    'Quicksand',
+    'SF Distant Galaxy Alternate',
+    'SF Distant Galaxy Alt Outline',
+    'Shrikhand'
+];
+
 export default function TextConfiguration({ canvas, selectedObject }) {
     const textRef = useRef(null);
+    const [font, setFont] = useState('Fira Sans');
     const [fontColor, setFontColor] = useState('black');
     const [textAlign, setTextAlign] = useState('left');
+
+    const itemStyles = {};
+    for (let i = 0; i < fonts.length; i++) {
+        const font = fonts[i];
+        itemStyles[font] = useFonts(font)();
+    }
 
     useEffect(() => {
         if (selectedObject) {
@@ -26,6 +70,7 @@ export default function TextConfiguration({ canvas, selectedObject }) {
                 case 'text':
                     const obj = selectedObject as fabric.Text;
                     setCustomTextareas(obj.get('text'));
+                    setFont(obj.get('fontFamily'));
                     let color = obj.get('fill') as string;
                     color = (!color || color === 'rgb(0,0,0)') ? 'black' : color;
                     setFontColor(color);
@@ -77,6 +122,16 @@ export default function TextConfiguration({ canvas, selectedObject }) {
         }
     }
 
+    function fontChanged(event) {
+        const value = event.target.value;
+        if (selectedObject) {
+            const obj = selectedObject as fabric.Text;
+            obj.set('fontFamily', value);
+            canvas.renderAll();
+        }
+        setFont(value);
+    }
+
     function alignChanged(event) {
         const value = event.target.value;
         if (selectedObject) {
@@ -113,10 +168,23 @@ export default function TextConfiguration({ canvas, selectedObject }) {
                                 classes={{ root: muiStyles.withMargin }}>
                                 <InputLabel>Font</InputLabel>
                                 <Select
-                                    value="Fira Sans"
+                                    value={font}
                                     label="Font"
+                                    onChange={fontChanged}
+                                    classes={{ root: itemStyles[font].root }}
                                 >
-                                    <MenuItem value="Fira Sans">Fira Sans</MenuItem>
+                                    {
+                                        fonts.map(font => (
+                                            <MenuItem
+                                                key={font}
+                                                value={font}
+                                                classes={{ root: itemStyles[font].root }}
+                                            >
+                                                {font}
+                                            </MenuItem>
+                                        ))
+                                    }
+
                                 </Select>
                             </FormControl>
                             <ColorSelect
