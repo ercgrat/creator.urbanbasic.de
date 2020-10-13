@@ -3,14 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm-run-all --parallel start:appdev start:server",
-    "start": "npx npm-run-all --parallel start:appprod start:server",
-    "build": "npx npm-run-all --parallel build:app build:server",
-    "build:app": "npx next build",
-    "build:server": "npx netlify-lambda build functions",
-    "start:appdev": "npx cross-env PORT=3000 node server.js",
-    "start:appprod": "npx next start",
-    "start:server": "npx netlify-lambda serve functions"
+    "dev": "next dev",
+    "start": "next start",
+    "build": "next build"
   },
   "dependencies": {
     "faunadb": "^3.0.1",
@@ -20,23 +15,22 @@
   },
   "devDependencies": {
     "@ant-design/icons": "^4.2.2",
-    "@fortawesome/fontawesome-free": "^5.15.0",
+    "@fortawesome/fontawesome-free": "^5.15.1",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@types/aws-lambda": "^8.10.63",
     "@types/fabric": "^3.6.8",
-    "@types/node": "^14.11.2",
-    "@types/react": "^16.9.50",
+    "@types/node": "^14.11.8",
+    "@types/react": "^16.9.52",
     "@types/react-color": "^3.0.4",
     "cross-env": "^7.0.2",
     "fabric": "^4.2.0",
     "http-proxy-middleware": "^1.0.6",
     "netlify-lambda": "^2.0.1",
-    "npm-run-all": "^4.1.5",
     "react-color": "^2.18.1",
     "react-paypal-express-checkout": "^1.0.5",
-    "sass": "^1.26.11",
+    "sass": "^1.27.0",
     "typescript": "^4.0.3"
   }
 }

@@ -26,7 +26,10 @@ export default function PayPalButton(props: {
         }
     };
 
-    const env = process.env.NEXT_PUBLIC_PAYPAL_ENV;
+    let env = process.env.NEXT_PUBLIC_PAYPAL_ENV_DEV;
+    if (!env) {
+        env = process.env.NEXT_PUBLIC_PAYPAL_ENV;
+    }
     const currency = 'EUR';
     const client = {
         sandbox: 'AReJHDdGIO940UAsIBQ5tEcru7xT6VpNjJ831GXb1k8bLUlkapanjRgGah--hz1JpCqMmfCv_ZEjDYSJ',

@@ -4,7 +4,6 @@ import Head from 'next/head';
 import { CartContext, useCart } from '../hooks/useCart';
 import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
-import { DesignColor } from '../model/Cart';
 
 
 export default function App({ Component, pageProps }) {

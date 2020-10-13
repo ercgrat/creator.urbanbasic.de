@@ -36,7 +36,7 @@ export default function Cart() {
     }
 
     function onPaid(payment: any) {
-        lambda('order-create', 'POST', {
+        lambda('order', 'POST', {
             cart,
             payment
         }).then(response => {
