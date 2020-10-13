@@ -18,27 +18,21 @@ export default function useCanvasUtils() {
 
     async function renderObjects(canvas: fabric.Canvas, objects: fabric.Object[]) {
         const self = this;
-        return new Promise<string>((resolve) => {
-            const promises = []
-            objects.forEach((object) => {
-                promises.push(new Promise(
-                    async (innerResolve) => {
-                        if (object.isType('image')) {
-                            const image = await self.addImage(object.get('data') as Blob);
-                            const imageObject = object as fabric.Image;
-                            imageObject.setElement(image);
-                            canvas.add(imageObject);
-                        } else {
-                            canvas.add(object);
-                        }
-                        innerResolve();
-                    }
-                ));
-            });
+        return new Promise<string>(async (resolve) => {
+            // Need to await in sequence (instead of Promise.all) to preserve the order of canvas elements
+            for (let i = 0; i < objects.length; i++) {
+                const object = objects[i];
+                if (object.isType('image')) {
+                    const image = await self.addImage(object.get('data') as Blob);
+                    const imageObject = object as fabric.Image;
+                    imageObject.setElement(image);
+                    canvas.add(imageObject);
+                } else {
+                    canvas.add(object);
+                }
+            }
 
-            return Promise.all(promises).then(() => {
-                resolve();
-            });
+            resolve();
         });
     }
     return {

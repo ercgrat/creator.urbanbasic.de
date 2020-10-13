@@ -53,7 +53,8 @@ export default React.memo(function Customizer(props: {
         const effectCanvas = new fabric.Canvas(`${shirtPosition}Canvas`, {
             width: getCanvasRef().current.clientWidth,
             height: getCanvasRef().current.clientHeight,
-            selection: false
+            selection: false,
+            preserveObjectStacking: true
         });
 
         (async () => {

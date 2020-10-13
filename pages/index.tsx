@@ -67,11 +67,13 @@ export default function Home() {
         if (!designHasData()) { return; }
         const frontCanvas = new fabric.Canvas(document.createElement('canvas'), {
             width: CANVAS_WIDTH,
-            height: CANVAS_HEIGHT
+            height: CANVAS_HEIGHT,
+            preserveObjectStacking: true
         });
         const backCanvas = new fabric.Canvas(document.createElement('canvas'), {
             width: CANVAS_WIDTH,
-            height: CANVAS_HEIGHT
+            height: CANVAS_HEIGHT,
+            preserveObjectStacking: true
         });
         await canvasUtils.renderObjects(frontCanvas, frontObjects);
         await canvasUtils.renderObjects(backCanvas, backObjects);
