@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npm-run-all --parallel start:appdev start:server",
     "start": "npx npm-run-all --parallel start:appprod start:server",
-    "build": "npx npm-run-all --parallel build:app build:server",
+    "build": "npm install encoding && npx npm-run-all --parallel build:app build:server",
     "build:app": "npx next build",
     "build:server": "npx netlify-lambda build functions",
     "start:appdev": "npx cross-env PORT=3000 node server.js",
