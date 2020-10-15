@@ -1,6 +1,6 @@
 import styles from './customizer.module.scss';
 import { fabric } from 'fabric';
-import { Dispatch, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import TextConfiguration from './textConfiguration';
 import ColorRadioGroup from './colorRadioGroup';
 import SizeRadioGroup from './sizeRadioGroup';
@@ -10,7 +10,7 @@ import useCanvasUtils from '../../hooks/useCanvasUtils';
 import { Button, withStyles } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { DesignColor, DesignSize, DesignProduct, ColorMap } from '../../model/Cart';
-import ShirtUnderlay from '../shirtUnderlay';
+import ShirtUnderlay from '../cart/shirtUnderlay';
 import React from 'react';
 import ProductSelect from './productSelect';
 
@@ -36,14 +36,10 @@ export default React.memo(function Customizer(props: {
 
     const frontCanvasRef = useRef(null);
     const backCanvasRef = useRef(null);
-    let canvas: fabric.Canvas, setCanvas: Dispatch<fabric.Canvas>;
-    [canvas, setCanvas] = useState(null);
-    let selectedObject: fabric.Object, setSelectedObject: Dispatch<fabric.Object>;
-    [selectedObject, setSelectedObject] = useState(null);
-    let shirtPosition: string, setShirtPosition: Dispatch<string>;
-    [shirtPosition, setShirtPosition] = useState('front');
-    let hoveredColor: DesignColor, setHoveredColor: Dispatch<DesignColor>;
-    [hoveredColor, setHoveredColor] = useState<DesignColor>(null);
+    const [canvas, setCanvas] = useState<fabric.Canvas>(null);
+    const [selectedObject, setSelectedObject] = useState<fabric.Object>(null);
+    const [shirtPosition, setShirtPosition] = useState<string>('front');
+    const [hoveredColor, setHoveredColor] = useState<DesignColor>(null);
 
     const canvasUtils = useCanvasUtils();
 

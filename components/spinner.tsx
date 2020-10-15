@@ -10,7 +10,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function Spinner(props: { isSpinning: boolean }) {
+export default React.memo(function Spinner(props: { isSpinning: boolean }) {
     const classes = useStyles();
 
     return (
@@ -26,4 +26,4 @@ export default function Spinner(props: { isSpinning: boolean }) {
                 }} />
         </Backdrop>
     );
-}
+});

@@ -11,7 +11,7 @@ $link-color: rgb(0, 65, 130);
 $low-emphasis-color: rgb(86, 104, 122);
 $font-size-normal: 14px;
 
-$label-color: #84878A;
+$label-color: #84878a;
 
 @mixin page-heading {
     margin: 0;
@@ -32,3 +32,17 @@ $label-color: #84878A;
     }
 }
 
+@mixin cartItem {
+    display: grid;
+    grid-template-columns: 450px 60px 100px 100px 120px 50px;
+    gap: 12px 12px;
+    padding: 12px;
+    align-items: center;
+    font-weight: 400;
+
+    @media screen and (max-width: 1000px) {
+        display: flex;
+        flex-direction: column;
+        padding: 6px;
+    }
+}

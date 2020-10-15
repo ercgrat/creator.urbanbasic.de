@@ -12,7 +12,9 @@ exports.handler = async event => {
         data,
     };
 
-    return client.query(q.Create(q.Collection('orders'), order))
+    return client.query(q.Create(q.Collection('orders'), order), {
+        queryTimeout: 30000
+    })
         .then((response) => {
             console.log("success", response);
             return {

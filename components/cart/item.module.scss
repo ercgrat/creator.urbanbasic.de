@@ -1,0 +1,62 @@
+@import "../../styles/theme.scss";
+
+.listItem {
+    @include cartItem;
+}
+
+.listItem:not(.listHeader) {
+    border-bottom: solid 1px $border-color;
+    margin-bottom: 12px;
+}
+
+.listItem > div {
+    padding: 12px;
+}
+
+.listItemLabel {
+    display: none;
+}
+
+.fullDelete {
+    display: none;
+}
+
+.product {
+    display: flex;
+    align-items: center;
+}
+
+.quantity {
+    max-width: 100px;
+}
+
+@media screen and (max-width: 1000px) {
+    .listHeader.listItem {
+        display: none;
+    }
+
+    .listItem > div:not(:first-child) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 250px;
+        padding: 0px;
+    }
+
+    .listItemLabel {
+        display: block;
+        color: $label-color;
+        font-weight: 500;
+    }
+
+    .fullDelete {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .iconDelete {
+        display: none;
+    }
+}

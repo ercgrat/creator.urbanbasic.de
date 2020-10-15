@@ -8,10 +8,10 @@ export const STORAGE_KEYS = {
 export const lambda = (func: string, method: ('POST' | 'GET'), body?: object, token?: netlifyIdentity.Token): Promise<Response> => {
     return fetch(`/.netlify/functions/${func}`, {
         method,
-        body: body ? JSON.stringify(body) : null,
+        body: body ? JSON.stringify(body) : undefined,
         headers: token ? [
-            ['Authorization', `Bearer ${token}`]
-        ] : null
+            ['Authorization', `Bearer ${token.access_token}`]
+        ] : []
     });
 };
 
@@ -23,4 +23,8 @@ export interface IFaunaObject<T> {
     },
     data: T,
     ts: number
+}
+
+export function formatPrice(value: number) {
+    return `${value.toFixed(2).replace('.', ',')} €`;
 }

@@ -1,7 +1,6 @@
 import Page from '../components/page';
-import { Button, Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
+import { Button } from '@material-ui/core';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { CartActionType, CartContext } from '../hooks/useCart';
 import { fabric } from 'fabric';
 import Customizer, { CANVAS_HEIGHT, CANVAS_WIDTH, IDesignData } from '../components/customizer/customizer';
@@ -9,21 +8,17 @@ import Divider from '../components/divider';
 import useCanvasUtils from '../hooks/useCanvasUtils';
 import { Design, DesignColor, DesignProduct, DesignSize } from '../model/Cart';
 import styles from './index.module.scss';
+import useToastState from '../hooks/useToastState';
+import Toast from '../components/toast';
 
 export default function Home() {
 
-    let frontObjects: fabric.Object[], setFrontObjects: Dispatch<fabric.Object[]>;
-    [frontObjects, setFrontObjects] = useState([]);
-    let backObjects: fabric.Object[], setBackObjects: Dispatch<fabric.Object[]>;
-    [backObjects, setBackObjects] = useState([]);
-    let color: DesignColor, setColor: Dispatch<DesignColor>;
-    [color, setColor] = useState<DesignColor>(DesignColor.white);
-    let size: DesignSize, setSize: Dispatch<DesignSize>;
-    [size, setSize] = useState<DesignSize>(DesignSize.m);
-    let product: DesignProduct, setProduct: Dispatch<DesignProduct>;
-    [product, setProduct] = useState<DesignProduct>(DesignProduct.tshirt);
-    let open: boolean, setOpen: Dispatch<SetStateAction<boolean>>;
-    [open, setOpen] = useState(false);
+    const [frontObjects, setFrontObjects] = useState<fabric.Object[]>([]);
+    const [backObjects, setBackObjects] = useState<fabric.Object[]>([]);
+    const [color, setColor] = useState<DesignColor>(DesignColor.white);
+    const [size, setSize] = useState<DesignSize>(DesignSize.m);
+    const [product, setProduct] = useState<DesignProduct>(DesignProduct.tshirt);
+    const [isToastOpen, openToast, closeToast] = useToastState();
     const canvasUtils = useCanvasUtils();
     const { cartDispatcher } = useContext(CartContext);
 
@@ -84,11 +79,7 @@ export default function Home() {
             value: new Design(frontImageBlob, backImageBlob, color, size, product)
         });
 
-        setOpen(true);
-    }
-
-    function handleClose() {
-        setOpen(false);
+        openToast();
     }
 
     return (
@@ -115,24 +106,13 @@ export default function Home() {
                     Add to Cart
                 </Button>
             </footer>
-            <Snackbar
-                anchorOrigin={
-                    {
-                        vertical: 'top',
-                        horizontal: 'center'
-                    }
-                }
-                open={open}
-                autoHideDuration={3000}
-                onClose={handleClose}>
-                <Alert
-                    variant="filled"
-                    onClose={handleClose}
-                    severity="success"
+            <Toast
+                isToastOpen={isToastOpen}
+                onClose={closeToast}
+                severity='success'
                 >
-                    Design added to your cart!
-                </Alert>
-            </Snackbar>
+                Design added to your cart!
+            </Toast>
         </Page>
     )
 };

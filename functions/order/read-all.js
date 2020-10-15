@@ -6,7 +6,16 @@ const client = new faunadb.Client({
 });
 
 exports.handler = async (event, context) => {
-    console.log(context);
+    if (!context.clientContext.identity) {
+        return {
+            statusCode: 401,
+            body: JSON.stringify({
+                name: 'Unauthorized',
+                message: 'Netlify Identity context not provided. Please set a valid user JWT in the Auth header'
+            })
+        }
+    }
+
     return client
         .query(q.Paginate(q.Match(q.Index('all_orders'))), {
             ts: Date.now()*1000 // Microseconds since epoch

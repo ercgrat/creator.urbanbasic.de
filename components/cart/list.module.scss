@@ -1,0 +1,39 @@
+@import '../../styles/theme.scss';
+
+.list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.listHeader {
+    color: $label-color;
+}
+
+.listItem {
+    @include cartItem;
+}
+
+.cartSummary {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 6px;
+}
+
+.cartSummaryItem {
+    display: grid;
+    grid-template-columns: 1fr 150px;
+    text-align: right;
+    font-weight: 400;
+    margin: 6px;
+}
+
+.cartSummaryTotal {
+    font-size: 27px;
+}
+
+@media screen and (max-width: 1000px) {
+    .listHeader.listItem {
+        display: none;
+    }
+}
