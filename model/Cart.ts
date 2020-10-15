@@ -84,6 +84,10 @@ export interface ICartStorage {
     items: CartItem[];
 }
 
+export interface ICart extends ICartStorage {
+    shippingCost: number;
+}
+
 export class Cart {
     private items: CartItem[];
     public readonly shippingCost: number = 3.9;

@@ -12,6 +12,7 @@
   "dependencies": {
     "faunadb": "^3.0.1",
     "netlify-cli": "^2.67.0",
+    "moment": "^2.29.1",
     "netlify-identity-widget": "^1.9.1",
     "next": "^9.5.5",
     "react": "16.13.1",
