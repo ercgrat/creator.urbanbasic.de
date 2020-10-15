@@ -4,10 +4,11 @@ import Head from 'next/head';
 import { CartContext, useCart } from '../hooks/useCart';
 import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
-
+import useIdentity, { IdentityContext } from '../hooks/useIdentity';
 
 export default function App({ Component, pageProps }) {
     const [cart, cartDispatcher] = useCart();
+    const user = useIdentity();
 
     React.useEffect(() => {
         // Remove the server-side injected CSS.
@@ -16,7 +17,7 @@ export default function App({ Component, pageProps }) {
             jssStyles.parentElement.removeChild(jssStyles);
         }
     }, []);
-    
+
     const theme = createMuiTheme({
         typography: {
             fontFamily: [
@@ -42,9 +43,11 @@ export default function App({ Component, pageProps }) {
                 <link rel="prefetch" href={`/images/tshirt-front.png`}></link>
                 <link rel="prefetch" href={`/images/tshirt-back.png`}></link>
             </Head>
-            <CartContext.Provider value={{ cart, cartDispatcher }}>
-                <Component {...pageProps} />
-            </CartContext.Provider>
+            <IdentityContext.Provider value={user}>
+                <CartContext.Provider value={{ cart, cartDispatcher }}>
+                    <Component {...pageProps} />
+                </CartContext.Provider>
+            </IdentityContext.Provider>
         </ThemeProvider>
     );
 }
