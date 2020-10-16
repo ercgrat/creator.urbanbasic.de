@@ -15,12 +15,14 @@ exports.handler = async event => {
     return client.query(q.Create(q.Collection('orders'), order), {
         queryTimeout: 30000
     })
-        .then((response) => {
-            console.log("success", response);
-            return {
-                statusCode: 200,
-                body: JSON.stringify(response)
-            };
+        .then(() => {
+            return client.query(q.Delete(q.Ref(q.Collection('carts'), order.data.cart.id))).then((response) => {
+                console.log("success", response);
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify(response)
+                };
+            });
         }).catch((error) => {
             console.log("error", error);
             return {
