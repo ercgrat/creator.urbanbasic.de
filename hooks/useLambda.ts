@@ -29,9 +29,9 @@ type LambdaExecutor = (
     onError?: () => void
 ) => void;
 
-export default function useLambda<T>(): { data: T, execute: LambdaExecutor, isLoading: boolean, hasExecuted: boolean } {
+export default function useLambda<ResponseType>(): { data: ResponseType, execute: LambdaExecutor, isLoading: boolean, hasExecuted: boolean } {
 
-    const [data, setData] = useState<T>();
+    const [data, setData] = useState<ResponseType>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [hasExecuted, setHasExecuted] = useState<boolean>(false);
 

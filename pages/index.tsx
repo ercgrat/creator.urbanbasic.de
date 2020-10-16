@@ -74,9 +74,24 @@ export default function Home() {
         await canvasUtils.renderObjects(backCanvas, backObjects);
         const frontImageBlob = frontCanvas.toDataURL();
         const backImageBlob = backCanvas.toDataURL();
+        const originals = [];
+        for(let i = 0; i < frontObjects.length; i++) {
+            const object = frontObjects[i];
+            if (object.isType('image')) {
+                const original = await canvasUtils.readImage(object.get('data') as Blob);
+                originals.push(original);
+            }
+        }
+        for(let i = 0; i < backObjects.length; i++) {
+            const object = backObjects[i];
+            if (object.isType('image')) {
+                const original = await canvasUtils.readImage(object.get('data') as Blob);
+                originals.push(original);
+            }
+        }
         cartDispatcher({
             type: CartActionType.add,
-            value: new Design(frontImageBlob, backImageBlob, color, size, product)
+            value: [new Design(frontImageBlob, backImageBlob, color, size, product), originals]
         });
 
         openToast();

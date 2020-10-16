@@ -26,7 +26,7 @@ export interface ICartAction {
 export function useCart(): [Cart, Dispatch<ICartAction>] {
     const { data: rawNewCartData, execute: createCart, hasExecuted: hasCreated } = useLambda<IFaunaObject<ICart>>();
     const { data: rawCartData, execute: loadCart, hasExecuted: hasLoaded } = useLambda<IFaunaObject<ICart>>();
-    const { execute: updateCart } = useLambda<Cart>();
+    const { data: rawUpdatedCartData, execute: updateCart } = useLambda<IFaunaObject<ICart>>();
     const [cart, cartDispatcher] = useReducer((state: Cart, action: ICartAction) => {
         let cart = new Cart();
         state.getItems().forEach(item => cart.addItem(item));
@@ -35,17 +35,18 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                 cart = new Cart(action.value.id, action.value.getItems(), action.value.shippingCost);
                 break;
             case CartActionType.add:
-                cart.addDesign(action.value);
-                updateCart(`cart/${state.id}`, 'PUT', cart);
+                const [design, originals] = action.value;
+                cart.addDesign(design);
+                updateCart(`cart/${state.id}`, 'PUT', { cart, originals });
                 break;
             case CartActionType.remove:
                 cart.removeItem(action.value);
-                updateCart(`cart/${state.id}`, 'PUT', cart);
+                updateCart(`cart/${state.id}`, 'PUT', { cart });
                 break;
             case CartActionType.update:
                 const item = cart.getItem(action.value.index);
                 item.quantity = action.value.quantity;
-                updateCart(`cart/${state.id}`, 'PUT', cart);
+                updateCart(`cart/${state.id}`, 'PUT', { cart });
                 break;
             case CartActionType.clear:
                 cart = new Cart();
@@ -68,15 +69,16 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
 
     useEffect(() => {
         /** If loaded from db, parse cart */
-        if (rawCartData) {
+        if (rawUpdatedCartData || rawCartData) {
+            const rawData = rawUpdatedCartData || rawCartData;
             const id = window.localStorage.getItem(STORAGE_KEYS.CART_IDENTIFIER_KEY);
-            let cart = Cart.constructCartFromDatabase(id, rawCartData.data);
+            let cart = Cart.constructCartFromDatabase(id, rawData.data);
             cartDispatcher({
                 type: CartActionType.initialize,
                 value: cart
             });
         }
-    }, [rawCartData, cartDispatcher]);
+    }, [rawCartData, rawUpdatedCartData, cartDispatcher]);
 
     useEffect(() => {
         /** If new cart, construct and initialize and save ID to local storage */
@@ -88,7 +90,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                 type: CartActionType.initialize,
                 value: cart
             });
-            updateCart(`cart/${cart.id}`, 'PUT', cart);
+            updateCart(`cart/${cart.id}`, 'PUT', { cart });
         }
     }, [rawNewCartData, cartDispatcher]);
 
