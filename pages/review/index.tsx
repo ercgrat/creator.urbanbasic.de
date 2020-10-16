@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import Page from '../../components/page';
 import Spinner from '../../components/spinner';
 import { IdentityContext } from '../../hooks/useIdentity';
-import { Cart, CartItem, ICart } from '../../model/Cart';
+import { Cart, ICart } from '../../model/Cart';
 import moment from 'moment';
 import styles from './index.module.scss';
 import useToastState from '../../hooks/useToastState';
@@ -49,20 +49,22 @@ export default function Review() {
         /**
          * Load orders on user login, clear on logout
          */
-        if (user) {
+        if (user && token) {
             loadOrders('order', 'GET', null, token, null, openToast);
         } else {
             setOrders(null);
         }
-    }, [user]);
+    }, [user, token]);
 
     useEffect(() => {
         /** Process raw data to create Cart classes */
-        const orderData = rawOrderData.slice();
-        orderData.forEach(order => {
-            order.data.cart = new Cart(order.data.cart.items.map(item => new CartItem(item.design)), order.data.cart.shippingCost);
-        });
-        setOrders(orderData);
+        if (rawOrderData) {
+            const orderData = rawOrderData.slice();
+            orderData.forEach(order => {
+                order.data.cart = Cart.constructCartFromDatabase(order.data.cart.id, order.data.cart);
+            });
+            setOrders(orderData);
+        }
     }, [rawOrderData]);
 
     function login() {
@@ -95,6 +97,10 @@ export default function Review() {
             <ul className={styles.orders}>
                 {
                     orders ?
+                        orders.length === 0 ? 
+                        <Typography variant='h5' component='h2'>
+                            There are no orders to review.
+                        </Typography> :
                         orders.map(order => (
                             <li className={styles.order} key={order.ref["@ref"].id}>
                                 <Card variant='outlined'>

@@ -85,14 +85,21 @@ export interface ICartStorage {
 }
 
 export interface ICart extends ICartStorage {
+    id: string;
     shippingCost: number;
 }
 
 export class Cart {
+    public id: string;
     private items: CartItem[];
     public readonly shippingCost: number = 3.9;
 
-    constructor(items?: CartItem[], shippingCost?: number) {
+    static constructCartFromDatabase(id: string, partial: ICart): Cart {
+        return new Cart(id, partial.items.map(item => new CartItem(item.design, item.quantity)), partial.shippingCost);
+    }
+
+    constructor(id?: string, items?: CartItem[], shippingCost?: number) {
+        this.id = id || undefined;
         this.items = items || [];
         this.shippingCost = shippingCost || this.shippingCost;
     }

@@ -14,7 +14,7 @@ exports.handler = async (event, context) => {
                 message: 'Netlify Identity context not provided. Please set a valid user JWT in the Auth header'
             })
         }
-    }
+    };
 
     return client
         .query(q.Paginate(q.Match(q.Index('all_orders'))), {

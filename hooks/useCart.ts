@@ -1,7 +1,8 @@
-import React, { Dispatch, useEffect, useRef } from "react";
+import React, { Dispatch, useEffect } from "react";
 import { useReducer } from "react";
-import { Cart, CartItem, ICartStorage } from "../model/Cart";
+import { Cart, ICart } from "../model/Cart";
 import { STORAGE_KEYS } from "../model/Constants";
+import useLambda, { IFaunaObject } from "./useLambda";
 
 interface ICartContext {
     readonly cart: Cart,
@@ -23,22 +24,28 @@ export interface ICartAction {
 }
 
 export function useCart(): [Cart, Dispatch<ICartAction>] {
+    const { data: rawNewCartData, execute: createCart, hasExecuted: hasCreated } = useLambda<IFaunaObject<ICart>>();
+    const { data: rawCartData, execute: loadCart, hasExecuted: hasLoaded } = useLambda<IFaunaObject<ICart>>();
+    const { execute: updateCart } = useLambda<Cart>();
     const [cart, cartDispatcher] = useReducer((state: Cart, action: ICartAction) => {
         let cart = new Cart();
         state.getItems().forEach(item => cart.addItem(item));
         switch (action.type) {
             case CartActionType.initialize:
-                cart = new Cart(action.value);
+                cart = new Cart(action.value.id, action.value.getItems(), action.value.shippingCost);
                 break;
             case CartActionType.add:
                 cart.addDesign(action.value);
+                updateCart(`cart/${state.id}`, 'PUT', cart);
                 break;
             case CartActionType.remove:
                 cart.removeItem(action.value);
+                updateCart(`cart/${state.id}`, 'PUT', cart);
                 break;
             case CartActionType.update:
                 const item = cart.getItem(action.value.index);
                 item.quantity = action.value.quantity;
+                updateCart(`cart/${state.id}`, 'PUT', cart);
                 break;
             case CartActionType.clear:
                 cart = new Cart();
@@ -47,35 +54,43 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
         return cart;
     }, new Cart());
 
-    const cartRef = useRef<Cart>(cart);
     useEffect(() => {
-        cartRef.current = cart;
-    }, [cart]);
-
-    useEffect(() => {
-        const cartJSON = window.localStorage.getItem(STORAGE_KEYS.CART_STORAGE_KEY);
-        if (cartJSON) {
-            const cartData: ICartStorage = JSON.parse(cartJSON);
-            cartDispatcher({
-                type: CartActionType.initialize,
-                value: cartData.items.map(item => new CartItem(item.design, item.quantity))
+        /** Read cart from local storage and either load or create cart from db  */
+        let cartID: string = window.localStorage.getItem(STORAGE_KEYS.CART_IDENTIFIER_KEY);
+        if (cartID) {
+            loadCart(`cart/${cartID}`, 'GET', null, null, null, () => {
+                createCart(`cart`, 'POST', new Cart());
             });
+        } else {
+            createCart(`cart`, 'POST', new Cart());
         }
     }, [cartDispatcher]);
 
     useEffect(() => {
-        const listener = () => {
-            const storage: ICartStorage = {
-                items: cartRef.current.getItems()
-            };
-            window.localStorage.setItem(STORAGE_KEYS.CART_STORAGE_KEY, JSON.stringify(storage));
-        };
-        window.addEventListener('beforeunload', listener);
-
-        return () => {
-            window.removeEventListener('beforeunload', listener);
+        /** If loaded from db, parse cart */
+        if (rawCartData) {
+            const id = window.localStorage.getItem(STORAGE_KEYS.CART_IDENTIFIER_KEY);
+            let cart = Cart.constructCartFromDatabase(id, rawCartData.data);
+            cartDispatcher({
+                type: CartActionType.initialize,
+                value: cart
+            });
         }
-    }, []);
+    }, [rawCartData, cartDispatcher]);
+
+    useEffect(() => {
+        /** If new cart, construct and initialize and save ID to local storage */
+        if (rawNewCartData) {
+            let cart = new Cart();
+            cart.id = rawNewCartData.ref["@ref"].id;
+            window.localStorage.setItem(STORAGE_KEYS.CART_IDENTIFIER_KEY, cart.id);
+            cartDispatcher({
+                type: CartActionType.initialize,
+                value: cart
+            });
+            updateCart(`cart/${cart.id}`, 'PUT', cart);
+        }
+    }, [rawNewCartData, cartDispatcher]);
 
     return [cart, cartDispatcher];
 }

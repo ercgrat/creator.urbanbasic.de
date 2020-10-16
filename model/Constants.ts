@@ -1,5 +1,5 @@
 export const STORAGE_KEYS = {
-    CART_STORAGE_KEY: 'cart',
+    CART_IDENTIFIER_KEY: 'cart',
     DESIGN_STORAGE_KEY: 'design'
 };
 
