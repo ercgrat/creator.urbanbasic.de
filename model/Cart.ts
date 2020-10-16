@@ -92,8 +92,9 @@ export class Cart {
     private items: CartItem[];
     public readonly shippingCost: number = 3.9;
 
-    constructor(items?: CartItem[]) {
+    constructor(items?: CartItem[], shippingCost?: number) {
         this.items = items || [];
+        this.shippingCost = shippingCost || this.shippingCost;
     }
 
     public getSize(): number {

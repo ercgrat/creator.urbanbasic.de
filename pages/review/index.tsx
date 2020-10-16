@@ -52,7 +52,7 @@ export default function Review() {
                 if (response.ok) {
                     const result: IFaunaObject<IOrder>[] = await response.json();
                     result.forEach(order => {
-                        order.data.cart = new Cart(order.data.cart.items.map(item => new CartItem(item.design)));
+                        order.data.cart = new Cart(order.data.cart.items.map(item => new CartItem(item.design)), order.data.cart.shippingCost);
                     });
                     
                     setOrders(result);
