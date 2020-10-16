@@ -10,7 +10,7 @@ export default React.memo(function Design(props: {
 }) {
     return (
         <div className={styles.imageContainer}>
-            <ShirtUnderlay className={styles.image} shirtPosition='front' color={props.color} />
+            <ShirtUnderlay className={styles.image} shirtPosition={props.shirtPosition} color={props.color} />
             <img className={styles.design} src={props.imageSrc}></img>
         </div>
     );
