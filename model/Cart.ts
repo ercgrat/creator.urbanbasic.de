@@ -68,10 +68,12 @@ export class CartItem {
     design: Design;
     quantity: number;
     price: number;
+    originals?: string[];
 
-    constructor(design: Design, quantity?: number) {
+    constructor(design: Design, quantity?: number, originals?: string[]) {
         this.design = design;
         this.quantity = quantity || 1;
+        this.originals = originals || [];
         this.price = 20;
     }
 
@@ -95,7 +97,7 @@ export class Cart {
     public readonly shippingCost: number = 3.9;
 
     static constructCartFromDatabase(id: string, partial: ICart): Cart {
-        return new Cart(id, partial.items.map(item => new CartItem(item.design, item.quantity)), partial.shippingCost);
+        return new Cart(id, partial.items.map(item => new CartItem(item.design, item.quantity, item.originals)), partial.shippingCost);
     }
 
     constructor(id?: string, items?: CartItem[], shippingCost?: number) {

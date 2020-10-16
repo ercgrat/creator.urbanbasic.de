@@ -29,10 +29,15 @@ interface IOrder {
     }
 }
 
+interface IOriginal {
+    src: string;
+}
+
 export default function Review() {
 
     const [user, token] = useContext(IdentityContext);
     const { data: rawOrderData, execute: loadOrders, isLoading } = useLambda<IFaunaObject<IOrder>[]>();
+    const { data: rawOriginalsData, execute: loadOriginals, isLoading: isLoadingOriginals } = useLambda<IFaunaObject<IOriginal>[]>();
     const [orders, setOrders] = useState<IFaunaObject<IOrder>[]>([]);
     const [isToastOpen, openToast, closeToast] = useToastState();
 
@@ -76,6 +81,28 @@ export default function Review() {
         login();
     }
 
+    function downloadOriginals(order: IFaunaObject<IOrder>) {
+        const originals = [];
+        order.data.cart.items.forEach(item => {
+            item.originals?.forEach(original => {
+                originals.push(original);
+            });
+        });
+
+        loadOriginals(`original/${originals.join(',')}`, 'GET');
+    }
+
+    useEffect(() => {
+        if (rawOriginalsData) {
+            rawOriginalsData.forEach(original => {
+                const link = document.createElement('a');
+                link.setAttribute('href', original.data.src);
+                link.setAttribute('download', original.ref["@ref"].id);
+                link.click();
+            });
+        }
+    }, [rawOriginalsData]);
+
     return (
         <Page>
             {
@@ -85,66 +112,67 @@ export default function Review() {
                         color='primary'
                         variant='contained'>
                         Logout
-                </Button> :
+                    </Button> :
                     <Button
                         onClick={login}
                         color='primary'
                         variant='contained'>
                         Login
-                </Button>
+                    </Button>
             }
 
             <ul className={styles.orders}>
                 {
                     orders ?
-                        orders.length === 0 ? 
-                        <Typography variant='h5' component='h2'>
-                            There are no orders to review.
+                        orders.length === 0 ?
+                            <Typography variant='h5' component='h2'>
+                                There are no orders to review.
                         </Typography> :
-                        orders.map(order => (
-                            <li className={styles.order} key={order.ref["@ref"].id}>
-                                <Card variant='outlined'>
-                                    <CardHeader
-                                        title={`Payment ID: ${order.data.payment.paymentID}`}
-                                        subheader={moment(order.ts / 1000).locale('de').format('LLL')} />
-                                    <CardContent>
-                                        <section className={styles.address}>
-                                            <Typography variant='h6' component='h2' color='textSecondary'>
-                                                Address
+                            orders.map(order => (
+                                <li className={styles.order} key={order.ref["@ref"].id}>
+                                    <Card variant='outlined'>
+                                        <CardHeader
+                                            title={`Payment ID: ${order.data.payment.paymentID}`}
+                                            subheader={moment(order.ts / 1000).locale('de').format('LLL')} />
+                                        <CardContent>
+                                            <section className={styles.address}>
+                                                <Typography variant='h6' component='h2' color='textSecondary'>
+                                                    Address
                                             </Typography>
-                                            <Typography variant='body1' component='p'>
-                                                {order.data.payment.address.recipient_name}
+                                                <Typography variant='body1' component='p'>
+                                                    {order.data.payment.address.recipient_name}
+                                                </Typography>
+                                                <Typography variant='body2' component='p'>
+                                                    {order.data.payment.address.line1} <br />
+                                                    {order.data.payment.address.city}, {order.data.payment.address.state} {order.data.payment.address.postal_code}
+                                                </Typography>
+                                            </section>
+                                            <section>
+                                                <Typography variant='h6' component='h2' color='textSecondary'>
+                                                    Designs
                                             </Typography>
-                                            <Typography variant='body2' component='p'>
-                                                {order.data.payment.address.line1} <br />
-                                                {order.data.payment.address.city}, {order.data.payment.address.state} {order.data.payment.address.postal_code}
-                                            </Typography>
-                                        </section>
-                                        <section>
-                                            <Typography variant='h6' component='h2' color='textSecondary'>
-                                                Designs
-                                            </Typography>
-                                            <List
-                                                cart={order.data.cart as Cart}
-                                            />
-                                        </section>
-                                    </CardContent>
+                                                <List
+                                                    cart={order.data.cart as Cart}
+                                                />
+                                            </section>
+                                        </CardContent>
 
-                                    <CardActions disableSpacing>
-                                        <Button
-                                            aria-label='download'
-                                            color='primary'
-                                            startIcon={<SaveAltIcon />}>
-                                            Download Images
+                                        <CardActions disableSpacing>
+                                            <Button
+                                                aria-label='download'
+                                                color='primary'
+                                                startIcon={<SaveAltIcon />}
+                                                onClick={() => downloadOriginals(order)}>
+                                                Download Images
                                         </Button>
-                                    </CardActions>
-                                </Card>
-                            </li>
-                        )) :
+                                        </CardActions>
+                                    </Card>
+                                </li>
+                            )) :
                         null
                 }
             </ul>
-            <Spinner isSpinning={isLoading} />
+            <Spinner isSpinning={isLoading || isLoadingOriginals} />
             <Toast
                 isToastOpen={isToastOpen}
                 onClose={closeToast}
