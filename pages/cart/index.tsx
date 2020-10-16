@@ -1,21 +1,21 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import Page from '../../components/page';
 import { CartActionType, CartContext } from '../../hooks/useCart';
 import React from 'react';
 import styles from './index.module.scss';
 import PayPalButton from '../../components/payPalButton';
 import Divider from '../../components/divider';
-import { lambda } from '../../model/Constants';
-import router from 'next/router';
 import Toast from '../../components/toast';
 import useToastState from '../../hooks/useToastState';
 import Spinner from '../../components/spinner';
 import List from '../../components/cart/list';
+import useLambda from '../../hooks/useLambda';
+import router from 'next/router';
 
 export default function Cart() {
     const { cart, cartDispatcher } = useContext(CartContext);
     const [isToastOpen, openToast, closeToast] = useToastState();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { execute: submitOrder, isLoading } = useLambda();
 
     function quantityChanged(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, index: number) {
         let quantity: number | string = Number(event.target.value);
@@ -32,25 +32,17 @@ export default function Cart() {
     }
 
     function onPaid(payment: any) {
-        setIsLoading(true);
-        lambda('order', 'POST', {
+        submitOrder('order', 'POST', {
             cart,
             payment
-        }).then(response => {
-            if (response.ok) {
-                router.push('/ordercomplete');
-                cartDispatcher({
-                    type: CartActionType.clear
-                });
-            } else {
-                console.log(response);
-                openToast();
-            }
-        }).catch(err => {
-            console.log(err);
-            openToast();
-        }).finally(() => {
-            setIsLoading(false);
+        }, null, checkoutComplete, openToast);
+    }
+
+    function checkoutComplete() {
+        router.push('/ordercomplete').then(() => {
+            cartDispatcher({
+                type: CartActionType.clear
+            });
         });
     }
 
@@ -85,7 +77,7 @@ export default function Cart() {
                 isToastOpen={isToastOpen}
                 onClose={closeToast}
                 severity='error'
-                >
+            >
                 Something went wrong. Please try again or contact us for support.
             </Toast>
             <Spinner isSpinning={isLoading} />

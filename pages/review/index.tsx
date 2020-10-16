@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, CardHeader, IconButton, Typography } from '@material-ui/core';
+import { Button, Card, CardActions, CardContent, CardHeader, Typography } from '@material-ui/core';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import netlifyIdentity from 'netlify-identity-widget';
 import React, { useContext, useEffect, useState } from 'react';
@@ -6,12 +6,12 @@ import Page from '../../components/page';
 import Spinner from '../../components/spinner';
 import { IdentityContext } from '../../hooks/useIdentity';
 import { Cart, CartItem, ICart } from '../../model/Cart';
-import { IFaunaObject, lambda } from '../../model/Constants';
 import moment from 'moment';
 import styles from './index.module.scss';
 import useToastState from '../../hooks/useToastState';
 import Toast from '../../components/toast';
 import List from '../../components/cart/list';
+import useLambda, { IFaunaObject } from '../../hooks/useLambda';
 
 interface IOrder {
     cart: ICart,
@@ -32,8 +32,8 @@ interface IOrder {
 export default function Review() {
 
     const [user, token] = useContext(IdentityContext);
+    const { data: rawOrderData, execute: loadOrders, isLoading } = useLambda<IFaunaObject<IOrder>[]>();
     const [orders, setOrders] = useState<IFaunaObject<IOrder>[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isToastOpen, openToast, closeToast] = useToastState();
 
     useEffect(() => {
@@ -46,30 +46,24 @@ export default function Review() {
     }, []);
 
     useEffect(() => {
+        /**
+         * Load orders on user login, clear on logout
+         */
         if (user) {
-            setIsLoading(true);
-            lambda('order', 'GET', null, token).then(async response => {
-                if (response.ok) {
-                    const result: IFaunaObject<IOrder>[] = await response.json();
-                    result.forEach(order => {
-                        order.data.cart = new Cart(order.data.cart.items.map(item => new CartItem(item.design)), order.data.cart.shippingCost);
-                    });
-                    
-                    setOrders(result);
-                } else {
-                    openToast();
-                    console.log(response);
-                }
-            }).catch(err => {
-                openToast();
-                console.log(err);
-            }).finally(() => {
-                setIsLoading(false);
-            });
+            loadOrders('order', 'GET', null, token, null, openToast);
         } else {
             setOrders(null);
         }
     }, [user]);
+
+    useEffect(() => {
+        /** Process raw data to create Cart classes */
+        const orderData = rawOrderData.slice();
+        orderData.forEach(order => {
+            order.data.cart = new Cart(order.data.cart.items.map(item => new CartItem(item.design)), order.data.cart.shippingCost);
+        });
+        setOrders(orderData);
+    }, [rawOrderData]);
 
     function login() {
         netlifyIdentity.open('login');
