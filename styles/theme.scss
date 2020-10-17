@@ -21,7 +21,7 @@ $label-color: #84878a;
 @mixin footer {
     margin: 0px -16px -24px -16px;
     padding: 12px 24px;
-    background-color: #f9fafb;
+    background-color: $footer-background-color;
 }
 
 @mixin hero-font {

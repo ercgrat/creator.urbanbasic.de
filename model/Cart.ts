@@ -123,8 +123,8 @@ export class Cart {
         this.items = this.items.slice();
     }
 
-    public addDesign(design: Design) {
-        this.items.push(new CartItem(design));
+    public addDesign(design: Design, quantity?: number) {
+        this.items.push(new CartItem(design, quantity));
         this.items = this.items.slice();
     }
 

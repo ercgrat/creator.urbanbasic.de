@@ -20,16 +20,16 @@ export interface IFaunaObject<T> {
     ts: number
 }
 
-type LambdaExecutor = (
+type LambdaExecutor<T> = (
     path: string,
     method: 'GET' | 'POST' | 'PUT',
     body?: object,
     token?: string,
     onSuccess?: () => void,
     onError?: () => void
-) => void;
+) => Promise<T>;
 
-export default function useLambda<ResponseType>(): { data: ResponseType, execute: LambdaExecutor, isLoading: boolean, hasExecuted: boolean } {
+export default function useLambda<ResponseType>(): { data: ResponseType, execute: LambdaExecutor<ResponseType>, isLoading: boolean, hasExecuted: boolean } {
 
     const [data, setData] = useState<ResponseType>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -42,16 +42,18 @@ export default function useLambda<ResponseType>(): { data: ResponseType, execute
         token?: string,
         onSuccess?: () => void,
         onError?: () => void
-    ) => {
+    ): Promise<ResponseType> => {
         setIsLoading(true);
         return lambda(path, method, body, token).then(async response => {
             if (response.ok) {
                 const result = await response.json();
                 setData(result);
                 onSuccess && onSuccess();
+                return result;
             } else {
                 onError && onError();
                 console.log(response);
+                return null;
             }
         }).catch(err => {
             onError && onError();

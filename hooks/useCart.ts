@@ -11,8 +11,7 @@ interface ICartContext {
 export const CartContext = React.createContext<ICartContext>(null);
 
 export enum CartActionType {
-    initialize,
-    add,
+    replace,
     remove,
     update,
     clear
@@ -31,13 +30,8 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
         let cart = new Cart();
         state.getItems().forEach(item => cart.addItem(item));
         switch (action.type) {
-            case CartActionType.initialize:
+            case CartActionType.replace:
                 cart = new Cart(action.value.id, action.value.getItems(), action.value.shippingCost);
-                break;
-            case CartActionType.add:
-                const [design, originals] = action.value;
-                cart.addDesign(design);
-                updateCart(`cart/${state.id}`, 'PUT', { cart, originals });
                 break;
             case CartActionType.remove:
                 cart.removeItem(action.value);
@@ -74,7 +68,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
             const id = window.localStorage.getItem(STORAGE_KEYS.CART_IDENTIFIER_KEY);
             let cart = Cart.constructCartFromDatabase(id, rawData.data);
             cartDispatcher({
-                type: CartActionType.initialize,
+                type: CartActionType.replace,
                 value: cart
             });
         }
@@ -87,7 +81,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
             cart.id = rawNewCartData.ref["@ref"].id;
             window.localStorage.setItem(STORAGE_KEYS.CART_IDENTIFIER_KEY, cart.id);
             cartDispatcher({
-                type: CartActionType.initialize,
+                type: CartActionType.replace,
                 value: cart
             });
             updateCart(`cart/${cart.id}`, 'PUT', { cart });

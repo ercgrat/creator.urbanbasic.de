@@ -14,5 +14,35 @@
 .footer {
     @include footer;
     display: flex;
-    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.sizeList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.sizeItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px;
+}
+
+.sizeItem:not(:last-child) {
+    border-bottom: solid $border-color 1px;
+}
+
+.quantity {
+    max-width: 100px;
+}
+
+.modalFooter {
+    margin: 0px -24px -7px -24px;
+    border-top: solid $border-color 1px;
 }

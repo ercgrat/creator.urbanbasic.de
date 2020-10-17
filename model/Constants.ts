@@ -4,5 +4,5 @@ export const STORAGE_KEYS = {
 };
 
 export function formatPrice(value: number) {
-    return `${value.toFixed(2).replace('.', ',')} €`;
+    return value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
 }

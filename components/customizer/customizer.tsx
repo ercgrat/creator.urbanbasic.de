@@ -29,7 +29,6 @@ export default React.memo(function Customizer(props: {
     frontObjects: fabric.Object[],
     backObjects: fabric.Object[],
     color: DesignColor,
-    size: DesignSize,
     product: DesignProduct,
     onDesignChanged?: (data: Partial<IDesignData>) => void
 }) {
@@ -99,7 +98,7 @@ export default React.memo(function Customizer(props: {
 
     useEffect(() => {
         /**
-         * Every time an object is added or removed from the canvas, or the color or size change,
+         * Every time an object is added or removed from the canvas, or the color changes,
          * record the current objects and emit the latest state of the design.
          */
         if (canvas) {
@@ -172,12 +171,6 @@ export default React.memo(function Customizer(props: {
         }
     }, [setHoveredColor]);
 
-    const changeSize = useCallback((event: React.SyntheticEvent, size: string) => {
-        props.onDesignChanged({
-            size: DesignSize[size]
-        });
-    }, [props.size, canvas, frontCanvasRef, backCanvasRef]);
-
     const changePosition = useCallback((event: React.SyntheticEvent, position: string) => {
         setShirtPosition(position);
     }, [setShirtPosition]);
@@ -211,8 +204,6 @@ export default React.memo(function Customizer(props: {
                 <ProductSelect onChange={changeProduct}></ProductSelect>
                 <label className={styles.label}>Color</label>
                 <ColorRadioGroup onChange={changeColor} onHover={changeHoveredColor} />
-                <label className={styles.label}>Size</label>
-                <SizeRadioGroup onChange={changeSize} />
                 <label className={styles.label}>Text</label>
                 <TextConfiguration canvas={canvas} selectedObject={selectedObject} />
                 <label className={styles.label}>Image</label>
