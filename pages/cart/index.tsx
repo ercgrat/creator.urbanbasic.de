@@ -69,13 +69,19 @@ export default function Cart() {
                                 });
                             }}
                         />
-                        <Divider />
-                        <footer className={styles.footer}>
-                            <PayPalButton
-                                total={cart.getTotal()}
-                                onSuccess={onPaid}
-                            />
-                        </footer>
+                        {
+                            cart.getItems().reduce((total, item) => total + item.quantity, 0) > 0 ?
+                                <React.Fragment>
+                                    <Divider />
+                                    <footer className={styles.footer}>
+                                        <PayPalButton
+                                            total={cart.getTotal()}
+                                            onSuccess={onPaid}
+                                        />
+                                    </footer>
+                                </React.Fragment> :
+                                null
+                        }
                     </React.Fragment>
             }
             <Toast

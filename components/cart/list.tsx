@@ -1,3 +1,4 @@
+import { Typography } from "@material-ui/core";
 import React from "react";
 import { Cart, CartItem } from "../../model/Cart";
 import { formatPrice } from "../../model/Constants";
@@ -34,11 +35,17 @@ export default React.memo(function List(props: {
                     ))
                 }
             </ul>
-            <section className={styles.cartSummary}>
-                <p className={styles.cartSummaryItem}><span className={styles.label}> Subtotal</span> {formatPrice(props.cart.getSubtotal())}</p>
-                <p className={styles.cartSummaryItem}><span className={styles.label}> Shipping</span> {formatPrice(props.cart.getShipping())}</p>
-                <p className={`${styles.cartSummaryItem} ${styles.cartSummaryTotal}`}><span className={styles.label}> Total</span> {formatPrice(props.cart.getTotal())}</p>
-            </section>
+            {
+                props.cart.getItems().reduce((total, item) => total + item.quantity, 0) > 0 ?
+                    <section className={styles.cartSummary}>
+                        <p className={styles.cartSummaryItem}><span className={styles.label}> Subtotal</span> {formatPrice(props.cart.getSubtotal())}</p>
+                        <p className={styles.cartSummaryItem}><span className={styles.label}> Shipping</span> {formatPrice(props.cart.getShipping())}</p>
+                        <p className={`${styles.cartSummaryItem} ${styles.cartSummaryTotal}`}><span className={styles.label}> Total</span> {formatPrice(props.cart.getTotal())}</p>
+                    </section> :
+                    <Typography variant='body2' component='p'>
+                        None of the items in your cart have a quantity.
+                    </Typography>
+            }
         </React.Fragment>
     );
 });
