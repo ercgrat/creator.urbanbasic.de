@@ -162,7 +162,8 @@ export default function Review() {
                                                 aria-label='download'
                                                 color='primary'
                                                 startIcon={<SaveAltIcon />}
-                                                onClick={() => downloadOriginals(order)}>
+                                                onClick={() => downloadOriginals(order)}
+                                                disabled={order.data.cart.items.reduce((total, item) => total + item.originals?.length, 0) === 0}>
                                                 Download Images
                                         </Button>
                                         </CardActions>
