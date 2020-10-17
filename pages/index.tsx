@@ -81,7 +81,7 @@ export default function Home() {
         let quantity = Number(event.target.value);
         const newQuantityMap = Object.assign({}, quantityMap);
         if (event.target.value.length === 0) { quantity = undefined; }
-        else if (quantity < 0) { quantity = 0; }
+        else if (quantity < 1) { quantity = 1; }
         else if (quantity > 999) { quantity = 999; }
         newQuantityMap[size] = quantity;
         setQuantityMap(newQuantityMap);

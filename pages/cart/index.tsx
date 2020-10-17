@@ -21,7 +21,7 @@ export default function Cart() {
     function quantityChanged(event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, index: number) {
         let quantity: number | string = Number(event.target.value);
         if (event.target.value.length === 0) { quantity = ''; }
-        else if (quantity < 0) { quantity = 0; }
+        else if (quantity < 1) { quantity = 1; }
         else if (quantity > 999) { quantity = 999; }
         cartDispatcher({
             type: CartActionType.updateQuantity,
@@ -33,8 +33,10 @@ export default function Cart() {
     }
 
     function onPaid(payment: any) {
+        const validItems = cart.getItems().filter(item => item.quantity && item.quantity > 0);
+        let cartToOrder = new CartModel(cart.id, validItems, cart.shippingCost);
         submitOrder('order', 'POST', {
-            cart,
+            cart: cartToOrder,
             payment
         }, null, checkoutComplete, openToast);
     }

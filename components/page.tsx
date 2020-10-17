@@ -17,7 +17,7 @@ export default function Page({ children }) {
         <div className={styles.container}>
             <header>
                 <nav className={styles.nav}>
-                    <Link href="/"><img src="/images/logo.png" alt="Create Your Own Style" className={styles.logo}></img></Link>
+                    <a href="/"><img src="/images/logo.png" alt="Create Your Own Style" className={styles.logo}></img></a>
                     <ul className={styles.navActions}>
                         <li>
                             <a href="/cart" aria-label="cart" className={styles.cartLink}>

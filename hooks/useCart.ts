@@ -1,4 +1,4 @@
-import React, { Dispatch, useCallback, useEffect } from "react";
+import React, { Dispatch, useCallback, useEffect, useRef } from "react";
 import { useReducer } from "react";
 import { Cart, ICart } from "../model/Cart";
 import { STORAGE_KEYS } from "../model/Constants";
@@ -26,10 +26,10 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
     const { data: rawNewCartData, execute: createCart, hasExecuted: hasCreated } = useLambda<IFaunaObject<ICart>>();
     const { data: rawCartData, execute: loadCart, hasExecuted: hasLoaded } = useLambda<IFaunaObject<ICart>>();
     const { data: rawUpdatedCartData, execute: updateCart } = useLambda<IFaunaObject<ICart>>();
+    const cartRef = useRef(null);
 
     const memoizedCartDispatcher = useCallback((state: Cart, action: ICartAction) => {
-        let cart = new Cart();
-        state.getItems().forEach(item => cart.addItem(item));
+        let cart = Cart.clone(state);
         switch (action.type) {
             case CartActionType.replace:
                 cart = Cart.clone(action.value);
@@ -41,7 +41,6 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
             case CartActionType.updateQuantity:
                 const item = cart.getItem(action.value.index);
                 item.quantity = action.value.quantity;
-                updateCart(`cart/${state.id}`, 'PUT', { cart });
                 break;
             case CartActionType.clear:
                 cart = new Cart();
@@ -50,6 +49,23 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
         return cart;
     }, [updateCart]);
     const [cart, cartDispatcher] = useReducer(memoizedCartDispatcher, new Cart());
+
+    useEffect(() => {
+        /** Maintain ref for the beforeunload listener */
+        cartRef.current = cart;
+    }, [cart]);
+
+    useEffect(() => {
+        /** If there were any quantity changes, store an update to the database when leaving the page */
+        const listener = (event: BeforeUnloadEvent) => {
+            updateCart(`cart/${cartRef.current.id}`, 'PUT', { cart: cartRef.current });
+        };
+
+        window.addEventListener('beforeunload', listener);
+        return () => {
+            window.removeEventListener('beforeunload', listener);
+        }
+    }, [cartRef, updateCart]);
 
     useEffect(() => {
         /** Read cart from local storage and either load or create cart from db  */
