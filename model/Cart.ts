@@ -100,6 +100,10 @@ export class Cart {
         return new Cart(id, partial.items.map(item => new CartItem(item.design, item.quantity, item.originals)), partial.shippingCost);
     }
 
+    static clone(cart: Cart) {
+        return new Cart(cart.id, cart.getItems().slice(), cart.getShipping());
+    }
+
     constructor(id?: string, items?: CartItem[], shippingCost?: number) {
         this.id = id || undefined;
         this.items = items || [];
@@ -128,9 +132,10 @@ export class Cart {
         this.items = this.items.slice();
     }
 
-    public removeItem(actionItem: CartItem) {
-        this.items = this.items.filter(item => !(item.design.frontDataURL === actionItem.design.frontDataURL
-            && item.design.backDataURL === actionItem.design.backDataURL));
+    public removeAt(index: number) {
+        const newItems = this.items;
+        newItems.splice(index, 1);
+        this.items = newItems;
     }
 
     public getSubtotal(): number {

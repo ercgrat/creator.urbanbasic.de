@@ -11,6 +11,7 @@ import Spinner from '../../components/spinner';
 import List from '../../components/cart/list';
 import useLambda from '../../hooks/useLambda';
 import router from 'next/router';
+import { Cart as CartModel } from '../../model/Cart';
 
 export default function Cart() {
     const { cart, cartDispatcher } = useContext(CartContext);
@@ -23,7 +24,7 @@ export default function Cart() {
         else if (quantity < 0) { quantity = 0; }
         else if (quantity > 999) { quantity = 999; }
         cartDispatcher({
-            type: CartActionType.update,
+            type: CartActionType.updateQuantity,
             value: {
                 index,
                 quantity: quantity
@@ -57,11 +58,13 @@ export default function Cart() {
                             cart={cart}
                             isEditable
                             onQuantityChange={(event, index) => quantityChanged(event, index)}
-                            onDelete={(event, item) => {
+                            onDelete={(event, index) => {
+                                let newCart = CartModel.clone(cart);
+                                newCart.removeAt(index);
                                 cartDispatcher({
-                                    type: CartActionType.remove,
-                                    value: item
-                                })
+                                    type: CartActionType.updateList,
+                                    value: newCart
+                                });
                             }}
                         />
                         <Divider />

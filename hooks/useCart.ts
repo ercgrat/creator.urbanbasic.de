@@ -1,4 +1,4 @@
-import React, { Dispatch, useEffect } from "react";
+import React, { Dispatch, useCallback, useEffect } from "react";
 import { useReducer } from "react";
 import { Cart, ICart } from "../model/Cart";
 import { STORAGE_KEYS } from "../model/Constants";
@@ -12,8 +12,8 @@ export const CartContext = React.createContext<ICartContext>(null);
 
 export enum CartActionType {
     replace,
-    remove,
-    update,
+    updateList,
+    updateQuantity,
     clear
 }
 
@@ -26,18 +26,19 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
     const { data: rawNewCartData, execute: createCart, hasExecuted: hasCreated } = useLambda<IFaunaObject<ICart>>();
     const { data: rawCartData, execute: loadCart, hasExecuted: hasLoaded } = useLambda<IFaunaObject<ICart>>();
     const { data: rawUpdatedCartData, execute: updateCart } = useLambda<IFaunaObject<ICart>>();
-    const [cart, cartDispatcher] = useReducer((state: Cart, action: ICartAction) => {
+
+    const memoizedCartDispatcher = useCallback((state: Cart, action: ICartAction) => {
         let cart = new Cart();
         state.getItems().forEach(item => cart.addItem(item));
         switch (action.type) {
             case CartActionType.replace:
-                cart = new Cart(action.value.id, action.value.getItems(), action.value.shippingCost);
+                cart = Cart.clone(action.value);
                 break;
-            case CartActionType.remove:
-                cart.removeItem(action.value);
+            case CartActionType.updateList:
+                cart = Cart.clone(action.value);
                 updateCart(`cart/${state.id}`, 'PUT', { cart });
                 break;
-            case CartActionType.update:
+            case CartActionType.updateQuantity:
                 const item = cart.getItem(action.value.index);
                 item.quantity = action.value.quantity;
                 updateCart(`cart/${state.id}`, 'PUT', { cart });
@@ -47,7 +48,8 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                 break;
         }
         return cart;
-    }, new Cart());
+    }, [updateCart]);
+    const [cart, cartDispatcher] = useReducer(memoizedCartDispatcher, new Cart());
 
     useEffect(() => {
         /** Read cart from local storage and either load or create cart from db  */

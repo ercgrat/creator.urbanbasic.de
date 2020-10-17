@@ -8,7 +8,7 @@ export default React.memo(function List(props: {
     cart: Cart,
     isEditable?: boolean,
     onQuantityChange?: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, index: number) => void,
-    onDelete?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, item: CartItem) => void
+    onDelete?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => void
 }) {
     return (
         <React.Fragment>
@@ -28,7 +28,7 @@ export default React.memo(function List(props: {
                                 item={item}
                                 isEditable={props.isEditable}
                                 onQuantityChange={(event) => props.onQuantityChange(event, index)}
-                                onDelete={(event) => props.onDelete(event, item)}
+                                onDelete={(event) => props.onDelete(event, index)}
                             />
                         </li>
                     ))
