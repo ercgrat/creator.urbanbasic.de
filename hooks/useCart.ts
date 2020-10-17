@@ -36,7 +36,6 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                 break;
             case CartActionType.updateList:
                 cart = Cart.clone(action.value);
-                updateCart(`cart/${state.id}`, 'PUT', { cart });
                 break;
             case CartActionType.updateQuantity:
                 const item = cart.getItem(action.value.index);
@@ -47,7 +46,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                 break;
         }
         return cart;
-    }, [updateCart]);
+    }, []);
     const [cart, cartDispatcher] = useReducer(memoizedCartDispatcher, new Cart());
 
     useEffect(() => {
@@ -56,7 +55,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
     }, [cart]);
 
     useEffect(() => {
-        /** If there were any quantity changes, store an update to the database when leaving the page */
+        /** If there were any quantity changes or items removed, store an update to the database when leaving the page */
         const listener = (event: BeforeUnloadEvent) => {
             updateCart(`cart/${cartRef.current.id}`, 'PUT', { cart: cartRef.current });
         };
