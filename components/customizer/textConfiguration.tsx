@@ -20,7 +20,7 @@ const useStyles = makeStyles({
 const useFonts = (font) => {
     return makeStyles({
         root: {
-            fontFamily: font
+            fontFamily: `'${font}'`
         }
     });
 }
