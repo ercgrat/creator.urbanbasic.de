@@ -137,7 +137,7 @@ export default function Home() {
         }
 
         cartDispatcher({
-            type: CartActionType.replace,
+            type: CartActionType.initializeFromDB,
             value: newCart
         });
 

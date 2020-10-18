@@ -11,7 +11,7 @@ interface ICartContext {
 export const CartContext = React.createContext<ICartContext>(null);
 
 export enum CartActionType {
-    replace,
+    initializeFromDB,
     updateList,
     updateQuantity,
     clear
@@ -23,26 +23,28 @@ export interface ICartAction {
 }
 
 export function useCart(): [Cart, Dispatch<ICartAction>] {
-    const { data: rawNewCartData, execute: createCart, hasExecuted: hasCreated } = useLambda<IFaunaObject<ICart>>();
-    const { data: rawCartData, execute: loadCart, hasExecuted: hasLoaded } = useLambda<IFaunaObject<ICart>>();
-    const { data: rawUpdatedCartData, execute: updateCart } = useLambda<IFaunaObject<ICart>>();
-    const cartRef = useRef(null);
+    const { data: rawNewCartData, execute: createCart } = useLambda<IFaunaObject<ICart>>();
+    const { data: rawCartData, execute: loadCart } = useLambda<IFaunaObject<ICart>>();
+    const { execute: updateCart } = useLambda<IFaunaObject<ICart>>();
 
     const memoizedCartDispatcher = useCallback((state: Cart, action: ICartAction) => {
         let cart = Cart.clone(state);
         switch (action.type) {
-            case CartActionType.replace:
+            case CartActionType.initializeFromDB:
                 cart = Cart.clone(action.value);
                 break;
             case CartActionType.updateList:
                 cart = Cart.clone(action.value);
+                updateCart(`cart/${cart.id}`, 'PUT', { cart });
                 break;
             case CartActionType.updateQuantity:
                 const item = cart.getItem(action.value.index);
                 item.quantity = action.value.quantity;
+                updateCart(`cart/${cart.id}`, 'PUT', { cart });
                 break;
             case CartActionType.clear:
                 cart = new Cart();
+                updateCart(`cart/${cart.id}`, 'PUT', { cart });
                 break;
         }
         return cart;
@@ -50,24 +52,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
     const [cart, cartDispatcher] = useReducer(memoizedCartDispatcher, new Cart());
 
     useEffect(() => {
-        /** Maintain ref for the beforeunload listener */
-        cartRef.current = cart;
-    }, [cart]);
-
-    useEffect(() => {
-        /** If there were any quantity changes or items removed, store an update to the database when leaving the page */
-        const listener = (event: BeforeUnloadEvent) => {
-            updateCart(`cart/${cartRef.current.id}`, 'PUT', { cart: cartRef.current });
-        };
-
-        window.addEventListener('beforeunload', listener);
-        return () => {
-            window.removeEventListener('beforeunload', listener);
-        }
-    }, [cartRef, updateCart]);
-
-    useEffect(() => {
-        /** Read cart from local storage and either load or create cart from db  */
+        /** On context creation, read cart from local storage and load from db or create new cart  */
         let cartID: string = window.localStorage.getItem(STORAGE_KEYS.CART_IDENTIFIER_KEY);
         if (cartID) {
             loadCart(`cart/${cartID}`, 'GET', null, null, null, () => {
@@ -80,16 +65,16 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
 
     useEffect(() => {
         /** If loaded from db, parse cart */
-        if (rawUpdatedCartData || rawCartData) {
-            const rawData = rawUpdatedCartData || rawCartData;
+        if (rawCartData) {
+            const rawData = rawCartData;
             const id = window.localStorage.getItem(STORAGE_KEYS.CART_IDENTIFIER_KEY);
             let cart = Cart.constructCartFromDatabase(id, rawData.data);
             cartDispatcher({
-                type: CartActionType.replace,
+                type: CartActionType.initializeFromDB,
                 value: cart
             });
         }
-    }, [rawCartData, rawUpdatedCartData, cartDispatcher]);
+    }, [rawCartData, cartDispatcher]);
 
     useEffect(() => {
         /** If new cart, construct and initialize and save ID to local storage */
@@ -98,10 +83,9 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
             cart.id = rawNewCartData.ref["@ref"].id;
             window.localStorage.setItem(STORAGE_KEYS.CART_IDENTIFIER_KEY, cart.id);
             cartDispatcher({
-                type: CartActionType.replace,
+                type: CartActionType.initializeFromDB,
                 value: cart
             });
-            updateCart(`cart/${cart.id}`, 'PUT', { cart });
         }
     }, [rawNewCartData, cartDispatcher]);
 
