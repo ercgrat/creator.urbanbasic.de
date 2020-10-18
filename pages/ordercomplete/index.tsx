@@ -7,6 +7,9 @@ import styles from './index.module.scss';
 const useStyles = makeStyles({
     root: {
         backgroundColor: '#efefef'
+    },
+    footerButton: {
+        margin: '0px 12px'
     }
 });
 
@@ -32,6 +35,7 @@ export default function OrderComplete() {
                         variant='contained'
                         size='large'
                         color='primary'
+                        classes={{ root: classes.footerButton }}
                     >
                         Start Over
                 </Button>

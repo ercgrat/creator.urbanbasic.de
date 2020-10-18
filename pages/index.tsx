@@ -24,8 +24,10 @@ const useStyles = makeStyles({
         display: 'flex',
         flexWrap: 'nowrap',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: '12px'
+        alignItems: 'center'
+    },
+    modalFooterButton: {
+        marginLeft: '6px'
     }
 });
 
@@ -216,7 +218,8 @@ export default function Home() {
                             color="primary"
                             disabled={!isAddToCartEnabled()}
                             startIcon={<CheckCircleIcon />}
-                            onClick={addToCart}>
+                            onClick={addToCart}
+                            classes={{ root: classes.modalFooterButton }}>
                             Save and Continue
                         </Button>
                     </footer>

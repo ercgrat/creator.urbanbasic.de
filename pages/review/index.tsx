@@ -107,12 +107,67 @@ export default function Review() {
         <Page>
             {
                 user ?
-                    <Button
-                        onClick={logout}
-                        color='primary'
-                        variant='contained'>
-                        Logout
-                    </Button> :
+                    <React.Fragment>
+                        <Button
+                            onClick={logout}
+                            color='primary'
+                            variant='contained'>
+                            Logout
+                        </Button>
+                        <ul className={styles.orders}>
+                            {
+                                orders ?
+                                    orders.length === 0 ?
+                                        <Typography variant='h5' component='h2'>
+                                            There are no orders to review.
+                                        </Typography> :
+                                        orders.map(order => (
+                                            <li className={styles.order} key={order.ref["@ref"].id}>
+                                                <Card variant='outlined'>
+                                                    <CardHeader
+                                                        title={`Payment ID: ${order.data.payment.paymentID}`}
+                                                        subheader={moment(order.ts / 1000).locale('de').format('LLL')} />
+                                                    <CardContent>
+                                                        <section className={styles.address}>
+                                                            <Typography variant='h6' component='h2' color='textSecondary'>
+                                                                Address
+                                            </Typography>
+                                                            <Typography variant='body1' component='p'>
+                                                                {order.data.payment.address.recipient_name}
+                                                            </Typography>
+                                                            <Typography variant='body2' component='p'>
+                                                                {order.data.payment.address.line1} <br />
+                                                                {order.data.payment.address.city}, {order.data.payment.address.state} {order.data.payment.address.postal_code}
+                                                            </Typography>
+                                                        </section>
+                                                        <section>
+                                                            <Typography variant='h6' component='h2' color='textSecondary'>
+                                                                Designs
+                                            </Typography>
+                                                            <List
+                                                                cart={order.data.cart as Cart}
+                                                            />
+                                                        </section>
+                                                    </CardContent>
+
+                                                    <CardActions disableSpacing>
+                                                        <Button
+                                                            aria-label='download'
+                                                            color='primary'
+                                                            startIcon={<SaveAltIcon />}
+                                                            onClick={() => downloadOriginals(order)}
+                                                            disabled={order.data.cart.items.reduce((total, item) => total + item.originals?.length, 0) === 0}>
+                                                            Download Images
+                                            </Button>
+                                                    </CardActions>
+                                                </Card>
+                                            </li>
+                                        )) :
+                                    null
+                            }
+                        </ul>
+                    </React.Fragment>
+                    :
                     <Button
                         onClick={login}
                         color='primary'
@@ -120,59 +175,6 @@ export default function Review() {
                         Login
                     </Button>
             }
-
-            <ul className={styles.orders}>
-                {
-                    orders ?
-                        orders.length === 0 ?
-                            <Typography variant='h5' component='h2'>
-                                There are no orders to review.
-                        </Typography> :
-                            orders.map(order => (
-                                <li className={styles.order} key={order.ref["@ref"].id}>
-                                    <Card variant='outlined'>
-                                        <CardHeader
-                                            title={`Payment ID: ${order.data.payment.paymentID}`}
-                                            subheader={moment(order.ts / 1000).locale('de').format('LLL')} />
-                                        <CardContent>
-                                            <section className={styles.address}>
-                                                <Typography variant='h6' component='h2' color='textSecondary'>
-                                                    Address
-                                            </Typography>
-                                                <Typography variant='body1' component='p'>
-                                                    {order.data.payment.address.recipient_name}
-                                                </Typography>
-                                                <Typography variant='body2' component='p'>
-                                                    {order.data.payment.address.line1} <br />
-                                                    {order.data.payment.address.city}, {order.data.payment.address.state} {order.data.payment.address.postal_code}
-                                                </Typography>
-                                            </section>
-                                            <section>
-                                                <Typography variant='h6' component='h2' color='textSecondary'>
-                                                    Designs
-                                            </Typography>
-                                                <List
-                                                    cart={order.data.cart as Cart}
-                                                />
-                                            </section>
-                                        </CardContent>
-
-                                        <CardActions disableSpacing>
-                                            <Button
-                                                aria-label='download'
-                                                color='primary'
-                                                startIcon={<SaveAltIcon />}
-                                                onClick={() => downloadOriginals(order)}
-                                                disabled={order.data.cart.items.reduce((total, item) => total + item.originals?.length, 0) === 0}>
-                                                Download Images
-                                        </Button>
-                                        </CardActions>
-                                    </Card>
-                                </li>
-                            )) :
-                        null
-                }
-            </ul>
             <Spinner isSpinning={isLoading || isLoadingOriginals} />
             <Toast
                 isToastOpen={isToastOpen}

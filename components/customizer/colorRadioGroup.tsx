@@ -4,9 +4,8 @@ import { DesignColor, ColorMap } from '../../model/Cart';
 
 const useRadioGroupStyles = makeStyles({
     radioGroup: {
-        'display': 'flex',
-        'flex-direction': 'row',
-        'gap': '12px'
+        display: 'flex',
+        flexDirection: 'row'
     }
 });
 
@@ -26,9 +25,10 @@ const useRadioStyles = function (color: DesignColor) {
         width: 33,
         height: 33,
         backgroundColor: ColorMap[color].color,
+        margin: '6px',
         'input:hover ~ &': {
             boxShadow: '0px 0px 0px 3px rgba(116,182,199,0.3)'
-        },
+        }
     } as any;
 
     if (color === 'white') {
