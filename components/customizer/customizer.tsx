@@ -9,7 +9,7 @@ import PositionRadioGroup from './positionRadioGroup';
 import useCanvasUtils from '../../hooks/useCanvasUtils';
 import { Button, withStyles } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import { DesignColor, DesignSize, DesignProduct } from '../../model/Cart';
+import { DesignColor, DesignSize, DesignProduct, ColorMap } from '../../model/Cart';
 import ShirtUnderlay from '../shirtUnderlay';
 import React from 'react';
 import ProductSelect from './productSelect';
@@ -198,7 +198,7 @@ export default React.memo(function Customizer(props: {
         <div className={styles.container}>
             <div className={styles.editor}>
 
-                <ShirtUnderlay className={styles.shirtImage} shirtPosition={shirtPosition} color={hoveredColor || props.color} />
+                <ShirtUnderlay className={styles.shirtImage} shirtPosition={shirtPosition} color={ColorMap[hoveredColor || props.color].color} />
                 {
                     shirtPosition === 'front' ?
                         <div className={styles.canvasContainer} ref={frontCanvasRef}>

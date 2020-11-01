@@ -1,6 +1,6 @@
-import { FormControl, RadioGroup, Radio, makeStyles } from '@material-ui/core';
+import { FormControl, RadioGroup, Radio, Tooltip, makeStyles, withStyles } from '@material-ui/core';
 import React from 'react';
-import { DesignColor } from '../../model/Cart';
+import { DesignColor, ColorMap } from '../../model/Cart';
 
 const useRadioGroupStyles = makeStyles({
     radioGroup: {
@@ -10,12 +10,22 @@ const useRadioGroupStyles = makeStyles({
     }
 });
 
+const LightTooltip = withStyles((theme) => ({
+    tooltip: {
+        backgroundColor: theme.palette.common.white,
+        color: 'rgba(0, 0, 0, 0.87)',
+        boxShadow: theme.shadows[1],
+        fontSize: 11,
+        marginBottom: '0px'
+    },
+}))(Tooltip);
+
 const useRadioStyles = function (color: DesignColor) {
     const icon = {
         borderRadius: '50%',
         width: 33,
         height: 33,
-        backgroundColor: DesignColor[color],
+        backgroundColor: ColorMap[color].color,
         'input:hover ~ &': {
             boxShadow: '0px 0px 0px 3px rgba(116,182,199,0.3)'
         },
@@ -34,7 +44,7 @@ const useRadioStyles = function (color: DesignColor) {
             backgroundColor: 'transparent'
         },
         icon,
-        checkedIcon: Object.assign({...icon}, {
+        checkedIcon: Object.assign({ ...icon }, {
             border: 'none',
             boxShadow: '0px 0px 0px 3px rgb(116,182,199)',
             'input:hover ~ &': {
@@ -48,15 +58,19 @@ function ColorRadio(props: { color: DesignColor, onHover?: (color: DesignColor, 
     const classes = useRadioStyles(props.color);
 
     return (
-        <Radio
-            onMouseEnter={() => props.onHover(props.color, true)}
-            onMouseLeave={() => props.onHover(props.color, false)}
-            value={props.color}
-            classes={{ root: classes.root, checked: classes.rootSelected }}
-            icon={<span className={classes.icon} />}
-            checkedIcon={<span className={classes.checkedIcon} />}
-            color='primary'
-        />
+        <LightTooltip
+            title={ColorMap[props.color].name}
+            placement='top'>
+            <Radio
+                onMouseEnter={() => props.onHover(props.color, true)}
+                onMouseLeave={() => props.onHover(props.color, false)}
+                value={props.color}
+                classes={{ root: classes.root, checked: classes.rootSelected }}
+                icon={<span className={classes.icon} />}
+                checkedIcon={<span className={classes.checkedIcon} />}
+                color='primary'
+            />
+        </LightTooltip>
     );
 }
 

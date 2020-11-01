@@ -1,11 +1,24 @@
 export enum DesignColor {
     white = 'white',
     black = 'black',
-    oxfordGrey = 'rgb(163, 160, 167)',
-    navy = 'rgb(42, 43, 61)',
-    orange = 'rgb(209, 85, 23)',
+    oxfordGrey = 'oxfordGrey',
+    navy = 'navy',
+    orange = 'orange',
     red = 'red'
 }
+
+export type Color = {
+    name: string;
+    color: string;
+}
+export const ColorMap: { [key in DesignColor]: Color } = {
+    white: { name: 'White', color: 'white' },
+    black: { name: 'Black', color: 'black' },
+    oxfordGrey: { name: 'Oxford Grey', color: 'rgb(163, 160, 167)' },
+    navy: { name: 'Navy', color: 'rgb(42, 43, 61)' },
+    orange: { name: 'Orange', color: 'rgb(209, 85, 23)' },
+    red: { name: 'Red', color: 'red' }
+};
 
 export enum DesignSize {
     xs = 'xs',
