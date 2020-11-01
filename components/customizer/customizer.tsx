@@ -12,6 +12,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { DesignColor, DesignSize, DesignProduct } from '../../model/Cart';
 import ShirtUnderlay from '../shirtUnderlay';
 import React from 'react';
+import ProductSelect from './productSelect';
 
 export interface IDesignData {
     frontObjects: fabric.Object[];
@@ -24,7 +25,7 @@ export interface IDesignData {
 export const CANVAS_WIDTH = 168;
 export const CANVAS_HEIGHT = 252;
 
-export default React.memo(function Customizer(props: { 
+export default React.memo(function Customizer(props: {
     frontObjects: fabric.Object[],
     backObjects: fabric.Object[],
     color: DesignColor,
@@ -155,6 +156,12 @@ export default React.memo(function Customizer(props: {
         }
     }
 
+    const changeProduct = useCallback((event: React.SyntheticEvent, product: string) => {
+        props.onDesignChanged({
+            product: DesignProduct[product]
+        });
+    }, [props.product]);
+
     const changeColor = useCallback((event: React.SyntheticEvent, color: string) => {
         props.onDesignChanged({
             color: DesignColor[color]
@@ -204,6 +211,8 @@ export default React.memo(function Customizer(props: {
                 <PositionRadioGroup onChange={changePosition} />
             </div>
             <div className={styles.settings}>
+                <label className={styles.label}>Product</label>
+                <ProductSelect onChange={changeProduct}></ProductSelect>
                 <label className={styles.label}>Color</label>
                 <ColorRadioGroup onChange={changeColor} onHover={changeHoveredColor} />
                 <label className={styles.label}>Size</label>

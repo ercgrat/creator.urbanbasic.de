@@ -1,13 +1,10 @@
 export enum DesignColor {
     white = 'white',
-    oxfordGrey = '#8391A1',
-    heatherBlack = '#BDC3C7',
-    sand = '#C2B280',
-    gray = 'gray',
     black = 'black',
-    orange = 'orange',
-    dustyBlue = '#5A86AD',
-    navy = 'navy'
+    oxfordGrey = 'rgb(163, 160, 167)',
+    navy = 'rgb(42, 43, 61)',
+    orange = 'rgb(209, 85, 23)',
+    red = 'red'
 }
 
 export enum DesignSize {
@@ -21,6 +18,21 @@ export enum DesignSize {
 
 export enum DesignProduct {
     tshirt = 'tshirt'
+}
+
+export type Product = {
+    name: string;
+    oneSidedPrice: number;
+    twoSidedPrice: number;
+}
+
+/** Maps products to one-sided and two-sided prices */
+export const ProductMap: { [key in DesignProduct]: Product } = {
+    tshirt: {
+        name: 'T-shirt',
+        oneSidedPrice: 14,
+        twoSidedPrice: 19
+    }
 }
 
 export class Design {
@@ -61,7 +73,7 @@ export interface ICartStorage {
 
 export class Cart {
     private items: CartItem[];
-    public readonly shippingCost: number = 3;
+    public readonly shippingCost: number = 3.9;
 
     constructor(items?: CartItem[]) {
         this.items = items || [];

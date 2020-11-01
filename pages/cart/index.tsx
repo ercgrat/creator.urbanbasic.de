@@ -12,6 +12,7 @@ import { lambda } from '../../model/Constants';
 import router from 'next/router';
 import { Alert } from '@material-ui/lab';
 import ShirtUnderlay from '../../components/shirtUnderlay';
+import { formatPrice } from '../../utils';
 
 export default function Cart() {
     const { cart, cartDispatcher } = useContext(CartContext);
@@ -29,10 +30,6 @@ export default function Cart() {
                 quantity: quantity
             }
         })
-    }
-
-    function formatPrice(value: number) {
-        return `${value.toFixed(2).replace('.', ',')} €`;
     }
 
     function onPaid(payment: any) {

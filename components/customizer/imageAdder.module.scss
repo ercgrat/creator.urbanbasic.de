@@ -1,0 +1,25 @@
+@import "../../styles/theme.scss";
+
+.dropzone {
+    display: flex;
+    align-items: center;
+    padding: 24px;
+    border: dashed 2px $accent-color;
+    border-radius: 6px;
+    color: $accent-color;
+    cursor: pointer;
+
+    > p {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        > svg {
+            margin-right: 12px;
+        }
+    }
+}
+
+.dropzone:focus {
+    outline: solid 2px $primary-color;
+}
