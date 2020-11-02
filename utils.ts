@@ -1,3 +1,6 @@
 export function formatPrice(value: number) {
-    return `${value.toFixed(2).replace('.', ',')} €`;
+  return value.toLocaleString("de-DE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }

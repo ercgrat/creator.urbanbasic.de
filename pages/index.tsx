@@ -9,7 +9,13 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { CartActionType, CartContext } from "../hooks/useCart";
 import { fabric } from "fabric";
 import Customizer, {
@@ -25,6 +31,7 @@ import {
   DesignProduct,
   DesignSize,
   ICart,
+  ProductMap,
 } from "../model/Cart";
 import styles from "./index.module.scss";
 import Spinner from "../components/spinner";
@@ -34,6 +41,7 @@ import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 import router from "next/router";
 import useLambda, { IFaunaObject } from "../hooks/useLambda";
 import { Cart } from "../model/Cart";
+import { formatPrice } from "../utils";
 
 const useStyles = makeStyles({
   root: {
@@ -49,6 +57,28 @@ const useStyles = makeStyles({
     marginLeft: "6px",
   },
 });
+
+const PPU = React.memo(
+  (props: {
+    product: DesignProduct;
+    frontObjects: fabric.Object[];
+    backObjects: fabric.Object[];
+    className?: string;
+  }): ReactElement => (
+    <div className={props.className}>
+      <Typography variant="h6" component="span">
+        Price per unit:{" "}
+        <span className={styles.price}>
+          {formatPrice(
+            props.frontObjects.length > 0 && props.backObjects.length > 0
+              ? ProductMap[props.product].twoSidedPrice
+              : ProductMap[props.product].oneSidedPrice
+          )}
+        </span>
+      </Typography>
+    </div>
+  )
+);
 
 export default function Home() {
   const [frontObjects, setFrontObjects] = useState<fabric.Object[]>([]);
@@ -124,8 +154,10 @@ export default function Home() {
   function isAddToCartEnabled() {
     // Button is enabled if any size has at least 1 quantity
     return (
-      Object.keys(quantityMap).reduce((sum, key) => sum + quantityMap[key], 0) >
-      0
+      Object.keys(quantityMap).reduce(
+        (sum, key) => sum + (Number(quantityMap[key]) || 0),
+        0
+      ) > 0
     );
   }
 
@@ -221,6 +253,12 @@ export default function Home() {
       />
       <Divider />
       <footer className={styles.footer}>
+        <PPU
+          className={styles.priceLabelMain}
+          product={product}
+          frontObjects={frontObjects}
+          backObjects={backObjects}
+        />
         <Button
           disabled={!designHasData()}
           variant="contained"
@@ -276,6 +314,30 @@ export default function Home() {
               </li>
             ))}
           </ul>
+          <PPU
+            className={styles.priceLabelModal}
+            product={product}
+            frontObjects={frontObjects}
+            backObjects={backObjects}
+          />
+          <div className={styles.priceLabelModal}>
+            <Typography variant="h6" component="span">
+              Total:{" "}
+              <span className={styles.price}>
+                {(() => {
+                  const ppu =
+                    frontObjects.length > 0 && backObjects.length > 0
+                      ? ProductMap[product].twoSidedPrice
+                      : ProductMap[product].oneSidedPrice;
+                  const totalQuantity = Object.values(quantityMap).reduce(
+                    (sum, current) => sum + (Number(current) || 0),
+                    0
+                  );
+                  return formatPrice(totalQuantity * ppu);
+                })()}
+              </span>
+            </Typography>
+          </div>
           <footer className={`${styles.footer} ${styles.modalFooter}`}>
             <Button onClick={() => setIsSizeDialogOpen(false)} color="default">
               Cancel

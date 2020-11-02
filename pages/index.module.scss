@@ -36,6 +36,21 @@
     border-bottom: solid $border-color 1px;
 }
 
+.priceLabelMain {
+  margin-right: 12px;
+  align-self: center;
+}
+
+.priceLabelModal {
+  text-align: right;
+  margin: 12px 0px;
+}
+
+.price {
+  color: $primary-color;
+  font-weight: 600;
+}
+
 .quantity {
     max-width: 100px;
 }
