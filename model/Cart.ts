@@ -93,7 +93,7 @@ export interface ICart extends ICartStorage {
 
 export class Cart {
     public id: string;
-    private items: CartItem[];
+    public items: CartItem[];
     public readonly shippingCost: number = 3.9;
 
     static constructCartFromDatabase(id: string, partial: ICart): Cart {

@@ -21,7 +21,7 @@ export default React.memo(function ImageAdder(props: { canvas }) {
         props.canvas.add(imageObject);
         props.canvas.setActiveObject(imageObject);
         props.canvas.renderAll();
-    }, []);
+    }, [props.canvas]);
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
     return (
