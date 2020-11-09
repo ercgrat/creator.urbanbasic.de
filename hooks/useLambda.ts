@@ -30,7 +30,7 @@ type LambdaExecutor<ResponseType, RequestType> = (
   token?: string,
   onSuccess?: () => void,
   onError?: () => void
-) => Promise<ResponseType | void>;
+) => Promise<ResponseType>;
 
 export default function useLambda<
   ResponseType extends object = null,
@@ -53,7 +53,7 @@ export default function useLambda<
       token?: string,
       onSuccess?: () => void,
       onError?: () => void
-    ): Promise<ResponseType | void> => {
+    ): Promise<ResponseType> => {
       setIsLoading(true);
       return lambda<RequestType>(path, method, body, token)
         .then(async (response) => {
