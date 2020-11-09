@@ -16,7 +16,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { CartActionType, CartContext } from "../hooks/useCart";
+import { CartActionType, CartContext, ICartRequest } from "../hooks/useCart";
 import { fabric } from "fabric";
 import Customizer, {
   CANVAS_HEIGHT,
@@ -95,7 +95,8 @@ export default function Home() {
   const { cart, cartDispatcher } = useContext(CartContext);
   const classes = useStyles();
   const { execute: updateCart, isLoading: isCartUpdating } = useLambda<
-    IFaunaObject<ICart>
+    IFaunaObject<ICart>,
+    ICartRequest
   >();
 
   const onDesignChanged = useCallback(

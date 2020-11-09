@@ -12,29 +12,20 @@ import React, { useContext, useEffect, useState } from "react";
 import Page from "../../components/page";
 import Spinner from "../../components/spinner";
 import { IdentityContext } from "../../hooks/useIdentity";
-import { Cart, ICart } from "../../model/Cart";
+import { Cart } from "../../model/Cart";
 import moment from "moment";
 import styles from "./index.module.scss";
 import useToastState from "../../hooks/useToastState";
 import Toast from "../../components/toast";
 import List from "../../components/cart/list";
 import useLambda, { IFaunaObject } from "../../hooks/useLambda";
-
-interface IOrder {
-  cart: ICart;
-  payment: {
-    address: {
-      city: string;
-      country_code: string;
-      line1: string;
-      postal_code: string;
-      recipient_name: string;
-      state: string;
-    };
-    email: string;
-    paymentID: string;
-  };
-}
+import {
+  CheckBox,
+  CheckBoxOutlineBlank,
+  CheckCircle,
+} from "@material-ui/icons";
+import { IOrder } from "../../model/Order";
+import Tooltip from "../../components/tooltip";
 
 interface IOriginal {
   src: string;
@@ -50,6 +41,10 @@ export default function Review() {
     execute: loadOriginals,
     isLoading: isLoadingOriginals,
   } = useLambda<IFaunaObject<IOriginal>[]>();
+  const { execute: updateOrder, isLoading: isUpdatingOrder } = useLambda<
+    IFaunaObject<IOrder>,
+    IFaunaObject<Partial<IOrder>>
+  >();
   const [orders, setOrders] = useState<IFaunaObject<IOrder>[]>([]);
   const [isToastOpen, openToast, closeToast] = useToastState();
 
@@ -118,6 +113,27 @@ export default function Review() {
     }
   }, [rawOriginalsData]);
 
+  const markReviewed = (order: IFaunaObject<IOrder>) => {
+    updateOrder("order", "PATCH", {
+      data: {
+        isReviewed: true,
+      },
+      ref: order.ref,
+      ts: order.ts,
+    }).then(() => {
+      const originals = orders.slice();
+      originals
+        .filter(
+          (localOrder) =>
+            localOrder.data.payment.paymentID === order.data.payment.paymentID
+        )
+        .map((localOrder) => {
+          localOrder.data.isReviewed = true;
+        });
+      setOrders(originals);
+    });
+  };
+
   return (
     <Page>
       {user ? (
@@ -136,7 +152,19 @@ export default function Review() {
                   <li className={styles.order} key={order.ref["@ref"].id}>
                     <Card variant="outlined">
                       <CardHeader
-                        title={`Payment ID: ${order.data.payment.paymentID}`}
+                        title={
+                          <>
+                            {`Payment ID: ${order.data.payment.paymentID}`}{" "}
+                            {order.data.isReviewed ? (
+                              <Tooltip
+                                title="This order has been reviewed"
+                                placement="top"
+                              >
+                                <CheckCircle color="primary" />
+                              </Tooltip>
+                            ) : null}
+                          </>
+                        }
                         subheader={moment(order.ts / 1000)
                           .locale("de")
                           .format("LLL")}
@@ -187,6 +215,21 @@ export default function Review() {
                         >
                           Download Images
                         </Button>
+                        <Button
+                          aria-label="mark reviewed"
+                          color="primary"
+                          startIcon={
+                            order.data.isReviewed ? (
+                              <CheckBox />
+                            ) : (
+                              <CheckBoxOutlineBlank />
+                            )
+                          }
+                          onClick={() => markReviewed(order)}
+                          disabled={order.data.isReviewed}
+                        >
+                          Mark as Reviewed
+                        </Button>
                       </CardActions>
                     </Card>
                   </li>
@@ -200,7 +243,9 @@ export default function Review() {
           Login
         </Button>
       )}
-      <Spinner isSpinning={isLoading || isLoadingOriginals} />
+      <Spinner
+        isSpinning={isLoading || isLoadingOriginals || isUpdatingOrder}
+      />
       <Toast isToastOpen={isToastOpen} onClose={closeToast} severity="error">
         Something went wrong. Please try again.
       </Toast>

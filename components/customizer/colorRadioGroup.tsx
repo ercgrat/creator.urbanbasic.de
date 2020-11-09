@@ -1,6 +1,8 @@
-import { FormControl, RadioGroup, Radio, Tooltip, makeStyles, withStyles } from '@material-ui/core';
+import { FormControl, RadioGroup, Radio, makeStyles } from '@material-ui/core';
 import React from 'react';
 import { DesignColor, ColorMap } from '../../model/Cart';
+import Tooltip from '../tooltip';
+
 
 const useRadioGroupStyles = makeStyles({
     radioGroup: {
@@ -8,16 +10,6 @@ const useRadioGroupStyles = makeStyles({
         flexDirection: 'row'
     }
 });
-
-const LightTooltip = withStyles((theme) => ({
-    tooltip: {
-        backgroundColor: theme.palette.common.white,
-        color: 'rgba(0, 0, 0, 0.87)',
-        boxShadow: theme.shadows[1],
-        fontSize: 11,
-        marginBottom: '0px'
-    },
-}))(Tooltip);
 
 const useRadioStyles = function (color: DesignColor) {
     const icon = {
@@ -58,7 +50,7 @@ function ColorRadio(props: { color: DesignColor, onHover?: (color: DesignColor, 
     const classes = useRadioStyles(props.color);
 
     return (
-        <LightTooltip
+        <Tooltip
             title={ColorMap[props.color].name}
             placement='top'>
             <Radio
@@ -70,7 +62,7 @@ function ColorRadio(props: { color: DesignColor, onHover?: (color: DesignColor, 
                 checkedIcon={<span className={classes.checkedIcon} />}
                 color='primary'
             />
-        </LightTooltip>
+        </Tooltip>
     );
 }
 
