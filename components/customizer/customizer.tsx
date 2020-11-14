@@ -205,22 +205,38 @@ export default React.memo(function Customizer(props: {
 
   return (
     <div className={styles.container}>
-      <div className={styles.editor}>
-        <ShirtUnderlay
-          className={styles.shirtImage}
-          shirtPosition={shirtPosition}
-          color={hoveredColor || props.color}
-        />
-        {shirtPosition === "front" ? (
-          <div className={styles.canvasContainer} ref={frontCanvasRef}>
-            <canvas id="frontCanvas" className={styles.canvas}></canvas>
-          </div>
-        ) : (
-          <div className={styles.canvasContainer} ref={backCanvasRef}>
-            <canvas id="backCanvas" className={styles.canvas}></canvas>
-          </div>
-        )}
-        <PositionRadioGroup onChange={changePosition} />
+      <div className={styles.editPane}>
+        <div className={styles.editor}>
+          <ShirtUnderlay
+            className={styles.shirtImage}
+            shirtPosition={shirtPosition}
+            color={hoveredColor || props.color}
+          />
+          {shirtPosition === "front" ? (
+            <div
+              className={styles.canvasContainer}
+              ref={frontCanvasRef}
+              style={{
+                left: "8px",
+              }}
+            >
+              <canvas id="frontCanvas" className={styles.canvas}></canvas>
+            </div>
+          ) : (
+            <div
+              className={styles.canvasContainer}
+              ref={backCanvasRef}
+              style={{
+                left: "-8px",
+              }}
+            >
+              <canvas id="backCanvas" className={styles.canvas}></canvas>
+            </div>
+          )}
+        </div>
+        <div style={{ marginBottom: "24px" }}>
+          <PositionRadioGroup onChange={changePosition} />
+        </div>
       </div>
       <div className={styles.settings}>
         <label className={styles.label}>Product</label>
