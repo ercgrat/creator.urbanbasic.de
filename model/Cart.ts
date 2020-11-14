@@ -12,12 +12,12 @@ export type Color = {
   color: string;
 };
 export const ColorMap: { [key in DesignColor]: Color } = {
-  white: { name: "White", color: "white" },
-  black: { name: "Black", color: "black" },
-  oxfordGrey: { name: "Oxford Grey", color: "rgb(163, 160, 167)" },
-  navy: { name: "Navy", color: "rgb(42, 43, 61)" },
+  white: { name: "Weiß", color: "white" },
+  black: { name: "Schwarz", color: "black" },
+  oxfordGrey: { name: "Grau Melliert", color: "rgb(163, 160, 167)" },
+  navy: { name: "Navy Blau", color: "rgb(42, 43, 61)" },
   orange: { name: "Orange", color: "rgb(209, 85, 23)" },
-  red: { name: "Red", color: "red" },
+  red: { name: "Rot", color: "red" },
 };
 
 export enum DesignSize {

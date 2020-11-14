@@ -159,7 +159,7 @@ export default React.memo(function TextConfiguration(props: { canvas, selectedOb
     return (
         <section>
             <Button color="secondary" startIcon={<AddIcon />} variant="outlined"
-                onClick={() => addText()}>Add text</Button>
+                onClick={() => addText()}>TEXT HINZUFÜGEN</Button>
             {
                 selectedObject && selectedObject.isType('text') ?
                     <section>
@@ -168,10 +168,10 @@ export default React.memo(function TextConfiguration(props: { canvas, selectedOb
                                 variant="outlined"
                                 size="small"
                                 classes={{ root: muiStyles.withMargin }}>
-                                <InputLabel>Font</InputLabel>
+                                <InputLabel>Stil</InputLabel>
                                 <Select
                                     value={font}
-                                    label="Font"
+                                    label="Stil"
                                     onChange={fontChanged}
                                     classes={{ root: itemStyles[font].root }}
                                 >
@@ -197,12 +197,12 @@ export default React.memo(function TextConfiguration(props: { canvas, selectedOb
                                 variant="outlined"
                                 size="small"
                                 classes={{ root: muiStyles.withMargin }}>
-                                <InputLabel>Align</InputLabel>
+                                <InputLabel>Ausrichtung</InputLabel>
                                 <Select defaultValue="left"
                                     value={textAlign}
                                     onChange={alignChanged}
                                     style={{ fontSize: '15px' }}
-                                    label="Align">
+                                    label="Ausrichtung">
                                     <MenuItem value="left"><FormatAlignLeftIcon fontSize="inherit" /></MenuItem>
                                     <MenuItem value="center"><FormatAlignCenterIcon fontSize="inherit" /></MenuItem>
                                     <MenuItem value="right"><FormatAlignRightIcon fontSize="inherit" /></MenuItem>
@@ -211,7 +211,7 @@ export default React.memo(function TextConfiguration(props: { canvas, selectedOb
                         </div>
                         <TextField
                             ref={textRef}
-                            placeholder="Enter text here"
+                            placeholder="Text bitte hier eingeben"
                             variant="outlined"
                             multiline
                             onChange={textChanged}

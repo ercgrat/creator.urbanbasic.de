@@ -3,7 +3,6 @@ import { fabric } from "fabric";
 import { useCallback, useEffect, useRef, useState } from "react";
 import TextConfiguration from "./textConfiguration";
 import ColorRadioGroup from "./colorRadioGroup";
-import SizeRadioGroup from "./sizeRadioGroup";
 import ImageAdder from "./imageAdder";
 import PositionRadioGroup from "./positionRadioGroup";
 import useCanvasUtils from "../../hooks/useCanvasUtils";
@@ -12,8 +11,7 @@ import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import {
   DesignColor,
   DesignSize,
-  DesignProduct,
-  ColorMap,
+  DesignProduct
 } from "../../model/Cart";
 import ShirtUnderlay from "../cart/shirtUnderlay";
 import React from "react";
@@ -190,7 +188,8 @@ export default React.memo(function Customizer(props: {
 
   const changePosition = useCallback(
     (event: React.SyntheticEvent, position: string) => {
-      setShirtPosition(position);
+      const englishPosition = position === 'Vorne' ? 'front' : 'back';
+      setShirtPosition(englishPosition);
     },
     [setShirtPosition]
   );
@@ -241,11 +240,11 @@ export default React.memo(function Customizer(props: {
       <div className={styles.settings}>
         <label className={styles.label}>Product</label>
         <ProductSelect onChange={changeProduct}></ProductSelect>
-        <label className={styles.label}>Color</label>
+        <label className={styles.label}>Farbe</label>
         <ColorRadioGroup onChange={changeColor} onHover={changeHoveredColor} />
         <label className={styles.label}>Text</label>
         <TextConfiguration canvas={canvas} selectedObject={selectedObject} />
-        <label className={styles.label}>Image</label>
+        <label className={styles.label}>Bild</label>
         <ImageAdder canvas={canvas} />
         {selectedObject && (
           <section>

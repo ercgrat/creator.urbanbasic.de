@@ -268,7 +268,7 @@ export default function Home() {
           size="large"
           onClick={() => setIsSizeDialogOpen(true)}
         >
-          Add to Cart
+          In den Warenkorb
         </Button>
       </footer>
       <Dialog

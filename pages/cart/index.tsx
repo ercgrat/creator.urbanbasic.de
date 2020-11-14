@@ -69,7 +69,7 @@ export default function Cart() {
 
   return (
     <Page>
-      <h1 className={styles.heading}>Shopping Cart</h1>
+      <h1 className={styles.heading}>Warenkorb</h1>
       {cart.getSize() === 0 ? (
         <p className={styles.empty}>Your cart is empty.</p>
       ) : (
