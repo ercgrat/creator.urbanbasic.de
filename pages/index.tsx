@@ -67,7 +67,7 @@ const PPU = React.memo(
   }): ReactElement => (
     <div className={props.className}>
       <Typography variant="h6" component="span">
-        Price per unit:{" "}
+        Einzelpreis:{" "}
         <span className={styles.price}>
           {formatPrice(
             props.frontObjects.length > 0 && props.backObjects.length > 0
@@ -283,7 +283,7 @@ export default function Home() {
           classes={{ root: classes.root }}
         >
           <Typography variant="h5" component="h2">
-            Size and Quantity
+            Größe und Anzahl
           </Typography>
           <IconButton
             onClick={() => {
@@ -341,7 +341,7 @@ export default function Home() {
           </div>
           <footer className={`${styles.footer} ${styles.modalFooter}`}>
             <Button onClick={() => setIsSizeDialogOpen(false)} color="default">
-              Cancel
+              Abbrechen
             </Button>
             <Button
               variant="contained"
@@ -351,7 +351,7 @@ export default function Home() {
               onClick={addToCart}
               classes={{ root: classes.modalFooterButton }}
             >
-              Save and Continue
+              Speichern und Fortfahren
             </Button>
           </footer>
           <Spinner isSpinning={isCartUpdating} />

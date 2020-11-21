@@ -201,7 +201,7 @@ export default React.memo(function TextConfiguration(props: { canvas, selectedOb
                                 <Select defaultValue="left"
                                     value={textAlign}
                                     onChange={alignChanged}
-                                    style={{ fontSize: '15px' }}
+                                    style={{ fontSize: '15px', width: '91px' }}
                                     label="Ausrichtung">
                                     <MenuItem value="left"><FormatAlignLeftIcon fontSize="inherit" /></MenuItem>
                                     <MenuItem value="center"><FormatAlignCenterIcon fontSize="inherit" /></MenuItem>

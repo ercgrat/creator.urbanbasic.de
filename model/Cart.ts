@@ -42,7 +42,7 @@ export type Product = {
 /** Maps products to one-sided and two-sided prices */
 export const ProductMap: { [key in DesignProduct]: Product } = {
   tshirt: {
-    name: "T-shirt",
+    name: "T-Shirt, 100% Biobaumwolle, Fair Trade",
     oneSidedPrice: 14,
     twoSidedPrice: 19,
   },

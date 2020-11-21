@@ -72,7 +72,7 @@ export default function Cart() {
     <Page>
       <h1 className={styles.heading}>Warenkorb</h1>
       {cart.getSize() === 0 ? (
-        <p className={styles.empty}>Your cart is empty.</p>
+        <p className={styles.empty}>Der Warenkorb ist leer.</p>
       ) : (
         <React.Fragment>
           <List

@@ -238,7 +238,7 @@ export default React.memo(function Customizer(props: {
         </div>
       </div>
       <div className={styles.settings}>
-        <label className={styles.label}>Product</label>
+        <label className={styles.label}>Artikel</label>
         <ProductSelect onChange={changeProduct}></ProductSelect>
         <label className={styles.label}>Farbe</label>
         <ColorRadioGroup onChange={changeColor} onHover={changeHoveredColor} />
@@ -253,7 +253,7 @@ export default React.memo(function Customizer(props: {
               variant="outlined"
               onClick={deleteSelectedObject}
             >
-              Delete Selection
+              Auswahl löschen
             </DeleteButton>
           </section>
         )}

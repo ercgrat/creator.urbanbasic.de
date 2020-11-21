@@ -9,10 +9,9 @@ export default React.memo(function ProductSelect(props: { onChange }) {
         {Object.keys(DesignProduct).map((productKey) => {
           const product = ProductMap[productKey];
           return (
-            <option
-              key={productKey}
-              value={productKey}
-            >{`${product.name}`}</option>
+            <option key={productKey} value={productKey} title={product.name}>
+              {product.name}
+            </option>
           );
         })}
       </Select>

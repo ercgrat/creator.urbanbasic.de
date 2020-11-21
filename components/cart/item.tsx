@@ -73,7 +73,7 @@ export default React.memo(function Item(props: {
                                 aria-label="delete"
                                 onClick={props.onDelete}
                                 startIcon={<DeleteForeverIcon />}>
-                                Delete Item
+                                Artikel löschen
                                                 </Button>
                         </div>
                     </div> : null

@@ -37,7 +37,7 @@ export default React.memo(function ImageAdder(props: { canvas }) {
           <p>Drop the files here...</p>
         ) : (
           <p>
-            <AddPhotoAlternateIcon /> Drag and drop files here, or click to add
+            <AddPhotoAlternateIcon /> Datei hier ablegen oder zum Öffnen klicken
           </p>
         )}
       </div>
