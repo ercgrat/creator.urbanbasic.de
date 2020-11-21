@@ -227,52 +227,54 @@ export default function Review() {
                       </CardContent>
 
                       <CardActions disableSpacing>
-                        <Button
-                          aria-label="download"
-                          color="primary"
-                          startIcon={<SaveAltIcon />}
-                          onClick={() => downloadOriginals(order)}
-                          disabled={
-                            order.data.cart.items.reduce(
-                              (total, item) => total + item.originals?.length,
-                              0
-                            ) === 0
-                          }
-                        >
-                          Download Images
-                        </Button>
-                        <Button
-                          aria-label="mark in progress"
-                          color="primary"
-                          startIcon={
-                            order.data.isInProgress ? (
-                              <CheckBox />
-                            ) : (
-                              <CheckBoxOutlineBlank />
-                            )
-                          }
-                          onClick={() => updateOrderStatus(order)}
-                          disabled={order.data.isInProgress}
-                        >
-                          In Progress
-                        </Button>
-                        <Button
-                          aria-label="mark complete"
-                          color="primary"
-                          startIcon={
-                            order.data.isComplete ? (
-                              <CheckBox />
-                            ) : (
-                              <CheckBoxOutlineBlank />
-                            )
-                          }
-                          onClick={() => updateOrderStatus(order, true)}
-                          disabled={
-                            !order.data.isInProgress || order.data.isComplete
-                          }
-                        >
-                          Complete
-                        </Button>
+                        <div style={{ display: "flex", flexWrap: "wrap" }}>
+                          <Button
+                            aria-label="download"
+                            color="primary"
+                            startIcon={<SaveAltIcon />}
+                            onClick={() => downloadOriginals(order)}
+                            disabled={
+                              order.data.cart.items.reduce(
+                                (total, item) => total + item.originals?.length,
+                                0
+                              ) === 0
+                            }
+                          >
+                            Download Images
+                          </Button>
+                          <Button
+                            aria-label="mark in progress"
+                            color="primary"
+                            startIcon={
+                              order.data.isInProgress ? (
+                                <CheckBox />
+                              ) : (
+                                <CheckBoxOutlineBlank />
+                              )
+                            }
+                            onClick={() => updateOrderStatus(order)}
+                            disabled={order.data.isInProgress}
+                          >
+                            In Progress
+                          </Button>
+                          <Button
+                            aria-label="mark complete"
+                            color="primary"
+                            startIcon={
+                              order.data.isComplete ? (
+                                <CheckBox />
+                              ) : (
+                                <CheckBoxOutlineBlank />
+                              )
+                            }
+                            onClick={() => updateOrderStatus(order, true)}
+                            disabled={
+                              !order.data.isInProgress || order.data.isComplete
+                            }
+                          >
+                            Complete
+                          </Button>
+                        </div>
                       </CardActions>
                     </Card>
                   </li>
