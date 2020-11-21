@@ -23,6 +23,7 @@ import {
   CheckBox,
   CheckBoxOutlineBlank,
   CheckCircle,
+  WatchLater,
 } from "@material-ui/icons";
 import { IOrder } from "../../model/Order";
 import Tooltip from "../../components/tooltip";
@@ -113,10 +114,14 @@ export default function Review() {
     }
   }, [rawOriginalsData]);
 
-  const markReviewed = (order: IFaunaObject<IOrder>) => {
+  const updateOrderStatus = (
+    order: IFaunaObject<IOrder>,
+    isComplete = false
+  ) => {
     updateOrder("order", "PATCH", {
       data: {
-        isReviewed: true,
+        isInProgress: true,
+        isComplete,
       },
       ref: order.ref,
       ts: order.ts,
@@ -128,7 +133,8 @@ export default function Review() {
             localOrder.data.payment.paymentID === order.data.payment.paymentID
         )
         .map((localOrder) => {
-          localOrder.data.isReviewed = true;
+          localOrder.data.isInProgress = true;
+          localOrder.data.isComplete = isComplete;
         });
       setOrders(originals);
     });
@@ -152,18 +158,38 @@ export default function Review() {
                   <li className={styles.order} key={order.ref["@ref"].id}>
                     <Card variant="outlined">
                       <CardHeader
+                        style={{
+                          opacity: order.data.isComplete ? 0.6 : 1,
+                        }}
                         title={
-                          <>
-                            {`Payment ID: ${order.data.payment.paymentID}`}{" "}
-                            {order.data.isReviewed ? (
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <span style={{ marginRight: "6px" }}>
+                              {!order.data.isComplete ? (
+                                `Payment ID: ${order.data.payment.paymentID}`
+                              ) : (
+                                <s>
+                                  Payment ID: ${order.data.payment.paymentID}
+                                </s>
+                              )}
+                            </span>
+                            {order.data.isComplete ? (
                               <Tooltip
-                                title="This order has been reviewed"
+                                title="This order has been completed"
                                 placement="top"
                               >
                                 <CheckCircle color="primary" />
                               </Tooltip>
+                            ) : order.data.isInProgress ? (
+                              <Tooltip
+                                title="This order is in progress"
+                                placement="top"
+                              >
+                                <WatchLater color="primary" />
+                              </Tooltip>
                             ) : null}
-                          </>
+                          </div>
                         }
                         subheader={moment(order.ts / 1000)
                           .locale("de")
@@ -216,19 +242,36 @@ export default function Review() {
                           Download Images
                         </Button>
                         <Button
-                          aria-label="mark reviewed"
+                          aria-label="mark in progress"
                           color="primary"
                           startIcon={
-                            order.data.isReviewed ? (
+                            order.data.isInProgress ? (
                               <CheckBox />
                             ) : (
                               <CheckBoxOutlineBlank />
                             )
                           }
-                          onClick={() => markReviewed(order)}
-                          disabled={order.data.isReviewed}
+                          onClick={() => updateOrderStatus(order)}
+                          disabled={order.data.isInProgress}
                         >
-                          Mark as Reviewed
+                          In Progress
+                        </Button>
+                        <Button
+                          aria-label="mark complete"
+                          color="primary"
+                          startIcon={
+                            order.data.isComplete ? (
+                              <CheckBox />
+                            ) : (
+                              <CheckBoxOutlineBlank />
+                            )
+                          }
+                          onClick={() => updateOrderStatus(order, true)}
+                          disabled={
+                            !order.data.isInProgress || order.data.isComplete
+                          }
+                        >
+                          Complete
                         </Button>
                       </CardActions>
                     </Card>

@@ -51,7 +51,8 @@ export default function Cart() {
       {
         cart: cartToOrder,
         payment,
-        isReviewed: false,
+        isInProgress: false,
+        isComplete: false,
       },
       null,
       checkoutComplete,

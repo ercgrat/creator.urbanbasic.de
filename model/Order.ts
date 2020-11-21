@@ -14,5 +14,6 @@ export interface IOrder {
     email: string;
     paymentID: string;
   };
-  isReviewed: boolean;
+  isInProgress: boolean;
+  isComplete: boolean;
 }
