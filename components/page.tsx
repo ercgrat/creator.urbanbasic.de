@@ -48,13 +48,13 @@ export default function Page({ children }) {
       </main>
       <footer className={styles.footer}>
         <p>
-          Zurück zu
+          Zurück zu{" "}
           <a href="https://urbanbasic.de" target="_blank">
             urbanbasic.de
           </a>
         </p>
         <p>
-          Dieser Designer wurde entwickelt und programmiert von
+          Dieser Designer wurde entwickelt und programmiert von{" "}
           <a href="https://linkedin.com/in/ercgrat" target="_blank">
             Eric Gratta
           </a>
