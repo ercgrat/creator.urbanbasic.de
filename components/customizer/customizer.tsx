@@ -8,11 +8,7 @@ import PositionRadioGroup from "./positionRadioGroup";
 import useCanvasUtils from "../../hooks/useCanvasUtils";
 import { Button, withStyles } from "@material-ui/core";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
-import {
-  DesignColor,
-  DesignSize,
-  DesignProduct
-} from "../../model/Cart";
+import { DesignColor, DesignSize, DesignProduct } from "../../model/Cart";
 import ShirtUnderlay from "../cart/shirtUnderlay";
 import React from "react";
 import ProductSelect from "./productSelect";
@@ -73,13 +69,6 @@ export default React.memo(function Customizer(props: {
 
     setCanvas(effectCanvas);
     setSelectedObject(null);
-
-    return () => {
-      if (effectCanvas) {
-        removeUnusedObjects(effectCanvas);
-        effectCanvas.dispose();
-      }
-    };
   }, [shirtPosition]);
 
   useEffect(() => {
@@ -188,10 +177,13 @@ export default React.memo(function Customizer(props: {
 
   const changePosition = useCallback(
     (event: React.SyntheticEvent, position: string) => {
-      const englishPosition = position === 'Vorne' ? 'front' : 'back';
+      removeUnusedObjects(canvas);
+      setObjects(canvas.getObjects());
+      canvas.dispose();
+      const englishPosition = position === "Vorne" ? "front" : "back";
       setShirtPosition(englishPosition);
     },
-    [setShirtPosition]
+    [setShirtPosition, setObjects, canvas]
   );
 
   const DeleteButton = withStyles({
