@@ -1,21 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import netlifyIdentity from 'netlify-identity-widget';
-import React from "react";
+import React from 'react';
 
-export const IdentityContext = React.createContext<[netlifyIdentity.User, string]>(null);
+export const IdentityContext = React.createContext<
+    [netlifyIdentity.User | null, string | undefined]
+>([null, undefined]);
 
-export default function useIdentity(): [netlifyIdentity.User, string] {
-
-    const [user, setUser] = useState<netlifyIdentity.User>(null);
-    const [token, setToken] = useState<string>(null);
+export default function useIdentity(): [
+    netlifyIdentity.User | null,
+    string | undefined
+] {
+    const [user, setUser] = useState<netlifyIdentity.User | null>(null);
+    const [token, setToken] = useState<string>();
 
     useEffect(() => {
-        netlifyIdentity.on('init', user => {
+        netlifyIdentity.on('init', (user) => {
             setUser(user);
         });
-        netlifyIdentity.on('login', user => {
+        netlifyIdentity.on('login', (user) => {
             setUser(user);
-            (netlifyIdentity as any).refresh().then(token => {
+            netlifyIdentity.refresh().then((token) => {
                 setToken(token);
             });
         });

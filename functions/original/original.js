@@ -1,6 +1,6 @@
 exports.handler = async (event, context) => {
     const path = event.path.replace(/\.netlify\/functions\/[^/]+/, '');
-    const segments = path.split('/').filter(e => e);
+    const segments = path.split('/').filter((e) => e);
 
     switch (event.httpMethod) {
         case 'GET':
@@ -8,7 +8,7 @@ exports.handler = async (event, context) => {
             if (segments.length === 0) {
                 return {
                     statusCode: 400,
-                    body: 'Request must include at least one identifier'
+                    body: 'Request must include at least one identifier',
                 };
             }
             event.id = segments[0];
@@ -19,4 +19,4 @@ exports.handler = async (event, context) => {
         statusCode: 400,
         body: 'unrecognized HTTP Method, must be GET',
     };
-}
+};

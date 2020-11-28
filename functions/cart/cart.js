@@ -1,6 +1,6 @@
 exports.handler = async (event, context) => {
     const path = event.path.replace(/\.netlify\/functions\/[^/]+/, '');
-    const segments = path.split('/').filter(e => e);
+    const segments = path.split('/').filter((e) => e);
 
     switch (event.httpMethod) {
         case 'GET':
@@ -8,7 +8,8 @@ exports.handler = async (event, context) => {
             if (segments.length === 0) {
                 return {
                     statusCode: 400,
-                    body: 'Too few segments in GET request, must be /.netlify/functions/cart/123456'
+                    body:
+                        'Too few segments in GET request, must be /.netlify/functions/cart/123456',
                 };
             }
             // e.g. GET /.netlify/functions/fauna-crud/123456
@@ -18,7 +19,8 @@ exports.handler = async (event, context) => {
             } else {
                 return {
                     statusCode: 400,
-                    body: 'Too many segments in GET request, must be /.netlify/functions/carts/123456'
+                    body:
+                        'Too many segments in GET request, must be /.netlify/functions/carts/123456',
                 };
             }
         case 'POST':
@@ -32,12 +34,13 @@ exports.handler = async (event, context) => {
             } else {
                 return {
                     statusCode: 400,
-                    body: 'Incorrect number of segments in POST request, must be /.netlify/functions/cart/123456'
+                    body:
+                        'Incorrect number of segments in POST request, must be /.netlify/functions/cart/123456',
                 };
             }
     }
     return {
         statusCode: 400,
-        body: 'unrecognized HTTP Method, must be one of GET/POST/PUT'
+        body: 'unrecognized HTTP Method, must be one of GET/POST/PUT',
     };
-}
+};

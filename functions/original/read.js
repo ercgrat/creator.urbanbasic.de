@@ -6,7 +6,7 @@ const client = new faunadb.Client({
     secret: process.env.FAUNA_DB_SECRET,
 });
 
-exports.handler = async event => {
+exports.handler = async (event) => {
     const idArray = event.id.split(',');
     console.log(`Function 'read' invoked with id: ${idArray}`);
 
@@ -20,13 +20,13 @@ exports.handler = async event => {
                 )
             )
         )
-        .then(response => {
+        .then((response) => {
             return {
                 statusCode: 200,
                 body: JSON.stringify(response),
             };
         })
-        .catch(error => {
+        .catch((error) => {
             console.log('error', error);
             return {
                 statusCode: 400,

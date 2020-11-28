@@ -11,15 +11,18 @@ npm install
 ## Running locally
 
 First, install Netlify CLI.
+
 ```bash
 npm install netlify-cli -g
 ```
 
 Then, build and run the development server.
+
 ```bash
 netlify build # or 'npm run build'
 netlify dev
 ```
 
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)

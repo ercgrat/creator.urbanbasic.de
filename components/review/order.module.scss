@@ -1,0 +1,21 @@
+.order {
+    display: flex;
+    flex-direction: column;
+    margin: 6px 0px;
+}
+
+.designs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.design {
+    display: flex;
+}
+
+.address {
+    margin-bottom: 12px;
+}

@@ -1,26 +1,28 @@
 import React from 'react';
 import PaypalExpressBtn from 'react-paypal-express-checkout';
+import { IPayment } from '../model/Order';
 
-export default function PayPalButton(props: {
-    total: number,
-    onSuccess?: (payment: any) => void,
-    onCancel?: (data: any) => void,
-    onError?: (err: any) => void
-}) {
+type Props = {
+    total: number;
+    onSuccess?: (payment: IPayment) => void;
+    onCancel?: (data: unknown) => void;
+    onError?: (err: unknown) => void;
+};
 
-    const onSuccess = (payment) => {
+const PayPalButton: React.FC<Props> = (props) => {
+    const onSuccess = (payment: IPayment) => {
         if (props.onSuccess) {
             props.onSuccess(payment);
         }
     };
 
-    const onCancel = (data) => {
+    const onCancel = (data: unknown) => {
         if (props.onCancel) {
             props.onCancel(data);
         }
     };
 
-    const onError = (err) => {
+    const onError = (err: unknown) => {
         if (props.onError) {
             props.onError(err);
         }
@@ -32,8 +34,10 @@ export default function PayPalButton(props: {
     }
     const currency = 'EUR';
     const client = {
-        sandbox: 'AReJHDdGIO940UAsIBQ5tEcru7xT6VpNjJ831GXb1k8bLUlkapanjRgGah--hz1JpCqMmfCv_ZEjDYSJ',
-        production: 'ATWKxMFb8u6IGhqznaIU6W3i1OyuOPFgFOOY37yNBOSyZole-7CIvMAmnxhYY0UDo_kdu4CExP9WoNT9',
+        sandbox:
+            'AReJHDdGIO940UAsIBQ5tEcru7xT6VpNjJ831GXb1k8bLUlkapanjRgGah--hz1JpCqMmfCv_ZEjDYSJ',
+        production:
+            'ATWKxMFb8u6IGhqznaIU6W3i1OyuOPFgFOOY37yNBOSyZole-7CIvMAmnxhYY0UDo_kdu4CExP9WoNT9',
     };
 
     return (
@@ -50,8 +54,10 @@ export default function PayPalButton(props: {
                 color: 'gold',
                 label: 'checkout',
                 shape: 'rect',
-                tagline: false
-            }} />
+                tagline: false,
+            }}
+        />
     );
+};
 
-}
+export default PayPalButton;

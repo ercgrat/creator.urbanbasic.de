@@ -14,39 +14,39 @@ $font-size-normal: 14px;
 $label-color: #84878a;
 
 @mixin page-heading {
-  margin: 0;
-  padding: 12px;
+    margin: 0;
+    padding: 12px;
 }
 
 @mixin footer {
-  margin: 0px -16px -24px -16px;
-  padding: 12px 24px;
-  background-color: $footer-background-color;
+    margin: 0px -16px -24px -16px;
+    padding: 12px 24px;
+    background-color: $footer-background-color;
 
-  @media screen and (max-width: 600px) {
-    padding: 12px;
-  }
+    @media screen and (max-width: 600px) {
+        padding: 12px;
+    }
 }
 
 @mixin hero-font {
-  font-size: 60px;
+    font-size: 60px;
 
-  @media screen and (max-width: 600px) {
-    font-size: 40px;
-  }
+    @media screen and (max-width: 600px) {
+        font-size: 40px;
+    }
 }
 
 @mixin cartItem {
-  display: grid;
-  grid-template-columns: 450px 60px 100px 100px 120px 50px;
-  gap: 12px 12px;
-  padding: 12px;
-  align-items: center;
-  font-weight: 400;
+    display: grid;
+    grid-template-columns: 450px 60px 100px 100px 120px 50px;
+    gap: 12px 12px;
+    padding: 12px;
+    align-items: center;
+    font-weight: 400;
 
-  @media screen and (max-width: 1000px) {
-    display: flex;
-    flex-direction: column;
-    padding: 6px;
-  }
+    @media screen and (max-width: 1000px) {
+        display: flex;
+        flex-direction: column;
+        padding: 6px;
+    }
 }

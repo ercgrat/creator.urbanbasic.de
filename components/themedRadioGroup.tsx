@@ -1,11 +1,17 @@
-import { FormControl, FormControlLabel, RadioGroup, Radio, makeStyles } from '@material-ui/core';
+import {
+    FormControl,
+    FormControlLabel,
+    RadioGroup,
+    Radio,
+    makeStyles,
+} from '@material-ui/core';
 
 const useRadioGroupStyles = makeStyles({
     radioGroup: {
-        'display': 'flex',
+        display: 'flex',
         'flex-direction': 'row',
-        'flex-wrap': 'wrap'
-    }
+        'flex-wrap': 'wrap',
+    },
 });
 
 const useRadioStyles = function () {
@@ -14,23 +20,25 @@ const useRadioStyles = function () {
         padding: '12px 30px',
         color: 'white',
         backgroundColor: '#74b6c7',
-        border: 'solid 1px rgba(0,0,0,0.3)'
-    } as any;
+        border: 'solid 1px rgba(0,0,0,0.3)',
+    };
 
     return makeStyles({
         iconRoot: {
-            padding: '0'
+            padding: '0',
         },
-        iconRootSelected: {
-        },
+        iconRootSelected: {},
         icon,
-        checkedIcon: Object.assign({ ...icon }, {
-            border: 'solid 1px #5c7d84',
-            backgroundColor: '#5c7d84'
-        }),
+        checkedIcon: Object.assign(
+            { ...icon },
+            {
+                border: 'solid 1px #5c7d84',
+                backgroundColor: '#5c7d84',
+            }
+        ),
         radioRoot: {
             position: 'relative',
-            margin: 0
+            margin: 0,
         },
         label: {
             position: 'absolute',
@@ -38,12 +46,12 @@ const useRadioStyles = function () {
             fontWeight: 'bold',
             left: 0,
             right: 0,
-            textAlign: 'center'
-        }
+            textAlign: 'center',
+        },
     })();
 };
 
-function ThemedRadio({ value }) {
+const ThemedRadio: React.FC<{ value: string }> = ({ value }) => {
     const classes = useRadioStyles();
 
     return (
@@ -52,19 +60,31 @@ function ThemedRadio({ value }) {
             control={
                 <Radio
                     value={value}
-                    classes={{ root: classes.iconRoot, checked: classes.iconRootSelected }}
+                    classes={{
+                        root: classes.iconRoot,
+                        checked: classes.iconRootSelected,
+                    }}
                     icon={<span className={classes.icon} />}
                     checkedIcon={<span className={classes.checkedIcon} />}
                     color="primary"
                 />
             }
             label={value}
-            classes={{ root: classes.radioRoot, label: classes.label }} />
-
+            classes={{ root: classes.radioRoot, label: classes.label }}
+        />
     );
-}
+};
 
-export default function ThemedRadioGroup(props: { onChange, values: string[], defaultValue: string, label: string }) {
+type Props = {
+    onChange?: (
+        event: React.ChangeEvent<HTMLInputElement>,
+        value: string
+    ) => void;
+    values: string[];
+    defaultValue: string;
+    label: string;
+};
+const ThemedRadioGroup: React.FC<Props> = (props) => {
     const classes = useRadioGroupStyles();
     return (
         <FormControl component="fieldset">
@@ -73,13 +93,14 @@ export default function ThemedRadioGroup(props: { onChange, values: string[], de
                 defaultValue={props.defaultValue}
                 aria-label={props.label}
                 name={`${props.label}-radios`}
-                onChange={props.onChange}>
-                {
-                    props.values.map(value => (
-                        <ThemedRadio key={value} value={value} />
-                    ))
-                }
+                onChange={props.onChange}
+            >
+                {props.values.map((value) => (
+                    <ThemedRadio key={value} value={value} />
+                ))}
             </RadioGroup>
         </FormControl>
     );
-}
+};
+
+export default ThemedRadioGroup;

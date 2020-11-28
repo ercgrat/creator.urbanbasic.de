@@ -1,49 +1,49 @@
-@import "../../styles/theme.scss";
+@import '../../styles/theme.scss';
 
 .list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .listHeader {
-  color: $label-color;
+    color: $label-color;
 }
 
 .listItem {
-  @include cartItem;
+    @include cartItem;
 }
 
 .cartSummary {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 6px;
 }
 
 .cartSummaryItem {
-  display: grid;
-  grid-template-columns: 1fr 150px;
-  text-align: right;
-  font-weight: 400;
-  margin: 6px;
+    display: grid;
+    grid-template-columns: 1fr 150px;
+    text-align: right;
+    font-weight: 400;
+    margin: 6px;
 }
 
 .cartSummaryTotal {
-  font-size: 27px;
+    font-size: 27px;
 }
 
 @media screen and (max-width: 1000px) {
-  .listHeader.listItem {
-    display: none;
-  }
+    .listHeader.listItem {
+        display: none;
+    }
 }
 
 @media screen and (max-width: 600px) {
-  .cartSummaryItem {
-    grid-template-columns: 1fr 80px;
-    margin: 6px 0px;
-  }
-  .cartSummaryTotal {
-    font-size: 18px;
-  }
+    .cartSummaryItem {
+        grid-template-columns: 1fr 80px;
+        margin: 6px 0px;
+    }
+    .cartSummaryTotal {
+        font-size: 18px;
+    }
 }

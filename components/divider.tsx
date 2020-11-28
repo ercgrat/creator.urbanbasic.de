@@ -2,13 +2,13 @@ import { Divider as MUIDivider, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
     divider: {
-        margin: '0 -16px'
-    }
+        margin: '0 -16px',
+    },
 });
 
-export default function Divider() {
+const Divider: React.FC = () => {
     const muiStyles = useStyles();
-    return (
-        <MUIDivider className={muiStyles.divider} />
-    );
-}
+    return <MUIDivider className={muiStyles.divider} />;
+};
+
+export default Divider;

@@ -1,12 +1,18 @@
 import React from 'react';
 import ThemedRadioGroup from '../themedRadioGroup';
 
-export default React.memo(function PositionRadioGroup(props: { onChange }) {
+type Props = {
+    onChange: (event: React.SyntheticEvent, value: string) => void;
+};
+const PositionRadioGroup: React.FC<Props> = (props) => {
     return (
         <ThemedRadioGroup
             values={['Vorne', 'Hinten']}
-            defaultValue='Vorne'
-            label='shirtPosition'
-            onChange={props.onChange} />
+            defaultValue="Vorne"
+            label="shirtPosition"
+            onChange={props.onChange}
+        />
     );
-});
+};
+
+export default React.memo(PositionRadioGroup);

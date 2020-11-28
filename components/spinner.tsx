@@ -1,29 +1,28 @@
-import { Backdrop, CircularProgress, makeStyles } from "@material-ui/core";
-import React from "react";
+import { Backdrop, CircularProgress, makeStyles } from '@material-ui/core';
+import React from 'react';
 
 const useStyles = makeStyles({
     backdrop: {
-        zIndex: 1
+        zIndex: 1,
     },
     circle: {
-        strokeLinecap: 'round'
-    }
+        strokeLinecap: 'round',
+    },
 });
 
 export default React.memo(function Spinner(props: { isSpinning: boolean }) {
     const classes = useStyles();
 
     return (
-        <Backdrop
-            open={props.isSpinning}
-            className={classes.backdrop}>
+        <Backdrop open={props.isSpinning} className={classes.backdrop}>
             <CircularProgress
-                color='secondary'
+                color="secondary"
                 size={200}
                 thickness={3}
                 classes={{
-                    circle: classes.circle
-                }} />
+                    circle: classes.circle,
+                }}
+            />
         </Backdrop>
     );
 });
