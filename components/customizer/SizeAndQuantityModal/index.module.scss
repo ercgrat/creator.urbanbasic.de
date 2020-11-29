@@ -1,0 +1,40 @@
+@import '../../../styles/theme.scss';
+
+.footer {
+    @include footer;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sizeList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sizeItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px;
+}
+
+.sizeItem:not(:last-child) {
+    border-bottom: solid $border-color 1px;
+}
+
+.priceLabelModal {
+    text-align: right;
+    margin: 12px 0px;
+}
+
+.quantity {
+    max-width: 100px;
+}
+
+.modalFooter {
+    margin: 0px -24px -7px -24px;
+    border-top: solid $border-color 1px;
+}
