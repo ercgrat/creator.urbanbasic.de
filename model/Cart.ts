@@ -15,9 +15,9 @@ export const ColorMap: { [key in DesignColor]: Color } = {
     white: { name: 'Weiß', color: 'white' },
     black: { name: 'Schwarz', color: 'black' },
     oxfordGrey: { name: 'Grau Melliert', color: 'rgb(142, 140, 146)' },
-    navy: { name: 'Navy Blau', color: 'rgb(48, 50, 75)' },
+    navy: { name: 'Navy Blau', color: 'rgb(33, 33, 78)' },
     orange: { name: 'Orange', color: 'rgb(229, 84, 3)' },
-    red: { name: 'Rot', color: 'rgba(157, 3, 6)' },
+    red: { name: 'Rot', color: 'rgba(130, 15, 19)' },
 };
 
 export enum DesignSize {
