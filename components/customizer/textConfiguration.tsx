@@ -87,6 +87,7 @@ export default React.memo(function TextConfiguration(props: {
     >();
     for (let i = 0; i < fonts.length; i++) {
         const font = fonts[i];
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         itemStyles.set(font, useFonts(font)());
     }
 

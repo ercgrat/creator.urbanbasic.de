@@ -1,28 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { ColorMap, DesignColor } from '../../model/Cart';
 
-export default React.memo(function ShirtUnderlay(props: {
+type Props = {
     shirtPosition: string;
     color: DesignColor;
     className?: string;
-}) {
+};
+
+const ShirtUnderlay: React.FC<Props> = ({
+    shirtPosition,
+    color,
+    className,
+}) => {
     const [heatheredImage, setHeatheredImage] = useState('');
 
-    const [color, setColor] = useState('');
-    const shirtUrl = `/images/tshirt-${props.shirtPosition}.png`;
+    const [effectiveColor, setEffectiveColor] = useState('');
+    const shirtUrl = `/images/tshirt-${shirtPosition}.png`;
+    const [previousShirtUrl, setPreviousShirtUrl] = useState<string>();
     useEffect(() => {
         // Wait until the shirt image loads before applying color or heathering
         // This prevents the big square flash of color when changing sides and shirts
 
         // If switching shirt sides, hide the color background
-        if (ColorMap[props.color].color === color) {
-            setColor('');
+        if (
+            shirtUrl !== previousShirtUrl &&
+            ColorMap[color].color === effectiveColor
+        ) {
+            setEffectiveColor('');
+            setPreviousShirtUrl(shirtUrl);
         }
         setHeatheredImage('');
         const img = new Image();
         const listener = () => {
-            setColor(ColorMap[props.color].color);
-            if (props.color === DesignColor.oxfordGrey) {
+            setEffectiveColor(ColorMap[color].color);
+            if (color === DesignColor.oxfordGrey) {
                 setHeatheredImage('url(/images/heather.png) ');
             }
         };
@@ -32,22 +43,22 @@ export default React.memo(function ShirtUnderlay(props: {
         return () => {
             img.removeEventListener('load', listener);
         };
-    }, [shirtUrl, props.color]);
+    }, [shirtUrl, color, effectiveColor, previousShirtUrl]);
 
     return (
         <>
             <div
-                className={props.className}
+                className={className}
                 style={{
                     position: 'relative',
-                    background: `${heatheredImage} center center / 100% 100% no-repeat ${color}`,
+                    background: `${heatheredImage} center center / 100% 100% no-repeat ${effectiveColor}`,
                     zIndex: 0,
                     top: '1px',
                     height: 'calc(100% - 1px)',
                 }}
             ></div>
             <div
-                className={props.className}
+                className={className}
                 style={{
                     position: 'absolute',
                     top: 0,
@@ -57,4 +68,6 @@ export default React.memo(function ShirtUnderlay(props: {
             />
         </>
     );
-});
+};
+
+export default React.memo(ShirtUnderlay);

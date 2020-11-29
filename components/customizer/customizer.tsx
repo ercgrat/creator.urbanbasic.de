@@ -24,13 +24,20 @@ export interface IDesignData {
 export const CANVAS_WIDTH = 168;
 export const CANVAS_HEIGHT = 252;
 
-export default React.memo(function Customizer(props: {
+type Props = {
     frontObjects: fabric.Object[];
     backObjects: fabric.Object[];
     color: DesignColor;
     product: DesignProduct;
     onDesignChanged: (data: Partial<IDesignData>) => void;
-}) {
+};
+
+const Customizer: React.FC<Props> = ({
+    frontObjects,
+    backObjects,
+    color,
+    onDesignChanged,
+}) => {
     const frontCanvasRef = useRef<HTMLDivElement>(null);
     const backCanvasRef = useRef<HTMLDivElement>(null);
     const [canvas, setCanvas] = useState<fabric.Canvas>(
@@ -40,40 +47,72 @@ export default React.memo(function Customizer(props: {
         fabric.Object | undefined
     >();
     const [shirtPosition, setShirtPosition] = useState<string>('front');
+    const previousShirtPosition = useRef<string>();
     const [hoveredColor, setHoveredColor] = useState<DesignColor | null>(null);
 
-    const canvasUtils = useCanvasUtils();
+    const { renderObjects } = useCanvasUtils();
+
+    const getObjects = useCallback(() => {
+        return shirtPosition === 'front' ? frontObjects : backObjects;
+    }, [backObjects, frontObjects, shirtPosition]);
+
+    const getCanvasRef = useCallback(() => {
+        return shirtPosition === 'front' ? frontCanvasRef : backCanvasRef;
+    }, [shirtPosition]);
+
+    const setObjects = useCallback(
+        (objects: fabric.Object[]) => {
+            const currentData = {} as Partial<IDesignData>;
+            if (shirtPosition === 'front') {
+                currentData.frontObjects = objects;
+            } else {
+                currentData.backObjects = objects;
+            }
+            onDesignChanged(currentData);
+        },
+        [onDesignChanged, shirtPosition]
+    );
+
+    const deleteSelectedObject = useCallback(() => {
+        if (selectedObject) {
+            canvas?.remove(selectedObject);
+            setSelectedObject(undefined);
+        }
+    }, [canvas, selectedObject]);
 
     useEffect(() => {
         /**
          * Discard and reconstruct the canvas when flipping sides.
          */
-        const effectCanvas = new fabric.Canvas(`${shirtPosition}Canvas`, {
-            width: getCanvasRef().current?.clientWidth ?? 0,
-            height: getCanvasRef().current?.clientHeight ?? 0,
-            selection: false,
-            preserveObjectStacking: true,
-        });
+        if (previousShirtPosition.current !== shirtPosition) {
+            previousShirtPosition.current = shirtPosition;
+            const effectCanvas = new fabric.Canvas(`${shirtPosition}Canvas`, {
+                width: getCanvasRef().current?.clientWidth ?? 0,
+                height: getCanvasRef().current?.clientHeight ?? 0,
+                selection: false,
+                preserveObjectStacking: true,
+            });
 
-        (async () => {
-            await canvasUtils.renderObjects(effectCanvas, getObjects());
-            effectCanvas.renderAll();
-        })();
+            (async () => {
+                await renderObjects(effectCanvas, getObjects());
+                effectCanvas.renderAll();
+            })();
 
-        effectCanvas.on('selection:cleared', () => {
-            removeUnusedObjects(effectCanvas);
+            effectCanvas.on('selection:cleared', () => {
+                removeUnusedObjects(effectCanvas);
+                setSelectedObject(undefined);
+            });
+            effectCanvas.on('selection:created', (event) => {
+                setSelectedObject(event.target as fabric.Object);
+            });
+            effectCanvas.on('selection:updated', (event) => {
+                setSelectedObject(event.target as fabric.Object);
+            });
+
+            setCanvas(effectCanvas);
             setSelectedObject(undefined);
-        });
-        effectCanvas.on('selection:created', (event) => {
-            setSelectedObject(event.target as fabric.Object);
-        });
-        effectCanvas.on('selection:updated', (event) => {
-            setSelectedObject(event.target as fabric.Object);
-        });
-
-        setCanvas(effectCanvas);
-        setSelectedObject(undefined);
-    }, [shirtPosition]);
+        }
+    }, [shirtPosition, renderObjects, getCanvasRef, getObjects]);
 
     useEffect(() => {
         /**
@@ -89,7 +128,7 @@ export default React.memo(function Customizer(props: {
         return () => {
             window.removeEventListener('keydown', listener);
         };
-    }, [selectedObject, setSelectedObject]);
+    }, [deleteSelectedObject, selectedObject, setSelectedObject]);
 
     useEffect(() => {
         /**
@@ -99,40 +138,17 @@ export default React.memo(function Customizer(props: {
         if (canvas) {
             setObjects(canvas.getObjects());
 
-            if (props.onDesignChanged) {
-                props.onDesignChanged({
-                    frontObjects:
-                        shirtPosition === 'front'
-                            ? canvas.getObjects()
-                            : props.frontObjects,
-                    backObjects:
-                        shirtPosition === 'front'
-                            ? props.backObjects
-                            : canvas.getObjects(),
+            if (shirtPosition === 'front') {
+                onDesignChanged({
+                    frontObjects: canvas.getObjects(),
+                });
+            } else {
+                onDesignChanged({
+                    backObjects: canvas.getObjects(),
                 });
             }
         }
-    }, [selectedObject]);
-
-    function getCanvasRef() {
-        return shirtPosition === 'front' ? frontCanvasRef : backCanvasRef;
-    }
-
-    function getObjects() {
-        return shirtPosition === 'front'
-            ? props.frontObjects
-            : props.backObjects;
-    }
-
-    function setObjects(objects: fabric.Object[]) {
-        const currentData = {} as Partial<IDesignData>;
-        if (shirtPosition === 'front') {
-            currentData.frontObjects = objects;
-        } else {
-            currentData.backObjects = objects;
-        }
-        props.onDesignChanged(currentData);
-    }
+    }, [canvas, onDesignChanged, selectedObject, setObjects, shirtPosition]);
 
     function removeUnusedObjects(canvas?: fabric.Canvas) {
         canvas?.forEachObject((obj) => {
@@ -149,13 +165,6 @@ export default React.memo(function Customizer(props: {
         });
     }
 
-    function deleteSelectedObject() {
-        if (selectedObject) {
-            canvas?.remove(selectedObject);
-            setSelectedObject(undefined);
-        }
-    }
-
     const changeProduct = useCallback(
         (
             event: React.ChangeEvent<{
@@ -163,20 +172,20 @@ export default React.memo(function Customizer(props: {
                 value: unknown;
             }>
         ) => {
-            props.onDesignChanged({
+            onDesignChanged({
                 product: DesignProduct[event.target.value as DesignProduct],
             });
         },
-        [props.product]
+        [onDesignChanged]
     );
 
     const changeColor = useCallback(
         (event: React.SyntheticEvent, color: DesignColor) => {
-            props.onDesignChanged({
+            onDesignChanged({
                 color: DesignColor[color],
             });
         },
-        [props.color, canvas, frontCanvasRef, backCanvasRef]
+        [onDesignChanged]
     );
 
     const changeHoveredColor = useCallback(
@@ -216,7 +225,7 @@ export default React.memo(function Customizer(props: {
                     <ShirtUnderlay
                         className={styles.shirtImage}
                         shirtPosition={shirtPosition}
-                        color={hoveredColor || props.color}
+                        color={hoveredColor || color}
                     />
                     {shirtPosition === 'front' ? (
                         <div
@@ -279,4 +288,6 @@ export default React.memo(function Customizer(props: {
             </div>
         </div>
     );
-});
+};
+
+export default React.memo(Customizer);

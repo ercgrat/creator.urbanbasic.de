@@ -34,6 +34,10 @@ const Home: React.FC = () => {
         [setFrontObjects, setBackObjects, setColor, setProduct]
     );
 
+    const designHasData = useCallback(() => {
+        return frontObjects.length !== 0 || backObjects.length !== 0;
+    }, [frontObjects, backObjects]);
+
     useEffect(() => {
         const listener = (event: BeforeUnloadEvent) => {
             if (designHasData()) {
@@ -46,11 +50,7 @@ const Home: React.FC = () => {
         return () => {
             window.removeEventListener('beforeunload', listener);
         };
-    }, [frontObjects, backObjects]);
-
-    function designHasData() {
-        return frontObjects.length !== 0 || backObjects.length !== 0;
-    }
+    }, [frontObjects, backObjects, designHasData]);
 
     return (
         <Page>

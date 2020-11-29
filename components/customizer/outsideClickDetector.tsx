@@ -33,7 +33,7 @@ function useOutsideClickDetector(
                 document.removeEventListener('mousedown', onClick);
             };
         }
-    }, [ref, disabled]);
+    }, [ref, disabled, onBlur]);
 }
 
 type Props = {

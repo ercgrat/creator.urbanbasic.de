@@ -43,7 +43,7 @@ const Review: React.FC = () => {
         } else {
             setOrders([]);
         }
-    }, [user, token]);
+    }, [user, token, loadOrders, openToast]);
 
     useEffect(() => {
         /** Process raw data to create Cart classes */

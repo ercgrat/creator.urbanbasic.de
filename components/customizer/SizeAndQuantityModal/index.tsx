@@ -9,7 +9,7 @@ import {
     Typography,
 } from '@material-ui/core';
 import { AddShoppingCart, Close } from '@material-ui/icons';
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import {
     Cart,
     Design,
@@ -82,39 +82,42 @@ const SizeAndQuantityModal: React.FC<Props> = ({
     >();
     const classes = useStyles();
 
-    function isAddToCartEnabled() {
+    const isAddToCartEnabled = useCallback(() => {
         // Button is enabled if any size has at least 1 quantity
         let sum = 0;
         for (const value of quantityMap.values()) {
             sum += value;
         }
         return sum > 0;
-    }
+    }, [quantityMap]);
 
-    function onQuantityChange(
-        event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-        size: string
-    ) {
-        let quantity: number | undefined = Number(event.target.value);
-        if (event.target.value.length === 0) {
-            quantity = undefined;
-        } else if (quantity < 0) {
-            quantity = 0;
-        } else if (quantity > 999) {
-            quantity = 999;
-        }
-        setQuantityMap(
-            produce((draftMap: Map<string, number>) => {
-                if (quantity !== undefined) {
-                    draftMap.set(size, quantity);
-                } else {
-                    draftMap.delete(size);
-                }
-            })
-        );
-    }
+    const onQuantityChange = useCallback(
+        (
+            event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            size: string
+        ) => {
+            let quantity: number | undefined = Number(event.target.value);
+            if (event.target.value.length === 0) {
+                quantity = undefined;
+            } else if (quantity < 0) {
+                quantity = 0;
+            } else if (quantity > 999) {
+                quantity = 999;
+            }
+            setQuantityMap(
+                produce((draftMap: Map<string, number>) => {
+                    if (quantity !== undefined) {
+                        draftMap.set(size, quantity);
+                    } else {
+                        draftMap.delete(size);
+                    }
+                })
+            );
+        },
+        [setQuantityMap]
+    );
 
-    async function addToCart() {
+    const addToCart = useCallback(async () => {
         if (!designHasData()) {
             return;
         }
@@ -194,7 +197,18 @@ const SizeAndQuantityModal: React.FC<Props> = ({
         });
 
         router.push('/cart');
-    }
+    }, [
+        designHasData,
+        canvasUtils,
+        frontObjects,
+        backObjects,
+        cart,
+        cartDispatcher,
+        quantityMap,
+        color,
+        product,
+        updateCart,
+    ]);
 
     return (
         <Dialog

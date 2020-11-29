@@ -9,7 +9,7 @@ type Props = {
     canvas: fabric.Canvas;
 };
 
-const ImageAdder: React.FC<Props> = (props) => {
+const ImageAdder: React.FC<Props> = ({ canvas }) => {
     const canvasUtils = useCanvasUtils();
     const onDrop = useCallback(
         async (acceptedFiles) => {
@@ -21,12 +21,12 @@ const ImageAdder: React.FC<Props> = (props) => {
             imageObject.scaleToHeight(100);
             imageObject.scaleToWidth(100);
             imageObject.set('data', file);
-            props.canvas.centerObject(imageObject);
-            props.canvas.add(imageObject);
-            props.canvas.setActiveObject(imageObject);
-            props.canvas.renderAll();
+            canvas.centerObject(imageObject);
+            canvas.add(imageObject);
+            canvas.setActiveObject(imageObject);
+            canvas.renderAll();
         },
-        [props.canvas]
+        [canvas, canvasUtils]
     );
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,

@@ -79,14 +79,16 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
             }
             return cart;
         },
-        []
+        [updateCart]
     );
+
     const [cart, cartDispatcher] = useReducer(
         memoizedCartDispatcher,
         new Cart()
     );
 
     useEffect(() => {
+        console.log('executed');
         /** On context creation, read cart from local storage and load from db or create new cart  */
         const cartID: string | null = window.localStorage.getItem(
             STORAGE_KEYS.CART_IDENTIFIER_KEY
@@ -105,7 +107,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
         } else {
             createCart(`cart`, 'POST', new Cart());
         }
-    }, [cartDispatcher]);
+    }, [cartDispatcher, createCart, loadCart]);
 
     useEffect(() => {
         /** If loaded from db, parse cart */
