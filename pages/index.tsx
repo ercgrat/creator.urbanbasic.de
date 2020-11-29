@@ -36,13 +36,12 @@ import {
 import styles from './index.module.scss';
 import Spinner from '../components/spinner';
 import CloseIcon from '@material-ui/icons/Close';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import router from 'next/router';
 import useLambda, { IFaunaObject } from '../hooks/useLambda';
 import { Cart } from '../model/Cart';
 import { formatPrice } from '../utils';
 import produce from 'immer';
+import { AddShoppingCart } from '@material-ui/icons';
 
 const useStyles = makeStyles({
     root: {
@@ -275,11 +274,10 @@ const Home: React.FC = () => {
                     disabled={!designHasData()}
                     variant="contained"
                     color="primary"
-                    startIcon={<AddShoppingCartIcon />}
                     size="large"
                     onClick={() => setIsSizeDialogOpen(true)}
                 >
-                    In den Warenkorb
+                    ZUR GRÖSSENAUSWAHL
                 </Button>
             </footer>
             <Dialog
@@ -363,17 +361,17 @@ const Home: React.FC = () => {
                             onClick={() => setIsSizeDialogOpen(false)}
                             color="default"
                         >
-                            Abbrechen
+                            ZURÜCK
                         </Button>
                         <Button
                             variant="contained"
                             color="primary"
                             disabled={!isAddToCartEnabled()}
-                            startIcon={<CheckCircleIcon />}
+                            startIcon={<AddShoppingCart />}
                             onClick={addToCart}
                             classes={{ root: classes.modalFooterButton }}
                         >
-                            Speichern und Fortfahren
+                            IN DEN WARENKORB
                         </Button>
                     </footer>
                     <Spinner isSpinning={isCartUpdating} />
