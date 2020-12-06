@@ -96,6 +96,7 @@ const Customizer: React.FC<Props> = ({
             (async () => {
                 await renderObjects(effectCanvas, getObjects());
                 effectCanvas.renderAll();
+                setObjects(effectCanvas.getObjects());
             })();
 
             effectCanvas.on('selection:cleared', () => {
@@ -112,7 +113,7 @@ const Customizer: React.FC<Props> = ({
             setCanvas(effectCanvas);
             setSelectedObject(undefined);
         }
-    }, [shirtPosition, renderObjects, getCanvasRef, getObjects]);
+    }, [shirtPosition, renderObjects, getCanvasRef, getObjects, setObjects]);
 
     useEffect(() => {
         /**
@@ -132,23 +133,13 @@ const Customizer: React.FC<Props> = ({
 
     useEffect(() => {
         /**
-         * Every time an object is added or removed from the canvas, or the color changes,
+         * Every time an object is added or removed from the canvas,
          * record the current objects and emit the latest state of the design.
          */
         if (canvas) {
             setObjects(canvas.getObjects());
-
-            if (shirtPosition === 'front') {
-                onDesignChanged({
-                    frontObjects: canvas.getObjects(),
-                });
-            } else {
-                onDesignChanged({
-                    backObjects: canvas.getObjects(),
-                });
-            }
         }
-    }, [canvas, onDesignChanged, selectedObject, setObjects, shirtPosition]);
+    }, [selectedObject, setObjects, canvas]);
 
     function removeUnusedObjects(canvas?: fabric.Canvas) {
         canvas?.forEachObject((obj) => {

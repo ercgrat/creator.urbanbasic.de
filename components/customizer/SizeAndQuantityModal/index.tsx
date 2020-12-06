@@ -9,7 +9,7 @@ import {
     Typography,
 } from '@material-ui/core';
 import { AddShoppingCart, Close } from '@material-ui/icons';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
     Cart,
     Design,
@@ -74,6 +74,7 @@ const SizeAndQuantityModal: React.FC<Props> = ({
     const [quantityMap, setQuantityMap] = useState<Map<string, number>>(
         defaultQuantityMap
     );
+    const [totalPrice, setTotalPrice] = useState<string>(formatPrice(0));
     const canvasUtils = useCanvasUtils();
     const { cart, cartDispatcher } = useContext(CartContext);
     const { execute: updateCart, isLoading: isCartUpdating } = useLambda<
@@ -116,6 +117,18 @@ const SizeAndQuantityModal: React.FC<Props> = ({
         },
         [setQuantityMap]
     );
+
+    useEffect(() => {
+        const ppu =
+            frontObjects.length > 0 && backObjects.length > 0
+                ? ProductMap[product].twoSidedPrice
+                : ProductMap[product].oneSidedPrice;
+        let totalQuantity = 0;
+        quantityMap.forEach((value) => {
+            totalQuantity += value;
+        });
+        setTotalPrice(formatPrice(totalQuantity * ppu));
+    }, [backObjects.length, frontObjects.length, product, quantityMap]);
 
     const addToCart = useCallback(async () => {
         if (!designHasData()) {
@@ -266,23 +279,7 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                 <div className={styles.priceLabelModal}>
                     <Typography variant="h6" component="span">
                         Total:{' '}
-                        <span className={styles.price}>
-                            {(() => {
-                                const ppu =
-                                    frontObjects.length > 0 &&
-                                    backObjects.length > 0
-                                        ? ProductMap[product].twoSidedPrice
-                                        : ProductMap[product].oneSidedPrice;
-                                const totalQuantity = Object.values(
-                                    quantityMap
-                                ).reduce(
-                                    (sum, current) =>
-                                        sum + (Number(current) || 0),
-                                    0
-                                );
-                                return formatPrice(totalQuantity * ppu);
-                            })()}
-                        </span>
+                        <span className={styles.price}>{totalPrice}</span>
                     </Typography>
                 </div>
                 <footer className={`${styles.footer} ${styles.modalFooter}`}>
