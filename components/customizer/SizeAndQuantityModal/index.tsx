@@ -149,8 +149,16 @@ const SizeAndQuantityModal: React.FC<Props> = ({
         });
         await canvasUtils.renderObjects(frontCanvas, frontObjects);
         await canvasUtils.renderObjects(backCanvas, backObjects);
-        const frontImageBlob = frontCanvas.toDataURL();
-        const backImageBlob = backCanvas.toDataURL();
+        const frontImageBlob = frontCanvas.toDataURL({
+            enableRetinaScaling: true,
+            multiplier: 10,
+            format: 'png',
+        });
+        const backImageBlob = backCanvas.toDataURL({
+            enableRetinaScaling: true,
+            multiplier: 10,
+            format: 'png',
+        });
         const originals = [];
         for (let i = 0; i < frontObjects.length; i++) {
             const object = frontObjects[i];

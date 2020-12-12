@@ -88,7 +88,6 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
     );
 
     useEffect(() => {
-        console.log('executed');
         /** On context creation, read cart from local storage and load from db or create new cart  */
         const cartID: string | null = window.localStorage.getItem(
             STORAGE_KEYS.CART_IDENTIFIER_KEY

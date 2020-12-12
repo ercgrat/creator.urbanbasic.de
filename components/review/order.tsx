@@ -15,7 +15,7 @@ import {
     CheckCircle,
 } from '@material-ui/icons';
 import moment from 'moment';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import useLambda, { IFaunaObject } from '../../hooks/useLambda';
 import { Cart } from '../../model/Cart';
 import { IOrder, IOriginal } from '../../model/Order';
@@ -36,16 +36,40 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
         execute: loadOriginals,
         isLoading: isLoadingOriginals,
     } = useLambda<IFaunaObject<IOriginal>[], undefined>();
-    function downloadOriginals(order: IFaunaObject<IOrder>) {
-        const originals: string[] = [];
-        order.data.cart.items.forEach((item) => {
-            item.originals?.forEach((original) => {
-                originals.push(original);
-            });
-        });
 
-        loadOriginals(`original/${originals.join(',')}`, 'GET');
-    }
+    const downloadOriginals = useCallback(
+        (order: IFaunaObject<IOrder>) => {
+            const originals: string[] = [];
+            order.data.cart.items.forEach((item) => {
+                item.originals?.forEach((original) => {
+                    originals.push(original);
+                });
+            });
+
+            loadOriginals(`original/${originals.join(',')}`, 'GET');
+        },
+        [loadOriginals]
+    );
+
+    const downloadDesigns = useCallback((order: IFaunaObject<IOrder>) => {
+        order.data.cart.items.forEach((item, index) => {
+            const frontLink = document.createElement('a');
+            frontLink.setAttribute('href', item.design.frontDataURL);
+            frontLink.setAttribute(
+                'download',
+                `order-${order.ref['@ref'].id}-${index}-front`
+            );
+            frontLink.click();
+
+            const backLink = document.createElement('a');
+            backLink.setAttribute('href', item.design.backDataURL);
+            backLink.setAttribute(
+                'download',
+                `order-${order.ref['@ref'].id}-${index}-back`
+            );
+            backLink.click();
+        });
+    }, []);
 
     useEffect(() => {
         if (rawOriginalsData) {
@@ -161,6 +185,14 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                             }
                         >
                             Download Images
+                        </Button>
+                        <Button
+                            aria-label="download"
+                            color="primary"
+                            startIcon={<SaveAlt />}
+                            onClick={() => downloadDesigns(order)}
+                        >
+                            Download Designs
                         </Button>
                         <Button
                             aria-label="mark in progress"
