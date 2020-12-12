@@ -49,6 +49,10 @@ const App: React.FC<{
                 <link rel="prefetch" href={`/images/tshirt-front.png`}></link>
                 <link rel="prefetch" href={`/images/tshirt-back.png`}></link>
                 <link rel="prefetch" href={`/images/heather.png`}></link>
+                <meta
+                    name="keywords"
+                    content="T-Shirt gestalten, T-Shirt Druck, Urban Basic, Printservice, Textildruck, Köln, Geschenk, Jungesellenabschied, Teamshirts, Arbeitsbekleidung, DIY, T-Shirts bedrucken"
+                ></meta>
             </Head>
             <IdentityContext.Provider value={user}>
                 <CartContext.Provider value={{ cart, cartDispatcher }}>
