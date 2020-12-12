@@ -18,7 +18,7 @@ exports.handler = async (event, context) => {
     }
 
     return client
-        .query(q.Paginate(q.Match(q.Index('all_orders'))), {
+        .query(q.Paginate(q.Match(q.Index('all_orders_by_created_at'))), {
             ts: Date.now() * 1000, // Microseconds since epoch
         })
         .then((response) => {

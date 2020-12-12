@@ -9,7 +9,10 @@ exports.handler = async (event) => {
     const data = JSON.parse(event.body);
     console.log('Function `create` invoked', data);
     const order = {
-        data,
+        data: {
+            ...data,
+            created_at: new Date().getTime(),
+        },
     };
 
     return client
