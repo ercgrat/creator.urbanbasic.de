@@ -6,6 +6,7 @@ import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import useIdentity, { IdentityContext } from '../hooks/useIdentity';
 import { enableMapSet } from 'immer';
+import ErrorBoundary from '../components/ErrorBoundary';
 enableMapSet();
 
 const App: React.FC<{
@@ -54,11 +55,13 @@ const App: React.FC<{
                     content="T-Shirt gestalten, T-Shirt Druck, Urban Basic, Printservice, Textildruck, Köln, Geschenk, Jungesellenabschied, Teamshirts, Arbeitsbekleidung, DIY, T-Shirts bedrucken"
                 ></meta>
             </Head>
-            <IdentityContext.Provider value={user}>
-                <CartContext.Provider value={{ cart, cartDispatcher }}>
-                    <Component {...pageProps} />
-                </CartContext.Provider>
-            </IdentityContext.Provider>
+            <ErrorBoundary>
+                <IdentityContext.Provider value={user}>
+                    <CartContext.Provider value={{ cart, cartDispatcher }}>
+                        <Component {...pageProps} />
+                    </CartContext.Provider>
+                </IdentityContext.Provider>
+            </ErrorBoundary>
         </ThemeProvider>
     );
 };

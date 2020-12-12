@@ -75,11 +75,12 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                         STORAGE_KEYS.CART_IDENTIFIER_KEY
                     );
                     cart = new Cart();
+                    createCart(`cart`, 'POST', cart);
                     break;
             }
             return cart;
         },
-        [updateCart]
+        [createCart, updateCart]
     );
 
     const [cart, cartDispatcher] = useReducer(
@@ -128,7 +129,6 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
         if (rawNewCartData) {
             const cart = new Cart();
             cart.id = rawNewCartData.ref['@ref'].id;
-            console.log('new', cart.id);
             window.localStorage.setItem(
                 STORAGE_KEYS.CART_IDENTIFIER_KEY,
                 cart.id
