@@ -1,31 +1,10 @@
 import { useCallback, useState } from 'react';
-
-function lambda<RequestType>(
-    func: string,
-    method: 'POST' | 'GET' | 'PUT' | 'PATCH',
-    body?: RequestType,
-    token?: string
-): Promise<Response> {
-    return fetch(`/.netlify/functions/${func}`, {
-        method,
-        body: body ? JSON.stringify(body) : undefined,
-        headers: token ? [['Authorization', `Bearer ${token}`]] : [],
-    });
-}
-
-export interface IFaunaObject<T> {
-    ref: {
-        '@ref': {
-            id: 'string';
-        };
-    };
-    data: T;
-    ts: number;
-}
+import { HttpMethod } from '../model/lambda';
+import { lambda } from '../utils/lambda';
 
 type LambdaExecutor<ResponseType, RequestType> = (
     path: string,
-    method: 'GET' | 'POST' | 'PUT' | 'PATCH',
+    method: HttpMethod,
     body?: RequestType,
     token?: string,
     onSuccess?: () => void,
@@ -45,7 +24,7 @@ export default function useLambda<ResponseType, RequestType>(): {
     const execute = useCallback(
         (
             path: string,
-            method: 'GET' | 'POST' | 'PUT' | 'PATCH',
+            method: HttpMethod,
             body?: RequestType,
             token?: string,
             onSuccess?: () => void,

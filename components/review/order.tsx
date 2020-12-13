@@ -14,30 +14,23 @@ import {
     SaveAlt,
     CheckCircle,
 } from '@material-ui/icons';
-import moment from 'moment';
-import React, { useCallback, useEffect } from 'react';
-import useLambda, { IFaunaObject } from '../../hooks/useLambda';
-import { Cart } from '../../model/Cart';
-import { IOrder, IOriginal } from '../../model/Order';
+import React, { useCallback } from 'react';
+import { Order as OrderModel } from '../../model/Order';
 import List from '../../components/cart/list';
-import Spinner from '../../components/spinner';
 import styles from './order.module.scss';
 
 type Props = {
-    order: IFaunaObject<IOrder>;
-    updateOrderStatus: (
-        order: IFaunaObject<IOrder>,
-        isComplete?: boolean
-    ) => void;
+    order: OrderModel;
+    updateOrderStatus: (order: OrderModel, isComplete?: boolean) => void;
 };
 const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
-    const {
+    /*const {
         data: rawOriginalsData,
         execute: loadOriginals,
         isLoading: isLoadingOriginals,
-    } = useLambda<IFaunaObject<IOriginal>[], undefined>();
+    } = useLambda<IFaunaObject<IOriginal>[], undefined>();*/
 
-    const downloadOriginals = useCallback(
+    /*const downloadOriginals = useCallback(
         (order: IFaunaObject<IOrder>) => {
             const originals: string[] = [];
             order.data.cart.items.forEach((item) => {
@@ -49,15 +42,15 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
             loadOriginals(`original/${originals.join(',')}`, 'GET');
         },
         [loadOriginals]
-    );
+    );*/
 
-    const downloadDesigns = useCallback((order: IFaunaObject<IOrder>) => {
-        order.data.cart.items.forEach((item, index) => {
+    const downloadDesigns = useCallback((order: OrderModel) => {
+        order.cart.items.forEach((item, index) => {
             const frontLink = document.createElement('a');
             frontLink.setAttribute('href', item.design.frontDataURL);
             frontLink.setAttribute(
                 'download',
-                `order-${order.ref['@ref'].id}-${index}-front`
+                `order-${order.id}-${index}-front`
             );
             frontLink.click();
 
@@ -65,13 +58,13 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
             backLink.setAttribute('href', item.design.backDataURL);
             backLink.setAttribute(
                 'download',
-                `order-${order.ref['@ref'].id}-${index}-back`
+                `order-${order.id}-${index}-back`
             );
             backLink.click();
         });
     }, []);
 
-    useEffect(() => {
+    /*useEffect(() => {
         if (rawOriginalsData) {
             rawOriginalsData.forEach((original) => {
                 const link = document.createElement('a');
@@ -80,14 +73,14 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                 link.click();
             });
         }
-    }, [rawOriginalsData]);
+    }, [rawOriginalsData]);*/
 
     return (
-        <li className={styles.order} key={order.ref['@ref'].id}>
+        <li className={styles.order} key={order.id}>
             <Card variant="outlined">
                 <CardHeader
                     style={{
-                        opacity: order.data.isComplete ? 0.6 : 1,
+                        opacity: order.isComplete ? 0.6 : 1,
                     }}
                     title={
                         <div
@@ -101,23 +94,22 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                                     marginRight: '6px',
                                 }}
                             >
-                                {!order.data.isComplete ? (
-                                    `Payment ID: ${order.data.payment.paymentID}`
+                                {!order.isComplete ? (
+                                    `Payment ID: ${order.payment.paymentID}`
                                 ) : (
                                     <s>
-                                        Payment ID: $
-                                        {order.data.payment.paymentID}
+                                        Payment ID: ${order.payment.paymentID}
                                     </s>
                                 )}
                             </span>
-                            {order.data.isComplete ? (
+                            {order.isComplete ? (
                                 <Tooltip
                                     title="This order has been completed"
                                     placement="top"
                                 >
                                     <CheckCircle color="primary" />
                                 </Tooltip>
-                            ) : order.data.isInProgress ? (
+                            ) : order.isInProgress ? (
                                 <Tooltip
                                     title="This order is in progress"
                                     placement="top"
@@ -127,9 +119,7 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                             ) : null}
                         </div>
                     }
-                    subheader={moment(order.ts / 1000)
-                        .locale('de')
-                        .format('LLL')}
+                    subheader={order.created_at.locale('de').format('LLL')}
                 />
                 <CardContent>
                     <section className={styles.address}>
@@ -141,13 +131,13 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                             Name & Address
                         </Typography>
                         <Typography variant="body1" component="p">
-                            {order.data.payment.address.recipient_name}
+                            {order.payment.address.recipient_name}
                         </Typography>
                         <Typography variant="body2" component="p">
-                            {order.data.payment.address.line1} <br />
-                            {order.data.payment.address.city},{' '}
-                            {order.data.payment.address.state}{' '}
-                            {order.data.payment.address.postal_code}
+                            {order.payment.address.line1} <br />
+                            {order.payment.address.city},{' '}
+                            {order.payment.address.state}{' '}
+                            {order.payment.address.postal_code}
                         </Typography>
                     </section>
                     <section>
@@ -158,10 +148,10 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                         >
                             Designs
                         </Typography>
-                        <List cart={order.data.cart as Cart} />
+                        <List cart={order.cart} />
                     </section>
 
-                    <Spinner isSpinning={isLoadingOriginals} />
+                    {/* <Spinner isSpinning={isLoadingOriginals} /> */}
                 </CardContent>
 
                 <CardActions disableSpacing>
@@ -171,7 +161,7 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                             flexWrap: 'wrap',
                         }}
                     >
-                        <Button
+                        {/*<Button
                             aria-label="download"
                             color="primary"
                             startIcon={<SaveAlt />}
@@ -185,7 +175,7 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                             }
                         >
                             Download Images
-                        </Button>
+                          </Button>*/}
                         <Button
                             aria-label="download"
                             color="primary"
@@ -198,14 +188,14 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                             aria-label="mark in progress"
                             color="primary"
                             startIcon={
-                                order.data.isInProgress ? (
+                                order.isInProgress ? (
                                     <CheckBox />
                                 ) : (
                                     <CheckBoxOutlineBlank />
                                 )
                             }
                             onClick={() => updateOrderStatus(order)}
-                            disabled={order.data.isInProgress}
+                            disabled={order.isInProgress}
                         >
                             In Progress
                         </Button>
@@ -213,17 +203,14 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                             aria-label="mark complete"
                             color="primary"
                             startIcon={
-                                order.data.isComplete ? (
+                                order.isComplete ? (
                                     <CheckBox />
                                 ) : (
                                     <CheckBoxOutlineBlank />
                                 )
                             }
                             onClick={() => updateOrderStatus(order, true)}
-                            disabled={
-                                !order.data.isInProgress ||
-                                order.data.isComplete
-                            }
+                            disabled={!order.isInProgress || order.isComplete}
                         >
                             Complete
                         </Button>

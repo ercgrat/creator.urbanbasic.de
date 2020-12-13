@@ -1,7 +1,7 @@
 import { Typography } from '@material-ui/core';
 import React from 'react';
 import { Cart, CartItem } from '../../model/Cart';
-import { formatPrice } from '../../model/Constants';
+import { formatPrice } from '../../utils';
 import Item from './item';
 import styles from './list.module.scss';
 

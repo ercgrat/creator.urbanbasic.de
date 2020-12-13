@@ -1,22 +1,19 @@
+/* Import faunaDB sdk */
 const faunadb = require('faunadb');
 
 const q = faunadb.query;
 const client = new faunadb.Client({
     secret: process.env.FAUNA_DB_SECRET,
+    timeout: 30,
 });
 
 exports.handler = async (event) => {
-    const order = JSON.parse(event.body);
-    console.log('Function `create` invoked', request);
-
+    const id = event.id;
+    console.log(`Function 'read' invoked. Read id: ${id}`);
     return client
-        .query(
-            q.Update(
-                q.Ref(q.Collection('orders'), event.id),
-                order
-            )
-        )
+        .query(q.Get(q.Ref(q.Collection('cart_items'), id)))
         .then((response) => {
+            console.log('success', response);
             return {
                 statusCode: 200,
                 body: JSON.stringify(response),
@@ -25,7 +22,7 @@ exports.handler = async (event) => {
         .catch((error) => {
             console.log('error', error);
             return {
-                statusCode: 400,
+                statusCode: error.requestResult.statusCode,
                 body: JSON.stringify(error),
             };
         });

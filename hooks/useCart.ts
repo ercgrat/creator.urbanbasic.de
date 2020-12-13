@@ -1,8 +1,9 @@
 import React, { Dispatch, useCallback, useEffect } from 'react';
 import { useReducer } from 'react';
-import { Cart, ICart } from '../model/Cart';
-import { STORAGE_KEYS } from '../model/Constants';
-import useLambda, { IFaunaObject } from './useLambda';
+import { Cart, ICart, ICartItem } from '../model/Cart';
+import { IFaunaObject } from '../model/lambda';
+import { STORAGE_KEYS, URLS } from '../utils/const';
+import useLambda from './useLambda';
 
 interface ICartContext {
     readonly cart: Cart;
@@ -17,7 +18,7 @@ export const CartContext = React.createContext<ICartContext>({
 
 export enum CartActionType {
     initializeFromDB,
-    updateList,
+    deleteItem,
     updateQuantity,
     clear,
 }
@@ -27,8 +28,13 @@ export interface ICartAction {
     value?: unknown;
 }
 
+export interface ICartDeleteActionValue {
+    cart: Cart;
+    itemId: string;
+}
+
 export type ICartRequest = {
-    cart: ICart;
+    cartItems: string[];
     originals?: string[];
 };
 
@@ -40,15 +46,16 @@ export type UpdateCartActionValue = {
 export function useCart(): [Cart, Dispatch<ICartAction>] {
     const { data: rawNewCartData, execute: createCart } = useLambda<
         IFaunaObject<ICart>,
-        ICart
+        void
     >();
-    const { data: rawCartData, execute: loadCart } = useLambda<
-        IFaunaObject<ICart>,
-        undefined
-    >();
+    const { data: rawCartData, execute: loadCart } = useLambda<ICart, void>();
     const { execute: updateCart } = useLambda<
         IFaunaObject<ICart>,
         ICartRequest
+    >();
+    const { execute: updateCartItem } = useLambda<
+        IFaunaObject<ICartItem>,
+        ICartItem
     >();
 
     const memoizedCartDispatcher = useCallback(
@@ -58,16 +65,29 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                 case CartActionType.initializeFromDB:
                     cart = Cart.clone(action.value as Cart);
                     break;
-                case CartActionType.updateList:
-                    cart = Cart.clone(action.value as Cart);
-                    updateCart(`cart/${cart.id}`, 'PUT', { cart });
+                case CartActionType.deleteItem:
+                    {
+                        const value = action.value as ICartDeleteActionValue;
+                        cart = Cart.clone(value.cart as Cart);
+                        updateCart(
+                            URLS.CART.DELETE_ITEM(cart.id ?? '0', value.itemId),
+                            'DELETE',
+                            {
+                                cartItems: cart.getItemIds(),
+                            }
+                        );
+                    }
                     break;
                 case CartActionType.updateQuantity:
                     {
                         const value = action.value as UpdateCartActionValue;
                         const item = cart.getItem(value.index);
                         item.quantity = value.quantity;
-                        updateCart(`cart/${cart.id}`, 'PUT', { cart });
+                        updateCartItem(
+                            URLS.CART_ITEM.UPDATE(item.id ?? '0'),
+                            'PUT',
+                            item
+                        );
                     }
                     break;
                 case CartActionType.clear:
@@ -75,12 +95,12 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                         STORAGE_KEYS.CART_IDENTIFIER_KEY
                     );
                     cart = new Cart();
-                    createCart(`cart`, 'POST', cart);
+                    createCart(URLS.CART.CREATE(), 'POST');
                     break;
             }
             return cart;
         },
-        [createCart, updateCart]
+        [createCart, updateCart, updateCartItem]
     );
 
     const [cart, cartDispatcher] = useReducer(
@@ -101,27 +121,31 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                 undefined,
                 undefined,
                 () => {
-                    createCart(`cart`, 'POST', new Cart());
+                    createCart(`cart`, 'POST');
                 }
             );
         } else {
-            createCart(`cart`, 'POST', new Cart());
+            createCart(`cart`, 'POST');
         }
     }, [cartDispatcher, createCart, loadCart]);
 
     useEffect(() => {
-        /** If loaded from db, parse cart */
-        if (rawCartData) {
-            const rawData = rawCartData;
-            const cartID: string = window.localStorage.getItem(
-                STORAGE_KEYS.CART_IDENTIFIER_KEY
-            ) as string;
-            const cart = Cart.constructCartFromDatabase(cartID, rawData.data);
-            cartDispatcher({
-                type: CartActionType.initializeFromDB,
-                value: cart,
-            });
-        }
+        (async () => {
+            /** If loaded from db, parse cart */
+            if (rawCartData) {
+                const cartID: string = window.localStorage.getItem(
+                    STORAGE_KEYS.CART_IDENTIFIER_KEY
+                ) as string;
+                const cart = await Cart.constructCartFromDatabase(
+                    cartID,
+                    rawCartData.itemIds
+                );
+                cartDispatcher({
+                    type: CartActionType.initializeFromDB,
+                    value: cart,
+                });
+            }
+        })();
     }, [rawCartData, cartDispatcher]);
 
     useEffect(() => {

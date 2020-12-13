@@ -17,7 +17,17 @@ exports.handler = async (event, context) => {
             // e.g. POST /.netlify/functions/fauna-crud with a body of key value pair objects, NOT strings
             return require('./create').handler(event, context);
         case 'PATCH':
-            return require('./update').handler(event, context);
+            // e.g. PATCH /.netlify/functions/fauna-crud/123456 with a body of key value pair objects, NOT strings
+            if (segments.length === 1) {
+                event.id = segments[0];
+                return require('./update').handler(event, context);
+            } else {
+                return {
+                    statusCode: 400,
+                    body:
+                        'Incorrect number of segments in PATCH request, must be /.netlify/functions/order/123456',
+                };
+            }
     }
     return {
         statusCode: 400,

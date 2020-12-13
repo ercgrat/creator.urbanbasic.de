@@ -17,6 +17,7 @@ import {
     DesignProduct,
     DesignSize,
     ICart,
+    ICartItem,
     ProductMap,
 } from '../../../model/Cart';
 import { formatPrice } from '../../../utils';
@@ -32,8 +33,10 @@ import {
     CartContext,
     ICartRequest,
 } from '../../../hooks/useCart';
-import useLambda, { IFaunaObject } from '../../../hooks/useLambda';
+import useLambda from '../../../hooks/useLambda';
 import styles from './index.module.scss';
+import { URLS } from '../../../utils/const';
+import { IFaunaObject } from '../../../model/lambda';
 
 const useStyles = makeStyles({
     root: {
@@ -78,9 +81,13 @@ const SizeAndQuantityModal: React.FC<Props> = ({
     const canvasUtils = useCanvasUtils();
     const { cart, cartDispatcher } = useContext(CartContext);
     const { execute: updateCart, isLoading: isCartUpdating } = useLambda<
-        IFaunaObject<ICart>,
+        ICart,
         ICartRequest
     >();
+    const {
+        execute: createCartItem,
+        isLoading: isCartItemBeingCreated,
+    } = useLambda<IFaunaObject<ICartItem>, ICartItem>();
     const classes = useStyles();
 
     const isAddToCartEnabled = useCallback(() => {
@@ -159,7 +166,9 @@ const SizeAndQuantityModal: React.FC<Props> = ({
             multiplier: 10,
             format: 'png',
         });
-        const originals = [];
+
+        // TODO Either improve or remove
+        /*const originals = [];
         for (let i = 0; i < frontObjects.length; i++) {
             const object = frontObjects[i];
             if (object.isType('image')) {
@@ -177,17 +186,13 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                 );
                 originals.push(original);
             }
-        }
+        }*/
 
         const selectedSizes = Object.keys(DesignSize).filter((size) => {
             const quantity = quantityMap.get(size);
             return quantity && quantity > 0;
         }) as DesignSize[];
-        let newCart = new Cart(
-            cart.id,
-            cart.getItems().slice(),
-            cart.getShipping()
-        );
+        let newCart = new Cart(cart.id, cart.getItems().slice());
         for (let i = 0; i < selectedSizes.length; i++) {
             const size: DesignSize = selectedSizes[i];
             const design = new Design(
@@ -199,16 +204,24 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                 DesignSize[size],
                 product
             );
-            newCart.addDesign(design, quantityMap.get(size));
-            await updateCart(`cart/${newCart.id}`, 'PUT', {
-                cart: newCart,
-                originals,
-            }).then(
-                (rawCartData) =>
-                    (newCart = Cart.constructCartFromDatabase(
-                        newCart.id ?? '0',
-                        rawCartData.data
-                    ))
+
+            const cartItem = newCart.addDesign(design, quantityMap.get(size));
+            const cartItemResponse = await createCartItem(
+                URLS.CART_ITEM.CREATE(),
+                'POST',
+                cartItem
+            );
+            cartItem.id = cartItemResponse.ref['@ref'].id;
+            const cartData = await updateCart(
+                URLS.CART.UPDATE(newCart.id ?? '0'),
+                'PUT',
+                {
+                    cartItems: newCart.getItemIds(),
+                }
+            );
+            newCart = await Cart.constructCartFromDatabase(
+                cartData.id,
+                cartData.itemIds
             );
         }
 
@@ -228,6 +241,7 @@ const SizeAndQuantityModal: React.FC<Props> = ({
         quantityMap,
         color,
         product,
+        createCartItem,
         updateCart,
     ]);
 
@@ -305,7 +319,9 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                         IN DEN WARENKORB
                     </Button>
                 </footer>
-                <Spinner isSpinning={isCartUpdating} />
+                <Spinner
+                    isSpinning={isCartUpdating || isCartItemBeingCreated}
+                />
             </DialogContent>
         </Dialog>
     );

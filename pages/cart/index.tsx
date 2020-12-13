@@ -21,7 +21,10 @@ import { IOrder, IPayment } from '../../model/Order';
 const Cart: React.FC = () => {
     const { cart, cartDispatcher } = useContext(CartContext);
     const [isToastOpen, openToast, closeToast] = useToastState();
-    const { execute: submitOrder, isLoading } = useLambda<undefined, IOrder>();
+    const { execute: submitOrder, isLoading } = useLambda<
+        void,
+        Partial<IOrder>
+    >();
 
     function quantityChanged(
         event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
@@ -48,16 +51,15 @@ const Cart: React.FC = () => {
         const validItems = cart
             .getItems()
             .filter((item) => item.quantity && item.quantity > 0);
-        const cartToOrder = new CartModel(
-            cart.id,
-            validItems,
-            cart.shippingCost
-        );
+        const cartToOrder = new CartModel(cart.id, validItems);
         submitOrder(
             'order',
             'POST',
             {
-                cart: cartToOrder,
+                cart: {
+                    id: cartToOrder.id ?? '0',
+                    itemIds: cartToOrder.getItemIds(),
+                },
                 payment,
                 isInProgress: false,
                 isComplete: false,
@@ -91,10 +93,13 @@ const Cart: React.FC = () => {
                         }
                         onDelete={(event, index) => {
                             const newCart = CartModel.clone(cart);
-                            newCart.removeAt(index);
+                            const deletedItem = newCart.removeAt(index);
                             cartDispatcher({
-                                type: CartActionType.updateList,
-                                value: newCart,
+                                type: CartActionType.deleteItem,
+                                value: {
+                                    cart: newCart,
+                                    itemId: deletedItem.id,
+                                },
                             });
                         }}
                     />

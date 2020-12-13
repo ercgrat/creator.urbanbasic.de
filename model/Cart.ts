@@ -1,3 +1,7 @@
+import { URLS } from '../utils/const';
+import { processLambda } from '../utils/lambda';
+import { IFaunaObject } from './lambda';
+
 export enum DesignColor {
     white = 'white',
     black = 'black',
@@ -76,7 +80,15 @@ export class Design {
     }
 }
 
-export class CartItem {
+export interface ICartItem {
+    design: Design;
+    quantity: number;
+    price: number;
+    originals?: string[];
+}
+
+export class CartItem implements ICartItem {
+    id?: string;
     design: Design;
     quantity: number;
     price: number;
@@ -97,39 +109,45 @@ export class CartItem {
     }
 }
 
-export interface ICartStorage {
-    items: CartItem[];
+export interface ICart {
+    id: string;
+    itemIds: string[];
 }
 
-export interface ICart extends ICartStorage {
-    id?: string;
-    shippingCost: number;
-}
-
-export class Cart implements ICart {
+export class Cart {
     public id?: string;
     public items: CartItem[];
     public readonly shippingCost: number = 3.9;
 
-    static constructCartFromDatabase(id: string, partial: ICart): Cart {
-        return new Cart(
-            id,
-            partial.items.map(
-                (item) =>
-                    new CartItem(item.design, item.quantity, item.originals)
-            ),
-            partial.shippingCost
-        );
+    static async constructCartFromDatabase(
+        id: string,
+        itemIds: string[]
+    ): Promise<Cart> {
+        return new Promise((resolve) => {
+            const cartItemPromises = itemIds.map(async (id) => {
+                const cartItem = await processLambda<
+                    void,
+                    IFaunaObject<ICartItem>
+                >(URLS.CART_ITEM.READ(id), 'GET');
+                return new CartItem(
+                    cartItem.data.design,
+                    cartItem.data.quantity,
+                    cartItem.data.originals
+                );
+            });
+            Promise.all(cartItemPromises).then((cartItems) => {
+                resolve(new Cart(id, cartItems));
+            });
+        });
     }
 
     static clone(cart: Cart): Cart {
-        return new Cart(cart.id, cart.getItems().slice(), cart.getShipping());
+        return new Cart(cart.id, cart.getItems().slice());
     }
 
-    constructor(id?: string, items?: CartItem[], shippingCost?: number) {
+    constructor(id?: string, items?: CartItem[]) {
         this.id = id || undefined;
         this.items = items || [];
-        this.shippingCost = shippingCost || this.shippingCost;
     }
 
     public getSize(): number {
@@ -144,20 +162,27 @@ export class Cart implements ICart {
         return this.items.slice();
     }
 
+    public getItemIds(): string[] {
+        return this.items.map((item) => item.id ?? '0');
+    }
+
     public addItem(item: CartItem): void {
         this.items.push(item);
         this.items = this.items.slice();
     }
 
-    public addDesign(design: Design, quantity?: number): void {
-        this.items.push(new CartItem(design, quantity));
+    public addDesign(design: Design, quantity?: number): CartItem {
+        const cartItem = new CartItem(design, quantity);
+        this.items.push(cartItem);
         this.items = this.items.slice();
+        return cartItem;
     }
 
-    public removeAt(index: number): void {
+    public removeAt(index: number): CartItem {
         const newItems = this.items;
-        newItems.splice(index, 1);
+        const deletedItem = newItems.splice(index, 1);
         this.items = newItems;
+        return deletedItem[0];
     }
 
     public getSubtotal(): number {

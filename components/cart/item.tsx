@@ -2,7 +2,7 @@ import { Button, IconButton, TextField } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import React from 'react';
 import { CartItem } from '../../model/Cart';
-import { formatPrice } from '../../model/Constants';
+import { formatPrice } from '../../utils';
 import Design from './design';
 import styles from './item.module.scss';
 

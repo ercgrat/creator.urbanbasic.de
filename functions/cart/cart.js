@@ -35,7 +35,7 @@ exports.handler = async (event, context) => {
                 return {
                     statusCode: 400,
                     body:
-                        'Incorrect number of segments in POST request, must be /.netlify/functions/cart/123456',
+                        'Incorrect number of segments in PUT request, must be /.netlify/functions/cart/123456',
                 };
             }
     }

@@ -13,13 +13,11 @@ exports.handler = async (event) => {
     const data = JSON.parse(event.body);
     console.log('Function `create` invoked', data);
     const item = {
-        data: {
-            itemIds: [],
-        },
+        data,
     };
     /* construct the fauna query */
     return client
-        .query(q.Create(q.Collection('carts'), item))
+        .query(q.Create(q.Collection('cart_items'), item))
         .then((response) => {
             console.log('success', response);
             /* Success! return the response with statusCode 200 */

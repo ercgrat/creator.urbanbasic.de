@@ -1,28 +1,27 @@
+/* Import faunaDB sdk */
 const faunadb = require('faunadb');
 
-/* configure faunaDB Client with our secret */
 const q = faunadb.query;
 const client = new faunadb.Client({
     secret: process.env.FAUNA_DB_SECRET,
     timeout: 30,
 });
 
-/* export our lambda function as named "handler" export */
+/**
+ *  TODO: This operation can result in the deletion of cart items, which have associated original images.
+ *        The associated documents in the originals collection will not be deleted, which is a memory leak of sorts.
+ **/
 exports.handler = async (event) => {
-    /* parse the string body into a useable JS object */
     const data = JSON.parse(event.body);
-    console.log('Function `create` invoked', data);
-    const item = {
-        data: {
-            itemIds: [],
-        },
-    };
-    /* construct the fauna query */
+    const id = event.id;
+    console.log(`Function 'update' invoked. update id: ${id}`);
+
     return client
-        .query(q.Create(q.Collection('carts'), item))
+        .query(q.Update(q.Ref(q.Collection('cart_items'), id), { data }), {
+            queryTimeout: 30000,
+        })
         .then((response) => {
             console.log('success', response);
-            /* Success! return the response with statusCode 200 */
             return {
                 statusCode: 200,
                 body: JSON.stringify(response),
@@ -30,9 +29,8 @@ exports.handler = async (event) => {
         })
         .catch((error) => {
             console.log('error', error);
-            /* Error! return the error with statusCode 400 */
             return {
-                statusCode: 400,
+                statusCode: 500,
                 body: JSON.stringify(error),
             };
         });

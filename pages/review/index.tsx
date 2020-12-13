@@ -8,9 +8,10 @@ import { Cart } from '../../model/Cart';
 import styles from './index.module.scss';
 import useToastState from '../../hooks/useToastState';
 import Toast from '../../components/toast';
-import useLambda, { IFaunaObject } from '../../hooks/useLambda';
-import { IOrder } from '../../model/Order';
-import Order from '../../components/review/order';
+import useLambda from '../../hooks/useLambda';
+import { IOrder, Order } from '../../model/Order';
+import { IFaunaObject } from '../../model/lambda';
+import OrderComponent from '../../components/review/order';
 
 const Review: React.FC = () => {
     const [user, token] = useContext(IdentityContext);
@@ -20,9 +21,9 @@ const Review: React.FC = () => {
     >();
     const { execute: updateOrder, isLoading: isUpdatingOrder } = useLambda<
         IFaunaObject<IOrder>,
-        IFaunaObject<Partial<IOrder>>
+        Partial<Order>
     >();
-    const [orders, setOrders] = useState<IFaunaObject<IOrder>[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [isToastOpen, openToast, closeToast] = useToastState();
 
     useEffect(() => {
@@ -46,17 +47,31 @@ const Review: React.FC = () => {
     }, [user, token, loadOrders, openToast]);
 
     useEffect(() => {
-        /** Process raw data to create Cart classes */
-        if (rawOrderData) {
-            const orderData = rawOrderData.slice();
-            orderData.forEach((order) => {
-                order.data.cart = Cart.constructCartFromDatabase(
-                    order.data.cart.id ?? '0',
-                    order.data.cart
-                );
-            });
-            setOrders(orderData);
-        }
+        (async () => {
+            /** Process raw data to create Cart classes */
+            if (rawOrderData) {
+                const orders: Order[] = [];
+                const orderData = rawOrderData.slice();
+                for (let i = 0; i < orderData.length; i++) {
+                    const order = orderData[i];
+                    const cart = await Cart.constructCartFromDatabase(
+                        order.data.cart.id ?? '0',
+                        order.data.cart.itemIds
+                    );
+                    orders.push(
+                        new Order(
+                            order.ref['@ref'].id,
+                            order.data.created_at,
+                            cart,
+                            order.data.payment,
+                            order.data.isInProgress,
+                            order.data.isComplete
+                        )
+                    );
+                }
+                setOrders(orders);
+            }
+        })();
     }, [rawOrderData]);
 
     function login() {
@@ -68,28 +83,20 @@ const Review: React.FC = () => {
         login();
     }
 
-    const updateOrderStatus = (
-        order: IFaunaObject<IOrder>,
-        isComplete = false
-    ) => {
+    const updateOrderStatus = (order: Order, isComplete = false) => {
         updateOrder('order', 'PATCH', {
-            data: {
-                isInProgress: true,
-                isComplete,
-            },
-            ref: order.ref,
-            ts: order.ts,
+            isInProgress: true,
+            isComplete,
         }).then(() => {
             const originals = orders.slice();
             originals
                 .filter(
                     (localOrder) =>
-                        localOrder.data.payment.paymentID ===
-                        order.data.payment.paymentID
+                        localOrder.payment.paymentID === order.payment.paymentID
                 )
                 .map((localOrder) => {
-                    localOrder.data.isInProgress = true;
-                    localOrder.data.isComplete = isComplete;
+                    localOrder.isInProgress = true;
+                    localOrder.isComplete = isComplete;
                 });
             setOrders(originals);
         });
@@ -114,7 +121,7 @@ const Review: React.FC = () => {
                                 </Typography>
                             ) : (
                                 orders.map((order) => (
-                                    <Order
+                                    <OrderComponent
                                         order={order}
                                         updateOrderStatus={updateOrderStatus}
                                     />

@@ -1,4 +1,5 @@
-import { ICart } from './Cart';
+import moment from 'moment';
+import { Cart, ICart } from './Cart';
 
 export interface IPayment {
     address: {
@@ -15,6 +16,7 @@ export interface IPayment {
 
 export interface IOrder {
     cart: ICart;
+    created_at: number;
     payment: IPayment;
     isInProgress: boolean;
     isComplete: boolean;
@@ -22,4 +24,29 @@ export interface IOrder {
 
 export interface IOriginal {
     src: string;
+}
+
+export class Order {
+    id: string;
+    created_at: moment.Moment;
+    cart: Cart;
+    payment: IPayment;
+    isInProgress: boolean;
+    isComplete: boolean;
+
+    constructor(
+        id: string,
+        created_at: number,
+        cart: Cart,
+        payment: IPayment,
+        isInProgress: boolean,
+        isComplete: boolean
+    ) {
+        this.id = id;
+        this.created_at = moment(created_at / 1000);
+        this.cart = cart;
+        this.payment = payment;
+        this.isInProgress = isInProgress;
+        this.isComplete = isComplete;
+    }
 }
