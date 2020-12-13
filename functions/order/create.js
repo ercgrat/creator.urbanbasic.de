@@ -7,7 +7,7 @@ const client = new faunadb.Client({
 
 exports.handler = async (event) => {
     const data = JSON.parse(event.body);
-    console.log('Function `create` invoked', data);
+    console.log('Function `create` invoked');
     const order = {
         data: {
             ...data,
@@ -25,7 +25,7 @@ exports.handler = async (event) => {
                     q.Delete(q.Ref(q.Collection('carts'), order.data.cart.id))
                 )
                 .then((response) => {
-                    console.log('success', response);
+                    console.log('success');
                     return {
                         statusCode: 200,
                         body: JSON.stringify(response),

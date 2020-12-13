@@ -12,11 +12,11 @@ const client = new faunadb.Client({
  *        The associated documents in the originals collection will not be deleted, which is a memory leak of sorts.
  **/
 exports.handler = async (event) => {
-    const { cart, originals } = JSON.parse(event.body);
+    const { itemIds, originals } = JSON.parse(event.body);
     const id = event.id;
     console.log(`Function 'update' invoked. update id: ${id}`);
 
-    if (originals) {
+    /*if (originals) {
         cart.items[cart.items.length - 1].originals = [];
     }
 
@@ -48,22 +48,25 @@ exports.handler = async (event) => {
               )
             : []
     )
-        .then(() => {
-            // Replace the cart value
-            return client
-                .query(
-                    q.Update(q.Ref(q.Collection('carts'), id), { data: cart }),
-                    {
-                        queryTimeout: 30000,
-                    }
-                )
-                .then((response) => {
-                    console.log('success', response);
-                    return {
-                        statusCode: 200,
-                        body: JSON.stringify(response),
-                    };
-                });
+        .then(() => {*/
+    // Replace the cart value
+    return client
+        .query(
+            q.Update(q.Ref(q.Collection('carts'), id), {
+                data: {
+                    itemIds,
+                },
+            }),
+            {
+                queryTimeout: 30000,
+            }
+        )
+        .then((response) => {
+            console.log('success');
+            return {
+                statusCode: 200,
+                body: JSON.stringify(response),
+            };
         })
         .catch((error) => {
             console.log('error', error);

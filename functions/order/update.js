@@ -7,7 +7,7 @@ const client = new faunadb.Client({
 
 exports.handler = async (event) => {
     const order = JSON.parse(event.body);
-    console.log('Function `create` invoked', request);
+    console.log('Function `update` invoked');
 
     return client
         .query(

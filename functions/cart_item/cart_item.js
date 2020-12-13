@@ -38,18 +38,6 @@ exports.handler = async (event, context) => {
                       'Incorrect number of segments in PUT request, must be /.netlify/functions/cart/123456',
               };
           }
-      case 'DELETE':
-        // e.g. DELETE /.netlify/functions/fauna-crud/123456 with a body of key value pair objects, NOT strings
-        if (segments.length === 1) {
-          event.id = segments[0];
-          return require('./delete').handler(event, context);
-      } else {
-          return {
-              statusCode: 400,
-              body:
-                  'Incorrect number of segments in DELETE request, must be /.netlify/functions/cart/123456',
-          };
-      }
   }
   return {
       statusCode: 400,

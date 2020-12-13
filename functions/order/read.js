@@ -12,7 +12,7 @@ exports.handler = async (event) => {
     return client
         .query(q.Get(q.Ref(`classes/items/${id}`)))
         .then((response) => {
-            console.log('success', response);
+            console.log('success');
             return {
                 statusCode: 200,
                 body: JSON.stringify(response),

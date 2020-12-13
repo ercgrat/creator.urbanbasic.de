@@ -34,7 +34,7 @@ export interface ICartDeleteActionValue {
 }
 
 export type ICartRequest = {
-    cartItems: string[];
+    itemIds: string[];
     originals?: string[];
 };
 
@@ -48,7 +48,10 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
         IFaunaObject<ICart>,
         void
     >();
-    const { data: rawCartData, execute: loadCart } = useLambda<ICart, void>();
+    const { data: rawCartData, execute: loadCart } = useLambda<
+        IFaunaObject<ICart>,
+        void
+    >();
     const { execute: updateCart } = useLambda<
         IFaunaObject<ICart>,
         ICartRequest
@@ -73,7 +76,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                             URLS.CART.DELETE_ITEM(cart.id ?? '0', value.itemId),
                             'DELETE',
                             {
-                                cartItems: cart.getItemIds(),
+                                itemIds: cart.getItemIds(),
                             }
                         );
                     }
@@ -138,7 +141,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                 ) as string;
                 const cart = await Cart.constructCartFromDatabase(
                     cartID,
-                    rawCartData.itemIds
+                    rawCartData.data.itemIds
                 );
                 cartDispatcher({
                     type: CartActionType.initializeFromDB,

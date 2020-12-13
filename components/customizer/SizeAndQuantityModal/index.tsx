@@ -37,6 +37,7 @@ import useLambda from '../../../hooks/useLambda';
 import styles from './index.module.scss';
 import { URLS } from '../../../utils/const';
 import { IFaunaObject } from '../../../model/lambda';
+import { changeDpiDataUrl } from 'changedpi';
 
 const useStyles = makeStyles({
     root: {
@@ -81,7 +82,7 @@ const SizeAndQuantityModal: React.FC<Props> = ({
     const canvasUtils = useCanvasUtils();
     const { cart, cartDispatcher } = useContext(CartContext);
     const { execute: updateCart, isLoading: isCartUpdating } = useLambda<
-        ICart,
+        IFaunaObject<ICart>,
         ICartRequest
     >();
     const {
@@ -156,18 +157,21 @@ const SizeAndQuantityModal: React.FC<Props> = ({
         });
         await canvasUtils.renderObjects(frontCanvas, frontObjects);
         await canvasUtils.renderObjects(backCanvas, backObjects);
-        const frontImageBlob = frontCanvas.toDataURL({
-            enableRetinaScaling: true,
-            multiplier: 10,
-            format: 'png',
-        });
-        const backImageBlob = backCanvas.toDataURL({
-            enableRetinaScaling: true,
-            multiplier: 10,
-            format: 'png',
-        });
+        const frontImageBlob = changeDpiDataUrl(
+            frontCanvas.toDataURL({
+                enableRetinaScaling: true,
+                multiplier: 5,
+            }),
+            300
+        );
+        const backImageBlob = changeDpiDataUrl(
+            backCanvas.toDataURL({
+                enableRetinaScaling: true,
+                multiplier: 5,
+            }),
+            300
+        );
 
-        // TODO Either improve or remove
         /*const originals = [];
         for (let i = 0; i < frontObjects.length; i++) {
             const object = frontObjects[i];
@@ -216,12 +220,12 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                 URLS.CART.UPDATE(newCart.id ?? '0'),
                 'PUT',
                 {
-                    cartItems: newCart.getItemIds(),
+                    itemIds: newCart.getItemIds(),
                 }
             );
             newCart = await Cart.constructCartFromDatabase(
-                cartData.id,
-                cartData.itemIds
+                cartData.ref['@ref'].id,
+                cartData.data.itemIds
             );
         }
 

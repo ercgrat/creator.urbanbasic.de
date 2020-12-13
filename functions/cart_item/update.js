@@ -21,7 +21,7 @@ exports.handler = async (event) => {
             queryTimeout: 30000,
         })
         .then((response) => {
-            console.log('success', response);
+            console.log('success');
             return {
                 statusCode: 200,
                 body: JSON.stringify(response),

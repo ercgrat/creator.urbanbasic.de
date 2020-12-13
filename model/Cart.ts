@@ -125,15 +125,16 @@ export class Cart {
     ): Promise<Cart> {
         return new Promise((resolve) => {
             const cartItemPromises = itemIds.map(async (id) => {
-                const cartItem = await processLambda<
+                const cartItemData = await processLambda<
                     void,
                     IFaunaObject<ICartItem>
                 >(URLS.CART_ITEM.READ(id), 'GET');
-                return new CartItem(
-                    cartItem.data.design,
-                    cartItem.data.quantity,
-                    cartItem.data.originals
+                const cartItem = new CartItem(
+                    cartItemData.data.design,
+                    cartItemData.data.quantity
                 );
+                cartItem.id = cartItemData.ref['@ref'].id;
+                return cartItem;
             });
             Promise.all(cartItemPromises).then((cartItems) => {
                 resolve(new Cart(id, cartItems));

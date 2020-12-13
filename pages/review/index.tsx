@@ -12,6 +12,7 @@ import useLambda from '../../hooks/useLambda';
 import { IOrder, Order } from '../../model/Order';
 import { IFaunaObject } from '../../model/lambda';
 import OrderComponent from '../../components/review/order';
+import { URLS } from '../../utils/const';
 
 const Review: React.FC = () => {
     const [user, token] = useContext(IdentityContext);
@@ -84,7 +85,7 @@ const Review: React.FC = () => {
     }
 
     const updateOrderStatus = (order: Order, isComplete = false) => {
-        updateOrder('order', 'PATCH', {
+        updateOrder(URLS.ORDER.UPDATE(order.id), 'PATCH', {
             isInProgress: true,
             isComplete,
         }).then(() => {

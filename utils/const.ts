@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
 
 const CART = 'cart';
 const CART_ITEM = 'cart_item';
+const ORDER = 'order';
 
 export const URLS = {
     CART_ITEM: {
@@ -16,6 +17,9 @@ export const URLS = {
         CREATE: (): string => CART,
         UPDATE: (id: string): string => `${CART}/${id}`,
         DELETE_ITEM: (id: string, itemId: string): string =>
-            `${CART}/${id}/${CART_ITEM}/${itemId}`,
+            `${CART}/${id}/item/${itemId}`,
+    },
+    ORDER: {
+        UPDATE: (id: string): string => `${ORDER}/${id}`,
     },
 };

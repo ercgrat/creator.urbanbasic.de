@@ -10,8 +10,7 @@ const client = new faunadb.Client({
 /* export our lambda function as named "handler" export */
 exports.handler = async (event) => {
     /* parse the string body into a useable JS object */
-    const data = JSON.parse(event.body);
-    console.log('Function `create` invoked', data);
+    console.log('Function `create` invoked');
     const item = {
         data: {
             itemIds: [],
@@ -21,7 +20,7 @@ exports.handler = async (event) => {
     return client
         .query(q.Create(q.Collection('carts'), item))
         .then((response) => {
-            console.log('success', response);
+            console.log('success');
             /* Success! return the response with statusCode 200 */
             return {
                 statusCode: 200,
