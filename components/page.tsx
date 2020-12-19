@@ -23,6 +23,8 @@ const Page: React.FC = ({ children }) => {
                             src="/images/logo.png"
                             alt="Create Your Own Style"
                             className={styles.logo}
+                            width={330}
+                            height={80}
                         ></img>
                     </Link>
                     <ul className={styles.navActions}>
