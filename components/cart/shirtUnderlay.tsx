@@ -15,7 +15,7 @@ const ShirtUnderlay: React.FC<Props> = ({
     const [heatheredImage, setHeatheredImage] = useState('');
 
     const [effectiveColor, setEffectiveColor] = useState('');
-    const shirtUrl = `/images/tshirt-${shirtPosition}.png`;
+    const shirtUrl = `/images/tshirt-${shirtPosition}.webp`;
     const [previousShirtUrl, setPreviousShirtUrl] = useState<string>();
     useEffect(() => {
         // Wait until the shirt image loads before applying color or heathering
@@ -34,7 +34,7 @@ const ShirtUnderlay: React.FC<Props> = ({
         const listener = () => {
             setEffectiveColor(ColorMap[color].color);
             if (color === DesignColor.oxfordGrey) {
-                setHeatheredImage('url(/images/heather.png) ');
+                setHeatheredImage('url(/images/heather.webp) ');
             }
         };
         img.addEventListener('load', listener);

@@ -47,9 +47,9 @@ const App: React.FC<{
             <Head>
                 <title>Creator</title>
                 <link rel="icon" href="/favicon.png" />
-                <link rel="prefetch" href={`/images/tshirt-front.png`}></link>
-                <link rel="prefetch" href={`/images/tshirt-back.png`}></link>
-                <link rel="prefetch" href={`/images/heather.png`}></link>
+                <link rel="prefetch" href={`/images/tshirt-front.webp`}></link>
+                <link rel="prefetch" href={`/images/tshirt-back.webp`}></link>
+                <link rel="prefetch" href={`/images/heather.webp`}></link>
                 <meta
                     name="keywords"
                     content="T-Shirt gestalten, T-Shirt Druck, Urban Basic, Printservice, Textildruck, Köln, Geschenk, Jungesellenabschied, Teamshirts, Arbeitsbekleidung, DIY, T-Shirts bedrucken"
