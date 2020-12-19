@@ -47,9 +47,26 @@ const App: React.FC<{
             <Head>
                 <title>Creator</title>
                 <link rel="icon" href="/favicon.png" />
-                <link rel="prefetch" href={`/images/tshirt-front.webp`}></link>
-                <link rel="prefetch" href={`/images/tshirt-back.webp`}></link>
-                <link rel="prefetch" href={`/images/heather.webp`}></link>
+                <link
+                    rel="preload"
+                    href={`/images/tshirt-front.webp`}
+                    as="image"
+                ></link>
+                <link
+                    rel="prefetch"
+                    href={`/images/tshirt-back.webp`}
+                    as="image"
+                ></link>
+                <link
+                    rel="preload"
+                    href={`/images/heather.webp`}
+                    as="image"
+                ></link>
+                <link
+                    rel="preload"
+                    href={`/fonts/FiraSans.ttf`}
+                    as="font"
+                ></link>
                 <meta
                     name="keywords"
                     content="T-Shirt gestalten, T-Shirt Druck, Urban Basic, Printservice, Textildruck, Köln, Geschenk, Jungesellenabschied, Teamshirts, Arbeitsbekleidung, DIY, T-Shirts bedrucken"
