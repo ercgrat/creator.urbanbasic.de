@@ -23,3 +23,5 @@ export const URLS = {
         UPDATE: (id: string): string => `${ORDER}/${id}`,
     },
 };
+
+export const VAT = 0.19; // Tax

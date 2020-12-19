@@ -17,6 +17,9 @@ import useLambda from '../../hooks/useLambda';
 import router from 'next/router';
 import { Cart as CartModel } from '../../model/Cart';
 import { IOrder, IPayment } from '../../model/Order';
+import { formatPrice } from '../../utils';
+import { Typography } from '@material-ui/core';
+import { VAT } from '../../utils/const';
 
 const Cart: React.FC = () => {
     const { cart, cartDispatcher } = useContext(CartContext);
@@ -103,6 +106,39 @@ const Cart: React.FC = () => {
                             });
                         }}
                     />
+                    {cart
+                        .getItems()
+                        .reduce((total, item) => total + item.quantity, 0) >
+                    0 ? (
+                        <section className={styles.cartSummary}>
+                            <p className={styles.cartSummaryItem}>
+                                <span className={styles.label}>
+                                    Zwischensumme
+                                </span>
+                                {formatPrice(cart.getSubtotal())}
+                            </p>
+                            <p className={styles.cartSummaryItem}>
+                                <span className={styles.label}>Versand</span>
+                                {formatPrice(cart.getShipping())}
+                            </p>
+                            <p
+                                className={`${styles.cartSummaryItem} ${styles.cartSummaryTotal}`}
+                            >
+                                <span className={styles.label}>
+                                    Rechnungsbetrag
+                                </span>
+                                {formatPrice(cart.getTotal())}
+                            </p>
+                            <p className={styles.cartSummaryItem}>
+                                <span className={styles.label}>Enth. MwSt</span>
+                                {formatPrice(VAT * cart.getTotal())}
+                            </p>
+                        </section>
+                    ) : (
+                        <Typography variant="body2" component="p">
+                            None of the items in your cart have a quantity.
+                        </Typography>
+                    )}
                     {cart
                         .getItems()
                         .reduce((total, item) => total + item.quantity, 0) >

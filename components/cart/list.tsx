@@ -1,7 +1,5 @@
-import { Typography } from '@material-ui/core';
 import React from 'react';
 import { Cart, CartItem } from '../../model/Cart';
-import { formatPrice } from '../../utils';
 import Item from './item';
 import styles from './list.module.scss';
 
@@ -41,30 +39,6 @@ export default React.memo(function List(props: {
                     </li>
                 ))}
             </ul>
-            {props.cart
-                .getItems()
-                .reduce((total, item) => total + item.quantity, 0) > 0 ? (
-                <section className={styles.cartSummary}>
-                    <p className={styles.cartSummaryItem}>
-                        <span className={styles.label}>Zwischensumme</span>
-                        {formatPrice(props.cart.getSubtotal())}
-                    </p>
-                    <p className={styles.cartSummaryItem}>
-                        <span className={styles.label}>Versand</span>
-                        {formatPrice(props.cart.getShipping())}
-                    </p>
-                    <p
-                        className={`${styles.cartSummaryItem} ${styles.cartSummaryTotal}`}
-                    >
-                        <span className={styles.label}>Rechnungsbetrag</span>
-                        {formatPrice(props.cart.getTotal())}
-                    </p>
-                </section>
-            ) : (
-                <Typography variant="body2" component="p">
-                    None of the items in your cart have a quantity.
-                </Typography>
-            )}
         </React.Fragment>
     );
 });
