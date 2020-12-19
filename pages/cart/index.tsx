@@ -22,7 +22,7 @@ import { Typography } from '@material-ui/core';
 import { VAT } from '../../utils/const';
 
 const Cart: React.FC = () => {
-    const { cart, cartDispatcher } = useContext(CartContext);
+    const { cart, cartDispatcher, isCartLoading } = useContext(CartContext);
     const [isToastOpen, openToast, closeToast] = useToastState();
     const { execute: submitOrder, isLoading } = useLambda<
         void,
@@ -163,7 +163,7 @@ const Cart: React.FC = () => {
                 Something went wrong. Please try again or contact us for
                 support.
             </Toast>
-            <Spinner isSpinning={isLoading} />
+            <Spinner isSpinning={isLoading || isCartLoading} />
         </Page>
     );
 };

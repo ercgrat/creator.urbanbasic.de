@@ -1,6 +1,6 @@
 import Page from '../components/page';
 import { Button } from '@material-ui/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { fabric } from 'fabric';
 import Customizer, { IDesignData } from '../components/customizer/customizer';
 import Divider from '../components/divider';
@@ -8,6 +8,8 @@ import { DesignColor, DesignProduct } from '../model/Cart';
 import styles from './index.module.scss';
 import PricePerUnitRow from '../components/customizer/SizeAndQuantityModal/PricePerUnitRow';
 import SizeAndQuantityModal from '../components/customizer/SizeAndQuantityModal';
+import { getDesignExceedsDataLimit } from '../utils/canvas';
+import Spinner from '../components/spinner';
 
 const Home: React.FC = () => {
     const [frontObjects, setFrontObjects] = useState<fabric.Object[]>([]);
@@ -15,6 +17,12 @@ const Home: React.FC = () => {
     const [color, setColor] = useState<DesignColor>(DesignColor.white);
     const [product, setProduct] = useState<DesignProduct>(DesignProduct.tshirt);
     const [isSizeDialogOpen, setIsSizeDialogOpen] = useState<boolean>(false);
+    const [
+        isTryingToOpenSizeDialog,
+        setIsTryingToOpenSizeDialog,
+    ] = useState<boolean>(false);
+    const previousIsSizeDialogOpenRef = useRef<boolean>();
+    const [forceUpdateCanvas, setForceUpdateCanvas] = useState<number>(0); // Counter that force updates the customizer canvas
 
     const onDesignChanged = useCallback(
         (data: Partial<IDesignData>) => {
@@ -52,6 +60,39 @@ const Home: React.FC = () => {
         };
     }, [frontObjects, backObjects, designHasData]);
 
+    useEffect(() => {
+        if (previousIsSizeDialogOpenRef.current === undefined) {
+            // Don't force update canvas on initial load
+            previousIsSizeDialogOpenRef.current = isSizeDialogOpen;
+            return;
+        }
+        if (!isSizeDialogOpen) {
+            // Need to re-render the canvas when size and quantity modal is cancelled otherwise the resizing widgets are broken
+            setForceUpdateCanvas((forceUpdateCanvas) => forceUpdateCanvas + 1);
+        }
+    }, [isSizeDialogOpen]);
+
+    const tryToLaunchSizeAndQuantityModal = useCallback(() => {
+        setIsTryingToOpenSizeDialog(true);
+        (async () => {
+            const designExceedsDataLimit = await getDesignExceedsDataLimit(
+                frontObjects,
+                backObjects
+            );
+            if (designExceedsDataLimit) {
+                alert(
+                    'Dein Design übersteigt die zulässige Dateigröße. Bitte verwende Dateien mit einer geringeren Gesamtgröße. Weiter Infos findest Du in unseren FAQs.'
+                );
+                setForceUpdateCanvas(
+                    (forceUpdateCanvas) => forceUpdateCanvas + 1
+                );
+            } else {
+                setIsSizeDialogOpen(true);
+            }
+            setIsTryingToOpenSizeDialog(false);
+        })();
+    }, [backObjects, frontObjects]);
+
     return (
         <Page>
             <header className={styles.header}>
@@ -63,6 +104,7 @@ const Home: React.FC = () => {
                 color={color}
                 product={product}
                 onDesignChanged={onDesignChanged}
+                forceUpdateCanvas={forceUpdateCanvas}
             />
             <Divider />
             <footer className={styles.footer}>
@@ -77,7 +119,7 @@ const Home: React.FC = () => {
                     variant="contained"
                     color="primary"
                     size="large"
-                    onClick={() => setIsSizeDialogOpen(true)}
+                    onClick={tryToLaunchSizeAndQuantityModal}
                 >
                     ZUR GRÖSSENAUSWAHL
                 </Button>
@@ -91,6 +133,7 @@ const Home: React.FC = () => {
                 color={color}
                 product={product}
             />
+            <Spinner isSpinning={isTryingToOpenSizeDialog} />
         </Page>
     );
 };

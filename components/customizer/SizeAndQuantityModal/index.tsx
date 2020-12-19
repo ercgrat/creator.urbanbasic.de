@@ -24,9 +24,7 @@ import { formatPrice } from '../../../utils';
 import PricePerUnitRow from './PricePerUnitRow';
 import Spinner from '../../spinner';
 import produce from 'immer';
-import useCanvasUtils from '../../../hooks/useCanvasUtils';
 import { fabric } from 'fabric';
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../customizer';
 import router from 'next/router';
 import {
     CartActionType,
@@ -37,7 +35,7 @@ import useLambda from '../../../hooks/useLambda';
 import styles from './index.module.scss';
 import { URLS } from '../../../utils/const';
 import { IFaunaObject } from '../../../model/lambda';
-import { changeDpiDataUrl } from 'changedpi';
+import { getDataURLsForObjects } from '../../../utils/canvas';
 
 const useStyles = makeStyles({
     root: {
@@ -79,17 +77,18 @@ const SizeAndQuantityModal: React.FC<Props> = ({
         defaultQuantityMap
     );
     const [totalPrice, setTotalPrice] = useState<string>(formatPrice(0));
-    const canvasUtils = useCanvasUtils();
     const { cart, cartDispatcher } = useContext(CartContext);
-    const { execute: updateCart, isLoading: isCartUpdating } = useLambda<
+    const { execute: updateCart } = useLambda<
         IFaunaObject<ICart>,
         ICartRequest
     >();
-    const {
-        execute: createCartItem,
-        isLoading: isCartItemBeingCreated,
-    } = useLambda<IFaunaObject<ICartItem>, ICartItem>();
+    const { execute: createCartItem } = useLambda<
+        IFaunaObject<ICartItem>,
+        ICartItem
+    >();
     const classes = useStyles();
+    const [isUpdatingCart, setIsUpdatingCart] = useState<boolean>(false);
+    const [spinnerMessage, setSpinnerMessage] = useState<string>('');
 
     const isAddToCartEnabled = useCallback(() => {
         // Button is enabled if any size has at least 1 quantity
@@ -142,55 +141,11 @@ const SizeAndQuantityModal: React.FC<Props> = ({
         if (!designHasData()) {
             return;
         }
-        const frontCanvas = new fabric.Canvas(
-            document.createElement('canvas'),
-            {
-                width: CANVAS_WIDTH,
-                height: CANVAS_HEIGHT,
-                preserveObjectStacking: true,
-            }
+        setIsUpdatingCart(true);
+        const { frontDataURL, backDataURL } = await getDataURLsForObjects(
+            frontObjects,
+            backObjects
         );
-        const backCanvas = new fabric.Canvas(document.createElement('canvas'), {
-            width: CANVAS_WIDTH,
-            height: CANVAS_HEIGHT,
-            preserveObjectStacking: true,
-        });
-        await canvasUtils.renderObjects(frontCanvas, frontObjects);
-        await canvasUtils.renderObjects(backCanvas, backObjects);
-        const frontImageBlob = changeDpiDataUrl(
-            frontCanvas.toDataURL({
-                enableRetinaScaling: true,
-                multiplier: 5,
-            }),
-            300
-        );
-        const backImageBlob = changeDpiDataUrl(
-            backCanvas.toDataURL({
-                enableRetinaScaling: true,
-                multiplier: 5,
-            }),
-            300
-        );
-
-        /*const originals = [];
-        for (let i = 0; i < frontObjects.length; i++) {
-            const object = frontObjects[i];
-            if (object.isType('image')) {
-                const original = await canvasUtils.readImage(
-                    object.get('data') as Blob
-                );
-                originals.push(original);
-            }
-        }
-        for (let i = 0; i < backObjects.length; i++) {
-            const object = backObjects[i];
-            if (object.isType('image')) {
-                const original = await canvasUtils.readImage(
-                    object.get('data') as Blob
-                );
-                originals.push(original);
-            }
-        }*/
 
         const selectedSizes = Object.keys(DesignSize).filter((size) => {
             const quantity = quantityMap.get(size);
@@ -198,12 +153,15 @@ const SizeAndQuantityModal: React.FC<Props> = ({
         }) as DesignSize[];
         let newCart = new Cart(cart.id, cart.getItems().slice());
         for (let i = 0; i < selectedSizes.length; i++) {
+            if (selectedSizes.length > 1) {
+                setSpinnerMessage(`${i + 1}/${selectedSizes.length}`);
+            }
             const size: DesignSize = selectedSizes[i];
             const design = new Design(
                 frontObjects.length > 0,
-                frontImageBlob,
+                frontDataURL,
                 backObjects.length > 0,
-                backImageBlob,
+                backDataURL,
                 color,
                 DesignSize[size],
                 product
@@ -234,10 +192,11 @@ const SizeAndQuantityModal: React.FC<Props> = ({
             value: newCart,
         });
 
+        setIsUpdatingCart(false);
+        setSpinnerMessage('');
         router.push('/cart');
     }, [
         designHasData,
-        canvasUtils,
         frontObjects,
         backObjects,
         cart,
@@ -323,9 +282,7 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                         IN DEN WARENKORB
                     </Button>
                 </footer>
-                <Spinner
-                    isSpinning={isCartUpdating || isCartItemBeingCreated}
-                />
+                <Spinner isSpinning={isUpdatingCart} message={spinnerMessage} />
             </DialogContent>
         </Dialog>
     );

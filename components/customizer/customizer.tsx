@@ -5,13 +5,13 @@ import TextConfiguration from './textConfiguration';
 import ColorRadioGroup from './colorRadioGroup';
 import ImageAdder from './imageAdder';
 import PositionRadioGroup from './positionRadioGroup';
-import useCanvasUtils from '../../hooks/useCanvasUtils';
 import { Button, withStyles } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { DesignColor, DesignSize, DesignProduct } from '../../model/Cart';
 import ShirtUnderlay from '../cart/shirtUnderlay';
 import React from 'react';
 import ProductSelect from './productSelect';
+import { renderObjects } from '../../utils/canvas';
 
 export interface IDesignData {
     frontObjects: fabric.Object[];
@@ -30,6 +30,7 @@ type Props = {
     color: DesignColor;
     product: DesignProduct;
     onDesignChanged: (data: Partial<IDesignData>) => void;
+    forceUpdateCanvas: number; // Dummy value used to trigger the canvas rerender useEffect
 };
 
 const Customizer: React.FC<Props> = ({
@@ -37,6 +38,7 @@ const Customizer: React.FC<Props> = ({
     backObjects,
     color,
     onDesignChanged,
+    forceUpdateCanvas,
 }) => {
     const frontCanvasRef = useRef<HTMLDivElement>(null);
     const backCanvasRef = useRef<HTMLDivElement>(null);
@@ -46,11 +48,12 @@ const Customizer: React.FC<Props> = ({
     const [selectedObject, setSelectedObject] = useState<
         fabric.Object | undefined
     >();
-    const [shirtPosition, setShirtPosition] = useState<string>('front');
+    const [shirtPosition, setShirtPosition] = useState<'front' | 'back'>(
+        'front'
+    );
     const previousShirtPosition = useRef<string>();
+    const previousForceUpdateCanvas = useRef<number>();
     const [hoveredColor, setHoveredColor] = useState<DesignColor | null>(null);
-
-    const { renderObjects } = useCanvasUtils();
 
     const getObjects = useCallback(() => {
         return shirtPosition === 'front' ? frontObjects : backObjects;
@@ -82,7 +85,20 @@ const Customizer: React.FC<Props> = ({
 
     useEffect(() => {
         /**
-         * Discard and reconstruct the canvas when flipping sides.
+         * Rerender the canvas when force updated
+         */
+        if (previousForceUpdateCanvas.current !== forceUpdateCanvas) {
+            previousForceUpdateCanvas.current = forceUpdateCanvas;
+            canvas.clear();
+
+            (async () => {
+                await renderObjects(canvas, getObjects());
+                canvas.renderAll();
+            })();
+        }
+
+        /**
+         * Discard and reconstruct the canvas when flipping sides or on force update.
          */
         if (previousShirtPosition.current !== shirtPosition) {
             previousShirtPosition.current = shirtPosition;
@@ -113,7 +129,14 @@ const Customizer: React.FC<Props> = ({
             setCanvas(effectCanvas);
             setSelectedObject(undefined);
         }
-    }, [shirtPosition, renderObjects, getCanvasRef, getObjects, setObjects]);
+    }, [
+        shirtPosition,
+        getCanvasRef,
+        getObjects,
+        setObjects,
+        forceUpdateCanvas,
+        canvas,
+    ]);
 
     useEffect(() => {
         /**
@@ -264,7 +287,12 @@ const Customizer: React.FC<Props> = ({
                     selectedObject={selectedObject}
                 />
                 <label className={styles.label}>Bild</label>
-                <ImageAdder canvas={canvas} />
+                <ImageAdder
+                    canvas={canvas}
+                    shirtPosition={shirtPosition}
+                    frontObjects={frontObjects}
+                    backObjects={backObjects}
+                />
                 {selectedObject && (
                     <section>
                         <DeleteButton

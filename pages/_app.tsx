@@ -13,7 +13,7 @@ const App: React.FC<{
     Component: React.ComponentType;
     pageProps: React.PropsWithChildren<unknown>;
 }> = ({ Component, pageProps }) => {
-    const [cart, cartDispatcher] = useCart();
+    const [cart, cartDispatcher, isCartLoading] = useCart();
     const user = useIdentity();
 
     React.useEffect(() => {
@@ -57,7 +57,9 @@ const App: React.FC<{
             </Head>
             <ErrorBoundary>
                 <IdentityContext.Provider value={user}>
-                    <CartContext.Provider value={{ cart, cartDispatcher }}>
+                    <CartContext.Provider
+                        value={{ cart, cartDispatcher, isCartLoading }}
+                    >
                         <Component {...pageProps} />
                     </CartContext.Provider>
                 </IdentityContext.Provider>

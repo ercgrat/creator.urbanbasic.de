@@ -1,4 +1,4 @@
-import React, { Dispatch, useCallback, useEffect } from 'react';
+import React, { Dispatch, useCallback, useEffect, useState } from 'react';
 import { useReducer } from 'react';
 import { Cart, ICart, ICartItem } from '../model/Cart';
 import { IFaunaObject } from '../model/lambda';
@@ -8,12 +8,14 @@ import useLambda from './useLambda';
 interface ICartContext {
     readonly cart: Cart;
     cartDispatcher: React.Dispatch<ICartAction>;
+    isCartLoading: boolean;
 }
 export const CartContext = React.createContext<ICartContext>({
     cart: new Cart(),
     cartDispatcher: () => {
         throw new Error('CartContext was used without a provider');
     },
+    isCartLoading: false,
 });
 
 export enum CartActionType {
@@ -43,7 +45,7 @@ export type UpdateCartActionValue = {
     quantity: number;
 };
 
-export function useCart(): [Cart, Dispatch<ICartAction>] {
+export function useCart(): [Cart, Dispatch<ICartAction>, boolean] {
     const { data: rawNewCartData, execute: createCart } = useLambda<
         IFaunaObject<ICart>,
         void
@@ -60,6 +62,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
         IFaunaObject<ICartItem>,
         ICartItem
     >();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const memoizedCartDispatcher = useCallback(
         (state: Cart, action: ICartAction) => {
@@ -136,6 +139,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
         (async () => {
             /** If loaded from db, parse cart */
             if (rawCartData) {
+                setIsLoading(true);
                 const cartID: string = window.localStorage.getItem(
                     STORAGE_KEYS.CART_IDENTIFIER_KEY
                 ) as string;
@@ -147,6 +151,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
                     type: CartActionType.initializeFromDB,
                     value: cart,
                 });
+                setIsLoading(false);
             }
         })();
     }, [rawCartData, cartDispatcher]);
@@ -167,5 +172,5 @@ export function useCart(): [Cart, Dispatch<ICartAction>] {
         }
     }, [rawNewCartData, cartDispatcher]);
 
-    return [cart, cartDispatcher];
+    return [cart, cartDispatcher, isLoading];
 }
