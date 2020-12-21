@@ -130,7 +130,9 @@ const Cart: React.FC = () => {
                                 {formatPrice(cart.getTotal())}
                             </p>
                             <p className={styles.cartSummaryItem}>
-                                <span className={styles.label}>Enth. MwSt</span>
+                                <span className={styles.label}>
+                                    inkl. 19% MwSt.
+                                </span>
                                 {formatPrice(VAT * cart.getTotal())}
                             </p>
                         </section>
