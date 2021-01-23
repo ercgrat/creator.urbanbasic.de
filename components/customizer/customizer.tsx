@@ -21,7 +21,7 @@ export interface IDesignData {
     product: DesignProduct;
 }
 
-export const CANVAS_WIDTH = 168;
+export const CANVAS_WIDTH = 220;
 export const CANVAS_HEIGHT = 252;
 
 type Props = {

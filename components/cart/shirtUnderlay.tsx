@@ -51,10 +51,10 @@ const ShirtUnderlay: React.FC<Props> = ({
                 className={className}
                 style={{
                     position: 'relative',
+                    height: 'calc(100% - 1px)',
+                    top: '1px',
                     background: `${heatheredImage} center center / 100% 100% no-repeat ${effectiveColor}`,
                     zIndex: 0,
-                    top: '1px',
-                    height: 'calc(100% - 1px)',
                 }}
             ></div>
             <div

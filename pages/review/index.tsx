@@ -20,6 +20,7 @@ const Review: React.FC = () => {
         IFaunaObject<IOrder>[],
         undefined
     >();
+    const [isProcessingOrders, setIsProcessingOrders] = useState(false);
     const { execute: updateOrder, isLoading: isUpdatingOrder } = useLambda<
         IFaunaObject<IOrder>,
         Partial<Order>
@@ -51,6 +52,7 @@ const Review: React.FC = () => {
         (async () => {
             /** Process raw data to create Cart classes */
             if (rawOrderData) {
+                setIsProcessingOrders(true);
                 const orders: Order[] = [];
                 const orderData = rawOrderData.slice();
                 for (let i = 0; i < orderData.length; i++) {
@@ -71,6 +73,7 @@ const Review: React.FC = () => {
                     );
                 }
                 setOrders(orders);
+                setIsProcessingOrders(false);
             }
         })();
     }, [rawOrderData]);
@@ -123,6 +126,7 @@ const Review: React.FC = () => {
                             ) : (
                                 orders.map((order) => (
                                     <OrderComponent
+                                        key={order.id}
                                         order={order}
                                         updateOrderStatus={updateOrderStatus}
                                     />
@@ -136,7 +140,9 @@ const Review: React.FC = () => {
                     Login
                 </Button>
             )}
-            <Spinner isSpinning={isLoading || isUpdatingOrder} />
+            <Spinner
+                isSpinning={isLoading || isProcessingOrders || isUpdatingOrder}
+            />
             <Toast
                 isToastOpen={isToastOpen}
                 onClose={closeToast}

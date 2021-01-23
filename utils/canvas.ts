@@ -5,6 +5,10 @@ import {
     CANVAS_WIDTH,
 } from '../components/customizer/customizer';
 
+const CM_IN_PIXELS_AT_300_PPI = 37.8; // TODO: this should actually be 118.09
+const PLATEN_WIDTH_IN_CM = 35.5;
+const PLATEN_WIDTH_IN_PIXELS = PLATEN_WIDTH_IN_CM * CM_IN_PIXELS_AT_300_PPI;
+
 export const readImage = async (file: Blob): Promise<string> => {
     return new Promise<string>((resolve) => {
         const reader = new FileReader();
@@ -55,10 +59,10 @@ export const renderObjects = async (
 export const getDataURLForCanvas = (canvas: fabric.Canvas): string => {
     return changeDpiDataUrl(
         canvas.toDataURL({
-            enableRetinaScaling: true,
-            multiplier: 5,
-        }),
-        300
+            multiplier: PLATEN_WIDTH_IN_PIXELS / CANVAS_WIDTH,
+            // TODO:
+        })
+        // TODO: put 300 DPI here
     );
 };
 
