@@ -2,11 +2,13 @@ import React from 'react';
 import { DesignColor } from '../../model/Cart';
 import ShirtUnderlay from './shirtUnderlay';
 import styles from './design.module.scss';
+import { CircularProgress } from '@material-ui/core';
 
 export default React.memo(function Design(props: {
     shirtPosition: 'front' | 'back';
     color: DesignColor;
-    imageSrc: string;
+    imageSrc?: string;
+    progress?: number;
 }) {
     return (
         <div className={styles.imageContainer}>
@@ -15,7 +17,15 @@ export default React.memo(function Design(props: {
                 shirtPosition={props.shirtPosition}
                 color={props.color}
             />
-            <img className={styles.design} src={props.imageSrc}></img>
+            {props.imageSrc ? (
+                <img className={styles.design} src={props.imageSrc}></img>
+            ) : (
+                <CircularProgress
+                    className={styles.design}
+                    variant="determinate"
+                    value={props.progress}
+                />
+            )}
         </div>
     );
 });

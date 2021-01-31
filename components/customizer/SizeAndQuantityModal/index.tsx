@@ -12,7 +12,7 @@ import { AddShoppingCart, Close } from '@material-ui/icons';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
     Cart,
-    Design,
+    DesignMetadata as DesignMetadata,
     DesignColor,
     DesignProduct,
     DesignSize,
@@ -20,7 +20,7 @@ import {
     ICartItem,
     ProductMap,
 } from '../../../model/Cart';
-import { formatPrice } from '../../../utils';
+import { formatPercent, formatPrice } from '../../../utils';
 import PricePerUnitRow from './PricePerUnitRow';
 import Spinner from '../../spinner';
 import produce from 'immer';
@@ -29,13 +29,14 @@ import router from 'next/router';
 import {
     CartActionType,
     CartContext,
-    ICartRequest,
+    ICartUpdateRequest,
 } from '../../../hooks/useCart';
 import useLambda from '../../../hooks/useLambda';
 import styles from './index.module.scss';
-import { URLS } from '../../../utils/const';
+import { S3_BUCKET, URLS } from '../../../utils/const';
 import { IFaunaObject } from '../../../model/lambda';
 import { getDataURLsForObjects } from '../../../utils/canvas';
+import S3Client from 'aws-sdk/clients/s3';
 
 const useStyles = makeStyles({
     root: {
@@ -80,7 +81,7 @@ const SizeAndQuantityModal: React.FC<Props> = ({
     const { cart, cartDispatcher } = useContext(CartContext);
     const { execute: updateCart } = useLambda<
         IFaunaObject<ICart>,
-        ICartRequest
+        ICartUpdateRequest
     >();
     const { execute: createCartItem } = useLambda<
         IFaunaObject<ICartItem>,
@@ -142,59 +143,93 @@ const SizeAndQuantityModal: React.FC<Props> = ({
             return;
         }
         setIsUpdatingCart(true);
-        const { frontDataURL, backDataURL } = await getDataURLsForObjects(
-            frontObjects,
-            backObjects
-        );
 
         const selectedSizes = Object.keys(DesignSize).filter((size) => {
             const quantity = quantityMap.get(size);
             return quantity && quantity > 0;
         }) as DesignSize[];
-        let newCart = new Cart(cart.id, cart.getItems().slice());
-        for (let i = 0; i < selectedSizes.length; i++) {
-            if (selectedSizes.length > 1) {
-                setSpinnerMessage(`${i + 1}/${selectedSizes.length}`);
-            }
-            const size: DesignSize = selectedSizes[i];
-            const design = new Design(
-                frontObjects.length > 0,
-                frontDataURL,
-                backObjects.length > 0,
-                backDataURL,
-                color,
-                DesignSize[size],
-                product
-            );
 
-            const cartItem = newCart.addDesign(design, quantityMap.get(size));
-            const cartItemResponse = await createCartItem(
-                URLS.CART_ITEM.CREATE(),
-                'POST',
-                cartItem
-            );
-            cartItem.id = cartItemResponse.ref['@ref'].id;
-            const cartData = await updateCart(
-                URLS.CART.UPDATE(newCart.id ?? '0'),
-                'PUT',
-                {
-                    itemIds: newCart.getItemIds(),
-                }
-            );
-            newCart = await Cart.constructCartFromDatabase(
-                cartData.ref['@ref'].id,
-                cartData.data.itemIds
-            );
-        }
+        const designData = await getDataURLsForObjects(
+            frontObjects,
+            backObjects
+        );
 
-        cartDispatcher({
-            type: CartActionType.initializeFromDB,
-            value: newCart,
+        // Use the cart ID and a counter as the S3 object key
+        const s3ObjectKey = `${cart.id}-${cart.s3KeyCounter}`;
+        const upload = new S3Client.ManagedUpload({
+            params: {
+                Bucket: S3_BUCKET,
+                Key: s3ObjectKey,
+                Body: Buffer.from(JSON.stringify(designData), 'binary'),
+            },
         });
+        upload.on('httpUploadProgress', (progress) => {
+            const percentDone = formatPercent(progress.loaded / progress.total);
+            setSpinnerMessage(percentDone);
+        });
+        upload
+            .promise()
+            .then(async () => {
+                setSpinnerMessage('✔️');
+                let newCart = new Cart(
+                    cart.id,
+                    cart.s3KeyCounter + 1, // Increment for every design
+                    cart.getItems().slice()
+                );
 
-        setIsUpdatingCart(false);
-        setSpinnerMessage('');
-        router.push('/cart');
+                for (let i = 0; i < selectedSizes.length; i++) {
+                    const size: DesignSize = selectedSizes[i];
+                    const design = new DesignMetadata(
+                        s3ObjectKey,
+                        frontObjects.length > 0,
+                        backObjects.length > 0,
+                        color,
+                        DesignSize[size],
+                        product
+                    );
+
+                    // Create a cart item
+                    const cartItem = newCart.addDesign(
+                        design,
+                        quantityMap.get(size)
+                    );
+                    const cartItemResponse = await createCartItem(
+                        URLS.CART_ITEM.CREATE(),
+                        'POST',
+                        cartItem
+                    );
+                    cartItem.id = cartItemResponse.ref['@ref'].id;
+                }
+
+                const cartData = await updateCart(
+                    URLS.CART.UPDATE(newCart.id ?? '0'),
+                    'PUT',
+                    {
+                        s3KeyCounter: newCart.s3KeyCounter,
+                        itemIds: newCart.getItemIds(),
+                    }
+                );
+                console.log(cartData);
+                newCart = await Cart.constructCartFromDatabase(
+                    cartData.ref['@ref'].id,
+                    cartData.data.s3KeyCounter,
+                    cartData.data.itemIds
+                );
+
+                cartDispatcher({
+                    type: CartActionType.initializeFromDB,
+                    value: newCart,
+                });
+
+                router.push('/cart');
+            })
+            .catch(() => {
+                alert('Something went wrong. Please try again.');
+            })
+            .finally(() => {
+                setIsUpdatingCart(false);
+                setSpinnerMessage('');
+            });
     }, [
         designHasData,
         frontObjects,

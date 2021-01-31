@@ -59,6 +59,7 @@ const Review: React.FC = () => {
                     const order = orderData[i];
                     const cart = await Cart.constructCartFromDatabase(
                         order.data.cart.id ?? '0',
+                        order.data.cart.s3KeyCounter,
                         order.data.cart.itemIds
                     );
                     orders.push(

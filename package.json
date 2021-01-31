@@ -21,12 +21,13 @@
         "@types/node": "^14.14.10",
         "@types/react": "^16.14.2",
         "@types/react-color": "^3.0.4",
+        "aws-sdk": "^2.834.0",
         "changedpi": "^1.0.4",
         "fabric": "^4.2.0",
         "faunadb": "^3.0.1",
         "immer": "^8.0.0",
         "moment": "^2.29.1",
-        "netlify-cli": "^2.69.10",
+        "netlify-cli": "^2.71.0",
         "netlify-identity-widget": "^1.9.1",
         "next": "^9.5.5",
         "react": "16.13.1",
@@ -35,7 +36,8 @@
         "react-dropzone": "^11.2.4",
         "react-paypal-express-checkout": "github:ercgrat/react-paypal-express-checkout",
         "sass": "^1.29.0",
-        "typescript": "^4.1.2"
+        "typescript": "^4.1.2",
+        "uuid": "^8.3.2"
     },
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^4.8.2",

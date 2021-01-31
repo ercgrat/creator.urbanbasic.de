@@ -52,28 +52,25 @@ export const ProductMap: { [key in DesignProduct]: Product } = {
     },
 };
 
-export class Design {
+export class DesignMetadata {
+    s3ObjectKey: string;
     hasFrontData: boolean;
-    frontDataURL: string;
     hasBackData: boolean;
-    backDataURL: string;
     color: DesignColor;
     size: DesignSize;
     product: DesignProduct;
 
     constructor(
+        s3ObjectKey: string,
         hasFrontData: boolean,
-        frontDataURL: string,
         hasBackData: boolean,
-        backDataURL: string,
         color: DesignColor,
         size: DesignSize,
         product: DesignProduct
     ) {
+        this.s3ObjectKey = s3ObjectKey;
         this.hasFrontData = hasFrontData;
-        this.frontDataURL = frontDataURL;
         this.hasBackData = hasBackData;
-        this.backDataURL = backDataURL;
         this.color = color;
         this.size = size;
         this.product = product;
@@ -81,23 +78,20 @@ export class Design {
 }
 
 export interface ICartItem {
-    design: Design;
+    design: DesignMetadata;
     quantity: number;
     price: number;
-    originals?: string[];
 }
 
 export class CartItem implements ICartItem {
     id?: string;
-    design: Design;
+    design: DesignMetadata;
     quantity: number;
     price: number;
-    originals?: string[];
 
-    constructor(design: Design, quantity?: number, originals?: string[]) {
+    constructor(design: DesignMetadata, quantity?: number) {
         this.design = design;
         this.quantity = quantity || 1;
-        this.originals = originals || [];
         this.price =
             design.hasFrontData && design.hasBackData
                 ? ProductMap[design.product].twoSidedPrice
@@ -111,16 +105,19 @@ export class CartItem implements ICartItem {
 
 export interface ICart {
     id: string;
+    s3KeyCounter: number;
     itemIds: string[];
 }
 
 export class Cart {
     public id?: string;
     public items: CartItem[];
+    public s3KeyCounter: number;
     public readonly shippingCost: number = 3.9;
 
     static async constructCartFromDatabase(
         id: string,
+        s3KeyCounter: number,
         itemIds: string[]
     ): Promise<Cart> {
         return new Promise((resolve) => {
@@ -137,17 +134,18 @@ export class Cart {
                 return cartItem;
             });
             Promise.all(cartItemPromises).then((cartItems) => {
-                resolve(new Cart(id, cartItems));
+                resolve(new Cart(id, s3KeyCounter, cartItems));
             });
         });
     }
 
     static clone(cart: Cart): Cart {
-        return new Cart(cart.id, cart.getItems().slice());
+        return new Cart(cart.id, cart.s3KeyCounter, cart.getItems().slice());
     }
 
-    constructor(id?: string, items?: CartItem[]) {
+    constructor(id?: string, s3KeyCounter?: number, items?: CartItem[]) {
         this.id = id || undefined;
+        this.s3KeyCounter = s3KeyCounter ?? 0;
         this.items = items || [];
     }
 
@@ -172,7 +170,7 @@ export class Cart {
         this.items = this.items.slice();
     }
 
-    public addDesign(design: Design, quantity?: number): CartItem {
+    public addDesign(design: DesignMetadata, quantity?: number): CartItem {
         const cartItem = new CartItem(design, quantity);
         this.items.push(cartItem);
         this.items = this.items.slice();

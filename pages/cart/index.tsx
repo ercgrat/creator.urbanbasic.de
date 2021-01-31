@@ -54,13 +54,18 @@ const Cart: React.FC = () => {
         const validItems = cart
             .getItems()
             .filter((item) => item.quantity && item.quantity > 0);
-        const cartToOrder = new CartModel(cart.id, validItems);
+        const cartToOrder = new CartModel(
+            cart.id,
+            cart.s3KeyCounter,
+            validItems
+        );
         submitOrder(
             'order',
             'POST',
             {
                 cart: {
                     id: cartToOrder.id ?? '0',
+                    s3KeyCounter: cartToOrder.s3KeyCounter,
                     itemIds: cartToOrder.getItemIds(),
                 },
                 payment,

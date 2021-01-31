@@ -5,11 +5,11 @@ import {
     CANVAS_WIDTH,
 } from '../components/customizer/customizer';
 
-const CM_IN_PIXELS_AT_300_PPI = 37.8; // TODO: this should actually be 118.09
+const CM_IN_PIXELS_AT_300_PPI = 118;
 const PLATEN_WIDTH_IN_CM = 35.5;
 const PLATEN_WIDTH_IN_PIXELS = PLATEN_WIDTH_IN_CM * CM_IN_PIXELS_AT_300_PPI;
 
-export const readImage = async (file: Blob): Promise<string> => {
+export const readImage = (file: Blob): Promise<string> => {
     return new Promise<string>((resolve) => {
         const reader = new FileReader();
         reader.onload = function (event) {
@@ -20,7 +20,7 @@ export const readImage = async (file: Blob): Promise<string> => {
     });
 };
 
-export const addImage = async (file: Blob): Promise<HTMLImageElement> => {
+export const addImage = (file: Blob): Promise<HTMLImageElement> => {
     return new Promise<HTMLImageElement>((resolve) => {
         const image = new Image();
         image.onload = function () {
@@ -33,26 +33,27 @@ export const addImage = async (file: Blob): Promise<HTMLImageElement> => {
     });
 };
 
-export const renderObjects = async (
+export const renderObjects = (
     canvas: fabric.Canvas,
     objects: fabric.Object[]
 ): Promise<void> => {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise<void>(async (resolve) => {
-        // Need to await in sequence (instead of Promise.all) to preserve the order of canvas elements
+    return new Promise<void>((resolve) => {
+        const addImagePromiseArray = [];
         for (let i = 0; i < objects.length; i++) {
             const object = objects[i];
             if (object.isType('image')) {
-                const image = await addImage(object.get('data') as Blob);
-                const imageObject = object as fabric.Image;
-                imageObject.setElement(image);
-                canvas.add(imageObject);
+                addImagePromiseArray.push(
+                    addImage(object.get('data') as Blob).then((image) => {
+                        const imageObject = object as fabric.Image;
+                        imageObject.setElement(image);
+                        canvas.add(imageObject);
+                    })
+                );
             } else {
                 canvas.add(object);
             }
         }
-
-        resolve();
+        Promise.all(addImagePromiseArray).then(() => resolve());
     });
 };
 
@@ -60,48 +61,65 @@ export const getDataURLForCanvas = (canvas: fabric.Canvas): string => {
     return changeDpiDataUrl(
         canvas.toDataURL({
             multiplier: PLATEN_WIDTH_IN_PIXELS / CANVAS_WIDTH,
-            // TODO:
-        })
-        // TODO: put 300 DPI here
+            quality: 1,
+            enableRetinaScaling: true,
+        }),
+        300
     );
 };
 
-type CanvasImageData = {
+export type CanvasImageData = {
     frontDataURL: string;
     backDataURL: string;
 };
-export const getDataURLsForObjects = async (
+export const getDataURLsForObjects = (
     frontObjects: fabric.Object[],
     backObjects: fabric.Object[]
 ): Promise<CanvasImageData> => {
-    const frontCanvas = new fabric.Canvas(document.createElement('canvas'), {
-        width: CANVAS_WIDTH,
-        height: CANVAS_HEIGHT,
-        preserveObjectStacking: true,
+    return new Promise((resolve) => {
+        const frontCanvas = new fabric.Canvas(
+            document.createElement('canvas'),
+            {
+                width: CANVAS_WIDTH,
+                height: CANVAS_HEIGHT,
+                preserveObjectStacking: true,
+            }
+        );
+        const backCanvas = new fabric.Canvas(document.createElement('canvas'), {
+            width: CANVAS_WIDTH,
+            height: CANVAS_HEIGHT,
+            preserveObjectStacking: true,
+        });
+        const renderPromiseArray = [
+            renderObjects(frontCanvas, frontObjects),
+            renderObjects(backCanvas, backObjects),
+        ];
+        Promise.all(renderPromiseArray).then(() => {
+            const frontDataURL = getDataURLForCanvas(frontCanvas);
+            const backDataURL = getDataURLForCanvas(backCanvas);
+            resolve({
+                frontDataURL,
+                backDataURL,
+            });
+        });
     });
-    const backCanvas = new fabric.Canvas(document.createElement('canvas'), {
-        width: CANVAS_WIDTH,
-        height: CANVAS_HEIGHT,
-        preserveObjectStacking: true,
-    });
-    await renderObjects(frontCanvas, frontObjects);
-    await renderObjects(backCanvas, backObjects);
-    const frontDataURL = getDataURLForCanvas(frontCanvas);
-    const backDataURL = getDataURLForCanvas(backCanvas);
-    return {
-        frontDataURL,
-        backDataURL,
-    };
 };
 
-export const getDesignExceedsDataLimit = async (
+export const getDesignExceedsDataLimit = (
     frontObjects: fabric.Object[],
     backObjects: fabric.Object[]
 ): Promise<boolean> => {
-    const { frontDataURL, backDataURL } = await getDataURLsForObjects(
-        frontObjects,
-        backObjects
-    );
-    const blobSize = new Blob([frontDataURL, backDataURL]).size;
-    return blobSize > 5500000; // 5.5MB
+    return new Promise((resolve, reject) => {
+        getDataURLsForObjects(frontObjects, backObjects)
+            .then((imageData) => {
+                const blobSize = new Blob([
+                    imageData.frontDataURL,
+                    imageData.backDataURL,
+                ]).size;
+                resolve(blobSize > 100000000); // 100MB
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
 };

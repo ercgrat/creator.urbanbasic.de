@@ -1,5 +1,6 @@
 import React from 'react';
 import { Cart, CartItem } from '../../model/Cart';
+import { CanvasImageData } from '../../utils/canvas';
 import Item from './item';
 import styles from './list.module.scss';
 
@@ -14,6 +15,7 @@ export default React.memo(function List(props: {
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
         index: number
     ) => void;
+    onDataLoaded?: (item: CartItem, data: CanvasImageData) => void;
 }) {
     return (
         <React.Fragment>
@@ -35,6 +37,7 @@ export default React.memo(function List(props: {
                                 props.onQuantityChange?.(event, index)
                             }
                             onDelete={(event) => props.onDelete?.(event, index)}
+                            onDataLoaded={props.onDataLoaded}
                         />
                     </li>
                 ))}

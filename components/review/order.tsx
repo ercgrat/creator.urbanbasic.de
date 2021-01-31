@@ -14,66 +14,63 @@ import {
     SaveAlt,
     CheckCircle,
 } from '@material-ui/icons';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Order as OrderModel } from '../../model/Order';
 import List from '../../components/cart/list';
 import styles from './order.module.scss';
+import { CanvasImageData } from '../../utils/canvas';
+import { CartItem } from '../../model/Cart';
 
 type Props = {
     order: OrderModel;
     updateOrderStatus: (order: OrderModel, isComplete?: boolean) => void;
+    frontDataUrl?: string;
+    backDataUrl?: string;
 };
 const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
-    /*const {
-        data: rawOriginalsData,
-        execute: loadOriginals,
-        isLoading: isLoadingOriginals,
-    } = useLambda<IFaunaObject<IOriginal>[], undefined>();*/
+    const [designMap, setDesignMap] = useState(
+        new Map<string, CanvasImageData>()
+    );
 
-    /*const downloadOriginals = useCallback(
-        (order: IFaunaObject<IOrder>) => {
-            const originals: string[] = [];
-            order.data.cart.items.forEach((item) => {
-                item.originals?.forEach((original) => {
-                    originals.push(original);
-                });
+    const downloadDesigns = useCallback(
+        (order: OrderModel) => {
+            order.cart.items.forEach((item, index) => {
+                const frontLink = document.createElement('a');
+                frontLink.setAttribute(
+                    'href',
+                    designMap.get(item.id ?? '0')?.frontDataURL ?? ''
+                );
+                frontLink.setAttribute(
+                    'download',
+                    `order-${order.id}-${index}-front`
+                );
+                frontLink.click();
+
+                const backLink = document.createElement('a');
+                backLink.setAttribute(
+                    'href',
+                    designMap.get(item.id ?? '0')?.backDataURL ?? ''
+                );
+                backLink.setAttribute(
+                    'download',
+                    `order-${order.id}-${index}-back`
+                );
+                backLink.click();
             });
-
-            loadOriginals(`original/${originals.join(',')}`, 'GET');
         },
-        [loadOriginals]
-    );*/
+        [designMap]
+    );
 
-    const downloadDesigns = useCallback((order: OrderModel) => {
-        order.cart.items.forEach((item, index) => {
-            const frontLink = document.createElement('a');
-            frontLink.setAttribute('href', item.design.frontDataURL);
-            frontLink.setAttribute(
-                'download',
-                `order-${order.id}-${index}-front`
-            );
-            frontLink.click();
-
-            const backLink = document.createElement('a');
-            backLink.setAttribute('href', item.design.backDataURL);
-            backLink.setAttribute(
-                'download',
-                `order-${order.id}-${index}-back`
-            );
-            backLink.click();
-        });
-    }, []);
-
-    /*useEffect(() => {
-        if (rawOriginalsData) {
-            rawOriginalsData.forEach((original) => {
-                const link = document.createElement('a');
-                link.setAttribute('href', original.data.src);
-                link.setAttribute('download', original.ref['@ref'].id);
-                link.click();
+    const onDataLoaded = useCallback(
+        (item: CartItem, data: CanvasImageData) => {
+            setDesignMap((prevMap) => {
+                const map = new Map(prevMap);
+                map.set(item.id ?? '0', data);
+                return map;
             });
-        }
-    }, [rawOriginalsData]);*/
+        },
+        []
+    );
 
     return (
         <li className={styles.order} key={order.id}>
@@ -148,10 +145,8 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                         >
                             Designs
                         </Typography>
-                        <List cart={order.cart} />
+                        <List cart={order.cart} onDataLoaded={onDataLoaded} />
                     </section>
-
-                    {/* <Spinner isSpinning={isLoadingOriginals} /> */}
                 </CardContent>
 
                 <CardActions disableSpacing>
@@ -161,26 +156,14 @@ const Order: React.FC<Props> = ({ order, updateOrderStatus }) => {
                             flexWrap: 'wrap',
                         }}
                     >
-                        {/*<Button
-                            aria-label="download"
-                            color="primary"
-                            startIcon={<SaveAlt />}
-                            onClick={() => downloadOriginals(order)}
-                            disabled={
-                                order.data.cart.items.reduce(
-                                    (total, item) =>
-                                        total + (item.originals?.length ?? 0),
-                                    0
-                                ) === 0
-                            }
-                        >
-                            Download Images
-                          </Button>*/}
                         <Button
                             aria-label="download"
                             color="primary"
                             startIcon={<SaveAlt />}
                             onClick={() => downloadDesigns(order)}
+                            disabled={order.cart.items.some(
+                                (item) => !designMap.get(item.id ?? '0')
+                            )}
                         >
                             Download Designs
                         </Button>

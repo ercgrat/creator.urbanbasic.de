@@ -1,7 +1,8 @@
 export const STORAGE_KEYS = {
     CART_IDENTIFIER_KEY: 'cart',
-    DESIGN_STORAGE_KEY: 'design',
 };
+
+export const S3_BUCKET = 'ub-creator-designs';
 
 const CART = 'cart';
 const CART_ITEM = 'cart_item';

@@ -35,9 +35,13 @@ export interface ICartDeleteActionValue {
     itemId: string;
 }
 
-export type ICartRequest = {
+export type ICartUpdateRequest = {
+    s3KeyCounter: number;
     itemIds: string[];
-    originals?: string[];
+};
+
+export type ICartDeleteItemRequest = {
+    itemIds: string[];
 };
 
 export type UpdateCartActionValue = {
@@ -54,9 +58,9 @@ export function useCart(): [Cart, Dispatch<ICartAction>, boolean] {
         IFaunaObject<ICart>,
         void
     >();
-    const { execute: updateCart } = useLambda<
+    const { execute: deleteCartItem } = useLambda<
         IFaunaObject<ICart>,
-        ICartRequest
+        ICartDeleteItemRequest
     >();
     const { execute: updateCartItem } = useLambda<
         IFaunaObject<ICartItem>,
@@ -75,7 +79,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>, boolean] {
                     {
                         const value = action.value as ICartDeleteActionValue;
                         cart = Cart.clone(value.cart as Cart);
-                        updateCart(
+                        deleteCartItem(
                             URLS.CART.DELETE_ITEM(cart.id ?? '0', value.itemId),
                             'DELETE',
                             {
@@ -106,7 +110,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>, boolean] {
             }
             return cart;
         },
-        [createCart, updateCart, updateCartItem]
+        [createCart, deleteCartItem, updateCartItem]
     );
 
     const [cart, cartDispatcher] = useReducer(
@@ -145,6 +149,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>, boolean] {
                 ) as string;
                 const cart = await Cart.constructCartFromDatabase(
                     cartID,
+                    rawCartData.data.s3KeyCounter,
                     rawCartData.data.itemIds
                 );
                 cartDispatcher({

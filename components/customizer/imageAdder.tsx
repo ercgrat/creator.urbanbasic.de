@@ -26,47 +26,56 @@ const ImageAdder: React.FC<Props> = ({
     const [isAddingImage, setIsAddingImage] = useState<boolean>(false);
 
     const onDrop = useCallback(
-        async (acceptedFiles) => {
+        (acceptedFiles) => {
             setIsAddingImage(true);
             const file = acceptedFiles[0];
-            const image: HTMLImageElement = await addImage(file);
-            const imageObject = new fabric.Image(image, {
-                transparentCorners: false,
-            });
-            imageObject.scaleToHeight(100);
-            imageObject.scaleToWidth(100);
-            imageObject.set('data', file);
+            addImage(file).then((image) => {
+                const imageObject = new fabric.Image(image, {
+                    transparentCorners: false,
+                });
+                imageObject.scaleToHeight(100);
+                imageObject.scaleToWidth(100);
+                imageObject.set('data', file);
 
-            const localFrontObjects = frontObjects.slice();
-            const localBackObjects = backObjects.slice();
-            if (shirtPosition === 'front') {
-                localFrontObjects.push(imageObject);
-            } else {
-                localBackObjects.push(imageObject);
-            }
-            const isDataLimitExceeded = await getDesignExceedsDataLimit(
-                localFrontObjects,
-                localBackObjects
-            );
-            if (!isDataLimitExceeded) {
-                canvas.centerObject(imageObject);
-                canvas.add(imageObject);
-                canvas.setActiveObject(imageObject);
-                canvas.renderAll();
-            } else {
-                alert(
-                    'Dein Design übersteigt die zulässige Dateigröße. Bitte verwende Dateien mit einer geringeren Gesamtgröße. Weiter Infos findest Du in unseren FAQs.'
-                );
-                // Re-render the canvas to fix resizers on the canvas objects
-                canvas.clear();
+                const localFrontObjects = frontObjects.slice();
+                const localBackObjects = backObjects.slice();
                 if (shirtPosition === 'front') {
-                    await renderObjects(canvas, frontObjects);
+                    localFrontObjects.push(imageObject);
                 } else {
-                    await renderObjects(canvas, backObjects);
+                    localBackObjects.push(imageObject);
                 }
-                canvas.renderAll();
-            }
-            setIsAddingImage(false);
+                getDesignExceedsDataLimit(localFrontObjects, localBackObjects)
+                    .then(async (isDataLimitExceeded) => {
+                        if (!isDataLimitExceeded) {
+                            canvas.centerObject(imageObject);
+                            canvas.add(imageObject);
+                            canvas.setActiveObject(imageObject);
+                            canvas.renderAll();
+                        } else {
+                            alert(
+                                'Dein Design übersteigt die zulässige Dateigröße. Bitte verwende Dateien mit einer geringeren Gesamtgröße. Weiter Infos findest Du in unseren FAQs.'
+                            );
+                            // Re-render the canvas to fix resizers on the canvas objects
+                            canvas.clear();
+                            let renderPromise;
+                            if (shirtPosition === 'front') {
+                                renderPromise = renderObjects(
+                                    canvas,
+                                    frontObjects
+                                );
+                            } else {
+                                renderPromise = renderObjects(
+                                    canvas,
+                                    backObjects
+                                );
+                            }
+                            renderPromise.then(() => canvas.renderAll());
+                        }
+                    })
+                    .finally(() => {
+                        setIsAddingImage(false);
+                    });
+            });
         },
         [backObjects, canvas, frontObjects, shirtPosition]
     );

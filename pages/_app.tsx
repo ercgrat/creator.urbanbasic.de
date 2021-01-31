@@ -7,6 +7,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import useIdentity, { IdentityContext } from '../hooks/useIdentity';
 import { enableMapSet } from 'immer';
 import ErrorBoundary from '../components/ErrorBoundary';
+import AWS from 'aws-sdk';
 enableMapSet();
 
 const App: React.FC<{
@@ -20,6 +21,16 @@ const App: React.FC<{
         // Remove the server-side injected CSS.
         const jssStyles = document.querySelector('#jss-server-side');
         jssStyles?.parentElement?.removeChild(jssStyles);
+
+        // Establish AWS credentials
+        const accessKeyId = process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID ?? '';
+        const secretAccessKey =
+            process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY ?? '';
+        AWS.config.credentials = {
+            accessKeyId,
+            secretAccessKey,
+        };
+        AWS.config.region = 'eu-central-1';
     }, []);
 
     const theme = createMuiTheme({

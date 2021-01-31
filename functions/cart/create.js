@@ -13,6 +13,7 @@ exports.handler = async (event) => {
     console.log('Function `create` invoked');
     const item = {
         data: {
+            s3KeyCounter: 0,
             itemIds: [],
         },
     };
