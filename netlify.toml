@@ -7,4 +7,4 @@ command = "npm run dev"
 
 [context.staging]
   [context.staging.environment]
-    NEXT_PUBLIC_PAYPAL_ENV=sandbox
+    NEXT_PUBLIC_PAYPAL_ENV = "sandbox"
