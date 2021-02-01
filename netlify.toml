@@ -5,6 +5,5 @@ functions = "functions/"
 [dev]
 command = "npm run dev"
 
-[context.staging]
-  [context.staging.environment]
-    NEXT_PUBLIC_PAYPAL_ENV = "sandbox"
+[context.branch-deploy.environment]
+NEXT_PUBLIC_PAYPAL_ENV = "sandbox"
