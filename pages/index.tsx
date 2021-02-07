@@ -8,7 +8,10 @@ import { DesignColor, DesignProduct } from '../model/Cart';
 import styles from './index.module.scss';
 import PricePerUnitRow from '../components/customizer/SizeAndQuantityModal/PricePerUnitRow';
 import SizeAndQuantityModal from '../components/customizer/SizeAndQuantityModal';
-import { getDesignExceedsDataLimit } from '../utils/canvas';
+import {
+    getDesignExceedsDataLimit,
+    isClientLargeCanvasCompatible,
+} from '../utils/canvas';
 import Spinner from '../components/spinner';
 
 const Home: React.FC = () => {
@@ -23,6 +26,13 @@ const Home: React.FC = () => {
     ] = useState<boolean>(false);
     const previousIsSizeDialogOpenRef = useRef<boolean>();
     const [forceUpdateCanvas, setForceUpdateCanvas] = useState<number>(0); // Counter that force updates the customizer canvas
+    const [showDesigner, setShowDesigner] = useState(true);
+    useEffect(() => {
+        (async () => {
+            const value = await isClientLargeCanvasCompatible();
+            setShowDesigner(value);
+        })();
+    }, []);
 
     const onDesignChanged = useCallback(
         (data: Partial<IDesignData>) => {
@@ -95,45 +105,55 @@ const Home: React.FC = () => {
 
     return (
         <Page>
-            <header className={styles.header}>
-                <h1 className={styles.heading}>Designer</h1>
-            </header>
-            <Customizer
-                frontObjects={frontObjects}
-                backObjects={backObjects}
-                color={color}
-                product={product}
-                onDesignChanged={onDesignChanged}
-                forceUpdateCanvas={forceUpdateCanvas}
-            />
-            <Divider />
-            <footer className={styles.footer}>
-                <PricePerUnitRow
-                    className={styles.priceLabelMain}
-                    product={product}
-                    frontObjects={frontObjects}
-                    backObjects={backObjects}
-                />
-                <Button
-                    disabled={!designHasData()}
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    onClick={tryToLaunchSizeAndQuantityModal}
-                >
-                    ZUR GRÖSSENAUSWAHL
-                </Button>
-            </footer>
-            <SizeAndQuantityModal
-                isOpen={isSizeDialogOpen}
-                setIsOpen={setIsSizeDialogOpen}
-                designHasData={designHasData}
-                frontObjects={frontObjects}
-                backObjects={backObjects}
-                color={color}
-                product={product}
-            />
-            <Spinner isSpinning={isTryingToOpenSizeDialog} />
+            {showDesigner ? (
+                <>
+                    <header className={styles.header}>
+                        <h1 className={styles.heading}>Designer</h1>
+                    </header>
+                    <Customizer
+                        frontObjects={frontObjects}
+                        backObjects={backObjects}
+                        color={color}
+                        product={product}
+                        onDesignChanged={onDesignChanged}
+                        forceUpdateCanvas={forceUpdateCanvas}
+                    />
+                    <Divider />
+                    <footer className={styles.footer}>
+                        <PricePerUnitRow
+                            className={styles.priceLabelMain}
+                            product={product}
+                            frontObjects={frontObjects}
+                            backObjects={backObjects}
+                        />
+                        <Button
+                            disabled={!designHasData()}
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            onClick={tryToLaunchSizeAndQuantityModal}
+                        >
+                            ZUR GRÖSSENAUSWAHL
+                        </Button>
+                    </footer>
+                    <SizeAndQuantityModal
+                        isOpen={isSizeDialogOpen}
+                        setIsOpen={setIsSizeDialogOpen}
+                        designHasData={designHasData}
+                        frontObjects={frontObjects}
+                        backObjects={backObjects}
+                        color={color}
+                        product={product}
+                    />
+                    <Spinner isSpinning={isTryingToOpenSizeDialog} />
+                </>
+            ) : (
+                <p>
+                    Leider unterstützt dieses Gerät nicht die notwendige
+                    Druckauflösung. Bitte nutze diese Seite über einen
+                    Desktop-Browser.
+                </p>
+            )}
         </Page>
     );
 };

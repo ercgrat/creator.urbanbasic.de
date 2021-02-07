@@ -162,6 +162,9 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                 Key: s3ObjectKey,
                 Body: Buffer.from(JSON.stringify(designData), 'binary'),
             },
+            /*service: new S3Client({
+                useAccelerateEndpoint: true,
+            }),*/
         });
         upload.on('httpUploadProgress', (progress) => {
             const percentDone = formatPercent(progress.loaded / progress.total);

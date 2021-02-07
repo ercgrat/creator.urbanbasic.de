@@ -7,7 +7,9 @@ import {
 
 const CM_IN_PIXELS_AT_300_PPI = 118;
 const PLATEN_WIDTH_IN_CM = 35.5;
+const PLATEN_HEIGHT_IN_CM = 40.6;
 const PLATEN_WIDTH_IN_PIXELS = PLATEN_WIDTH_IN_CM * CM_IN_PIXELS_AT_300_PPI;
+const PLATEN_HEIGHT_IN_PIXELS = PLATEN_HEIGHT_IN_CM * CM_IN_PIXELS_AT_300_PPI;
 
 export const readImage = (file: Blob): Promise<string> => {
     return new Promise<string>((resolve) => {
@@ -55,6 +57,24 @@ export const renderObjects = (
         }
         Promise.all(addImagePromiseArray).then(() => resolve());
     });
+};
+
+export const isClientLargeCanvasCompatible = async (): Promise<boolean> => {
+    if (typeof window !== 'undefined') {
+        const canvasSize = (await import('canvas-size')).default;
+        console.log(canvasSize.maxHeight(PLATEN_HEIGHT_IN_PIXELS));
+        console.log(
+            canvasSize.test({
+                width: PLATEN_WIDTH_IN_PIXELS,
+                height: PLATEN_HEIGHT_IN_PIXELS,
+            })
+        );
+        return canvasSize.test({
+            width: PLATEN_WIDTH_IN_PIXELS,
+            height: PLATEN_HEIGHT_IN_PIXELS,
+        });
+    }
+    return false;
 };
 
 export const getDataURLForCanvas = (canvas: fabric.Canvas): string => {
