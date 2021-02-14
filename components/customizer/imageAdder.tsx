@@ -89,7 +89,7 @@ const ImageAdder: React.FC<Props> = ({
             <div {...getRootProps()} className={styles.dropzone}>
                 <input {...getInputProps()} />
                 {isDragActive ? (
-                    <p>Drop the files here...</p>
+                    <p>Dateien hier ablegen...</p>
                 ) : (
                     <p>
                         <AddPhotoAlternateIcon /> Datei hier ablegen oder zum
