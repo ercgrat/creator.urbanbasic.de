@@ -29,7 +29,7 @@ export default React.memo(function List(props: {
                     <div></div>
                 </li>
                 {props.cart.getItems().map((item: CartItem, index) => (
-                    <li key={index}>
+                    <li key={item.id}>
                         <Item
                             item={item}
                             isEditable={props.isEditable}

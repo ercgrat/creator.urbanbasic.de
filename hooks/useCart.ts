@@ -96,7 +96,7 @@ export function useCart(): [Cart, Dispatch<ICartAction>, boolean] {
                         updateCartItem(
                             URLS.CART_ITEM.UPDATE(item.id ?? '0'),
                             'PUT',
-                            item
+                            item.getPayload()
                         );
                     }
                     break;

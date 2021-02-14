@@ -62,13 +62,6 @@ export const renderObjects = (
 export const isClientLargeCanvasCompatible = async (): Promise<boolean> => {
     if (typeof window !== 'undefined') {
         const canvasSize = (await import('canvas-size')).default;
-        console.log(canvasSize.maxHeight(PLATEN_HEIGHT_IN_PIXELS));
-        console.log(
-            canvasSize.test({
-                width: PLATEN_WIDTH_IN_PIXELS,
-                height: PLATEN_HEIGHT_IN_PIXELS,
-            })
-        );
         return canvasSize.test({
             width: PLATEN_WIDTH_IN_PIXELS,
             height: PLATEN_HEIGHT_IN_PIXELS,

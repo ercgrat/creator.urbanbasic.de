@@ -9,7 +9,7 @@ import S3Client from 'aws-sdk/clients/s3';
 import { S3_BUCKET } from '../../utils/const';
 import { CanvasImageData } from '../../utils/canvas';
 
-export default React.memo(function Item(props: {
+type Props = {
     item: CartItem;
     isEditable?: boolean;
     onQuantityChange?: (
@@ -17,16 +17,29 @@ export default React.memo(function Item(props: {
     ) => void;
     onDelete?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     onDataLoaded?: (item: CartItem, data: CanvasImageData) => void;
-}) {
-    const [frontDataURL, setFrontDataURL] = useState<string>();
-    const [backDataURL, setBackDataURL] = useState<string>();
+};
+const Item: React.FC<Props> = ({
+    item,
+    isEditable,
+    onQuantityChange,
+    onDelete,
+    onDataLoaded,
+}) => {
+    const [frontDataURL, setFrontDataURL] = useState<string | undefined>(
+        item.clientFrontDataURL
+    );
+    const [backDataURL, setBackDataURL] = useState<string | undefined>(
+        item.clientBackDataURL
+    );
     const [progress, setProgress] = useState<number>(0);
 
     useEffect(() => {
         if (!frontDataURL && !backDataURL) {
-            const download = new S3Client().getObject({
+            const download = new S3Client({
+                useAccelerateEndpoint: true,
+            }).getObject({
                 Bucket: S3_BUCKET,
-                Key: props.item.design.s3ObjectKey,
+                Key: item.design.s3ObjectKey,
             });
             download.on('httpDownloadProgress', (progress) => {
                 setProgress((progress.loaded / progress.total) * 100);
@@ -37,38 +50,38 @@ export default React.memo(function Item(props: {
                 );
                 setFrontDataURL(canvasImageData.frontDataURL);
                 setBackDataURL(canvasImageData.backDataURL);
-                props.onDataLoaded?.(props.item, canvasImageData);
+                onDataLoaded?.(item, canvasImageData);
             });
         }
-    }, [backDataURL, frontDataURL, props]);
+    }, [backDataURL, frontDataURL, item, onDataLoaded]);
 
     return (
         <div className={styles.listItem}>
             <div className={styles.product}>
                 <Design
                     shirtPosition="front"
-                    color={props.item.design.color}
+                    color={item.design.color}
                     imageSrc={frontDataURL}
                     progress={progress}
                 />
                 <Design
                     shirtPosition="back"
-                    color={props.item.design.color}
+                    color={item.design.color}
                     imageSrc={backDataURL}
                     progress={progress}
                 />
             </div>
             <div>
                 <span className={styles.listItemLabel}>Size: </span>
-                {props.item.design.size}
+                {item.design.size}
             </div>
             <div>
                 <span className={styles.listItemLabel}>Price: </span>
-                {formatPrice(props.item.price)}
+                {formatPrice(item.price)}
             </div>
             <div>
                 <span className={styles.listItemLabel}>Quantity: </span>
-                {props.isEditable ? (
+                {isEditable ? (
                     <TextField
                         className={styles.quantity}
                         type="number"
@@ -77,24 +90,24 @@ export default React.memo(function Item(props: {
                         }}
                         variant="outlined"
                         size="small"
-                        value={props.item.quantity}
-                        onChange={props.onQuantityChange}
+                        value={item.quantity}
+                        onChange={onQuantityChange}
                     />
                 ) : (
-                    props.item.quantity
+                    item.quantity
                 )}
             </div>
             <div>
                 <span className={styles.listItemLabel}>Total price: </span>
-                {formatPrice(props.item.getTotalPrice())}
+                {formatPrice(item.getTotalPrice())}
             </div>
-            {props.isEditable ? (
+            {isEditable ? (
                 <div>
                     <div className={styles.iconDelete}>
                         <IconButton
                             className={styles.iconDelete}
                             aria-label="delete"
-                            onClick={props.onDelete}
+                            onClick={onDelete}
                         >
                             <DeleteForeverIcon />
                         </IconButton>
@@ -103,7 +116,7 @@ export default React.memo(function Item(props: {
                         <Button
                             className={styles.fullDelete}
                             aria-label="delete"
-                            onClick={props.onDelete}
+                            onClick={onDelete}
                             startIcon={<DeleteForeverIcon />}
                         >
                             Artikel löschen
@@ -113,4 +126,6 @@ export default React.memo(function Item(props: {
             ) : null}
         </div>
     );
-});
+};
+
+export default React.memo(Item);

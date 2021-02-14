@@ -81,6 +81,8 @@ export interface ICartItem {
     design: DesignMetadata;
     quantity: number;
     price: number;
+    clientFrontDataURL?: string;
+    clientBackDataURL?: string;
 }
 
 export class CartItem implements ICartItem {
@@ -88,6 +90,8 @@ export class CartItem implements ICartItem {
     design: DesignMetadata;
     quantity: number;
     price: number;
+    clientFrontDataURL?: string;
+    clientBackDataURL?: string;
 
     constructor(design: DesignMetadata, quantity?: number) {
         this.design = design;
@@ -100,6 +104,14 @@ export class CartItem implements ICartItem {
 
     public getTotalPrice(): number {
         return this.price * this.quantity;
+    }
+
+    public getPayload(): ICartItem {
+        return {
+            design: this.design,
+            quantity: this.quantity,
+            price: this.price,
+        };
     }
 }
 

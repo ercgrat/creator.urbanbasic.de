@@ -162,9 +162,9 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                 Key: s3ObjectKey,
                 Body: Buffer.from(JSON.stringify(designData), 'binary'),
             },
-            /*service: new S3Client({
+            service: new S3Client({
                 useAccelerateEndpoint: true,
-            }),*/
+            }),
         });
         upload.on('httpUploadProgress', (progress) => {
             const percentDone = formatPercent(progress.loaded / progress.total);
@@ -180,6 +180,7 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                     cart.getItems().slice()
                 );
 
+                const newCartItemIDs: string[] = [];
                 for (let i = 0; i < selectedSizes.length; i++) {
                     const size: DesignSize = selectedSizes[i];
                     const design = new DesignMetadata(
@@ -199,9 +200,10 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                     const cartItemResponse = await createCartItem(
                         URLS.CART_ITEM.CREATE(),
                         'POST',
-                        cartItem
+                        cartItem.getPayload()
                     );
                     cartItem.id = cartItemResponse.ref['@ref'].id;
+                    newCartItemIDs.push(cartItem.id);
                 }
 
                 const cartData = await updateCart(
@@ -212,12 +214,22 @@ const SizeAndQuantityModal: React.FC<Props> = ({
                         itemIds: newCart.getItemIds(),
                     }
                 );
-                console.log(cartData);
+
                 newCart = await Cart.constructCartFromDatabase(
                     cartData.ref['@ref'].id,
                     cartData.data.s3KeyCounter,
                     cartData.data.itemIds
                 );
+
+                newCart
+                    .getItems()
+                    .filter(
+                        (item) => item.id && newCartItemIDs.includes(item.id)
+                    )
+                    .forEach((item) => {
+                        item.clientFrontDataURL = designData.frontDataURL;
+                        item.clientBackDataURL = designData.backDataURL;
+                    });
 
                 cartDispatcher({
                     type: CartActionType.initializeFromDB,
