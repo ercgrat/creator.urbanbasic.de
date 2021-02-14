@@ -1,5 +1,6 @@
 import Page from '../components/page';
-import { Button } from '@material-ui/core';
+import { Button, IconButton } from '@material-ui/core';
+import Tooltip from '../components/tooltip';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { fabric } from 'fabric';
 import Customizer, { IDesignData } from '../components/customizer/customizer';
@@ -13,6 +14,7 @@ import {
     isClientLargeCanvasCompatible,
 } from '../utils/canvas';
 import Spinner from '../components/spinner';
+import { Help } from '@material-ui/icons';
 
 const Home: React.FC = () => {
     const [frontObjects, setFrontObjects] = useState<fabric.Object[]>([]);
@@ -109,6 +111,18 @@ const Home: React.FC = () => {
                 <>
                     <header className={styles.header}>
                         <h1 className={styles.heading}>Designer</h1>
+                        <div>
+                            <a
+                                target="_blank"
+                                href="https://www.urbanbasic.de/c/print-service/faqs"
+                            >
+                                <Tooltip title="FAQs" placement="top">
+                                    <IconButton color="primary" size="medium">
+                                        <Help />
+                                    </IconButton>
+                                </Tooltip>
+                            </a>
+                        </div>
                     </header>
                     <Customizer
                         frontObjects={frontObjects}
