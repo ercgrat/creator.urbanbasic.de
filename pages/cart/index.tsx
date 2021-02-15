@@ -20,6 +20,7 @@ import { IOrder, IPayment } from '../../model/Order';
 import { formatPrice } from '../../utils';
 import { Typography } from '@material-ui/core';
 import { VAT } from '../../utils/const';
+import NewDesignLink from '../../components/NewDesignLink';
 
 const Cart: React.FC = () => {
     const { cart, cartDispatcher, isCartLoading } = useContext(CartContext);
@@ -88,7 +89,10 @@ const Cart: React.FC = () => {
 
     return (
         <Page>
-            <h1 className={styles.heading}>Warenkorb</h1>
+            <div className={styles.header}>
+                <h1>Warenkorb</h1>
+                <NewDesignLink variant="text" />
+            </div>
             {cart.getSize() === 0 ? (
                 <p className={styles.empty}>Der Warenkorb ist leer.</p>
             ) : (
@@ -116,6 +120,9 @@ const Cart: React.FC = () => {
                         .reduce((total, item) => total + item.quantity, 0) >
                     0 ? (
                         <section className={styles.cartSummary}>
+                            <div className={styles.flexEnd}>
+                                <NewDesignLink variant="text" />
+                            </div>
                             <p className={styles.cartSummaryItem}>
                                 <span className={styles.label}>
                                     Zwischensumme

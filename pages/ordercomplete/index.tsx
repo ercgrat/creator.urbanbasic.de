@@ -1,15 +1,13 @@
 import { Button, makeStyles } from '@material-ui/core';
 import Link from 'next/link';
 import React from 'react';
+import NewDesignLink from '../../components/NewDesignLink';
 import Page from '../../components/page';
 import styles from './index.module.scss';
 
 const useStyles = makeStyles({
     root: {
         backgroundColor: '#efefef',
-    },
-    footerButton: {
-        margin: '0px 12px',
     },
 });
 
@@ -30,16 +28,11 @@ const OrderComplete: React.FC = () => {
                         Zurück zu Urban Basic
                     </Button>
                 </Link>
-                <Link href="/">
-                    <Button
-                        variant="contained"
-                        size="large"
-                        color="primary"
-                        classes={{ root: classes.footerButton }}
-                    >
-                        Neu starten
-                    </Button>
-                </Link>
+                <NewDesignLink
+                    buttonRootStyles={{
+                        margin: '0px 12px',
+                    }}
+                />
             </footer>
         </Page>
     );

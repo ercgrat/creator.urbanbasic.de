@@ -1,7 +1,7 @@
 @import '../../styles/theme.scss';
 
-.heading {
-    @include page-heading;
+.header {
+    @include page-header;
 }
 
 .empty {
@@ -24,6 +24,12 @@
 
 .cartSummaryTotal {
     font-size: 27px;
+}
+
+.flexEnd {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
 }
 
 .footer {

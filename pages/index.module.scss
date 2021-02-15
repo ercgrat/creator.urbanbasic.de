@@ -1,14 +1,7 @@
 @import '../styles/theme.scss';
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    align-items: center;
-}
-
-.heading {
-    @include page-heading;
+    @include page-header
 }
 
 .footer {

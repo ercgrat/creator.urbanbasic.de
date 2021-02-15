@@ -13,9 +13,16 @@ $font-size-normal: 14px;
 
 $label-color: #84878a;
 
-@mixin page-heading {
-    margin: 0;
-    padding: 12px;
+@mixin page-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    h1 {
+        margin: 0;
+        padding: 12px;
+    }
 }
 
 @mixin footer {
