@@ -116,7 +116,7 @@ const Home: React.FC = () => {
                                 target="_blank"
                                 href="https://www.urbanbasic.de/c/print-service/faqs"
                             >
-                                <Tooltip title="FAQs" placement="top">
+                                <Tooltip title="HILFE & TIPPS" placement="top">
                                     <IconButton color="primary" size="medium">
                                         <Help />
                                     </IconButton>
