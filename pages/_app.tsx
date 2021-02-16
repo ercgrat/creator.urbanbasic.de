@@ -56,7 +56,7 @@ const App: React.FC<{
     return (
         <ThemeProvider theme={theme}>
             <Head>
-                <title>Creator</title>
+                <title>Designer</title>
                 <link rel="icon" href="/favicon.png" />
                 <link
                     rel="preload"
