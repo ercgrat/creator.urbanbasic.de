@@ -7,10 +7,6 @@ const client = new faunadb.Client({
     timeout: 30,
 });
 
-/**
- *  TODO: This operation can result in the deletion of cart items, which have associated original images.
- *        The associated documents in the originals collection will not be deleted, which is a memory leak of sorts.
- **/
 exports.handler = async (event) => {
     const { s3KeyCounter, itemIds } = JSON.parse(event.body);
     const id = event.id;
