@@ -60,7 +60,7 @@ export const renderObjects = (
 };
 
 export const isClientLargeCanvasCompatible = async (): Promise<boolean> => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && window.innerWidth >= 600) {
         const canvasSize = (await import('canvas-size')).default;
         return new Promise((resolve) => {
             canvasSize.maxArea({
