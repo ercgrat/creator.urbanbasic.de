@@ -162,11 +162,19 @@ const Home: React.FC = () => {
                     <Spinner isSpinning={isTryingToOpenSizeDialog} />
                 </>
             ) : (
-                <p>
-                    Leider unterstützt dieses Gerät nicht die notwendige
-                    Druckauflösung. Bitte nutze diese Seite über einen
-                    Desktop-Browser.
-                </p>
+                <>
+                    <p>
+                        Leider unterstützt dieses Gerät nicht die notwendige
+                        Druckauflösung. Bitte nutze diese Seite über einen
+                        Desktop-Browser.
+                    </p>
+                    <p>
+                        Zurück zu{' '}
+                        <a href="https://urbanbasic.de" target="_blank">
+                            urbanbasic.de
+                        </a>
+                    </p>
+                </>
             )}
         </Page>
     );
