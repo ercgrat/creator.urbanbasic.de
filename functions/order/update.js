@@ -11,10 +11,7 @@ exports.handler = async (event) => {
 
     return client
         .query(
-            q.Update(
-                q.Ref(q.Collection('orders'), event.id),
-                order
-            )
+            q.Update(q.Ref(q.Collection('orders'), event.id), { data: order })
         )
         .then((response) => {
             return {
