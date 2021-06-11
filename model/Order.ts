@@ -43,7 +43,7 @@ export class Order {
         isComplete: boolean
     ) {
         this.id = id;
-        this.created_at = moment(created_at / 1000);
+        this.created_at = moment(created_at);
         this.cart = cart;
         this.payment = payment;
         this.isInProgress = isInProgress;
